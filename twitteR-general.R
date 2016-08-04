@@ -1,32 +1,31 @@
-# Learning how to use twitteR package
+# NESREA Twitter Analysis
 # Inspired by Michael Levy - http://michaellevy.name/blog/conference-twitter/
 
-# Authentication
 # loading packages
 lapply(c("twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
             "qdap", "tm"), FUN = library, character.only = TRUE)
-
 theme_set(new = theme_bw())
-source("twitterAuth.R")
 source("local_functions.R")
+
+# Authentication
+source("twitterAuth.R")
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 rm(access_secret, access_token, consumer_key, consumer_secret)
-
 rand <- sample(1:2000, 1)
 set.seed(rand) # Change per session
 rm(rand)
 
 # harvest data
-tweets <- searchTwitter("NESREA", n = 110, since = "2016-07-01")
+tweets <- searchTwitter("NESREA", n = 100, since = "2016-07-29")
 
 # save data
 saveRDS(tweets, "NESREA_tweets.rds")
 
 # put into dataframe
 df <- twListToDF(tweets)
+rm(tweets)
 df$text <- stringr::str_replace_all(df$text, "[^[:graph:]]", " ")
-head(df)
-tbl_df(df)
+dim(df)
 
 # Timing of tweets
 df$created <- with_tz(df$created, "Africa/Lagos")
@@ -38,13 +37,14 @@ timeDist <- ggplot(df, aes(created)) +
 timeDist
 
 # Zoom in on a particular day
-dayOf <- filter(df, mday(created) == 21)
+dayOf <- filter(df, mday(created) == 30)
 timeDistDayOf <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
   xlab("Tweets of 21st July 2016")
 timeDistDayOf
 cowplot::plot_grid(timeDist, timeDistDayOf) # ALL + FOCUSED tweets side-by-side
+
 
 # What platforms are being used?
 oldpar <- par()
@@ -57,30 +57,26 @@ mtext('Number of tweets posted by platform')
 par(oldpar)
 
 # Split into retweets and original tweets
-
 spl <- split(df, df$isRetweet)
 orig <- spl[['FALSE']]
+
 # Extract the retweets and pull the original author's screenname
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
 
 pol <- lapply(orig$text, function(txt) {
-  # strip sentence enders so each tweet is analysed as a sentence, 
-  # and +'s which muck up regex
-  gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%
-    # strip URLs
-    gsub(" http[^[:blank:]]+", "", .) %>%
-    
-    # calculate polarity
-    polarity(.)
+  gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%    # strip sentence enders and +'s
+    gsub(" http[^[:blank:]]+", "", .) %>%          # strip URLs
+    polarity(.)                                    # calculate polarity
 })
+
 orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
 
-# As reality check, what are the most and least positive tweets
+# What are the most and least positive tweets?
 orig$text[which.max(orig$emotionalValence)]
 orig$text[which.min(orig$emotionalValence)]
 
 # How does emotionalValence change over the day?
-filter(orig, mday(created) == 21) %>%
+filter(orig, mday(created) == 30) %>%
   ggplot(aes(created, emotionalValence)) +
   geom_point() +
   geom_smooth(span = .5)
@@ -127,9 +123,9 @@ par(oldpar)           # return to default graphical parameters
 
 # Make a corpus by valence and a wordcloud from it
 corp <- make_corpus(polText)
-col3 <- RColorBrewer::brewer.pal(3, 'Paired') # Define some pretty colours
+col3 <- RColorBrewer::brewer.pal(3, 'Paired') # Define colours
 wordcloud::comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                            max.words = 100, min.freq = 1, 
+                            max.words = 150, min.freq = 1, 
                             random.order = FALSE, rot.per = 0,
                             colors = col3, vfont = c("sans serif", "plain"))
 
@@ -152,15 +148,14 @@ plot(rtnet, label = vlabs, label.pos = 5, label.cex = .8,
      edge.lwd = 'num', edge.col = 'gray70',
      main = 'NESREA Retweet Network')
 
-# Extract who is mentioned ineach tweet
-# Someone has probably written a function to do this, but it's fun regex problem
+# Extract who is mentioned in each tweet
 mentioned <- lapply(orig$text, function(tx) {
-  matches <- gregexpr('@[^([:blank:]|{:punct:])]+', tx)[[1]]
+  matches <- gregexpr('@[^([:blank:]|[:punct:])]+', tx)[[1]]
   sapply(seq_along(matches), function(i)
     substr(tx, matches[i] + 1, matches[i] + attr(matches, 'match.length')[i] - 1))
 })
 
-# ----------------- REVIEW THE FOLLOWING LINES OF CODE LATER ---------------- #
+# ----------------- REVIEW THESE LINES OF CODE LATER ---------------- #
 
 # Make an edge from the tweeter to the mentioned, for each mention
 mentionEL <- lapply(orig$text, function(i) {
