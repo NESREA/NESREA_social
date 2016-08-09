@@ -19,3 +19,6 @@ twitter-26jul2016.pptx
 twitterAuth.R
 reports/*
 NESREA_tweets.rds
+victor_twitterAuth.R 
+nesrea_twitterAuth.R 
+shinyNESREA/data/nesrea-tweet-df.rds 
