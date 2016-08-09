@@ -8,7 +8,7 @@ theme_set(new = theme_bw())
 source("local_functions.R")
 
 # Authentication
-source("twitterAuth.R")
+source("nesrea_twitterAuth.R")
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 rm(access_secret, access_token, consumer_key, consumer_secret)
 rand <- sample(1:2000, 1)
@@ -16,7 +16,7 @@ set.seed(rand) # Change per session
 rm(rand)
 
 # harvest data
-tweets <- searchTwitter("NESREA", n = 100, since = "2016-07-29")
+tweets <- searchTwitter("NESREA", n = 100, since = "2016-07-29", until = "2016-08-07")
 
 # save data
 saveRDS(tweets, "NESREA_tweets.rds")
@@ -37,11 +37,11 @@ timeDist <- ggplot(df, aes(created)) +
 timeDist
 
 # Zoom in on a particular day
-dayOf <- filter(df, mday(created) == 30)
+dayOf <- filter(df, mday(created) == 1)
 timeDistDayOf <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab("Tweets of 21st July 2016")
+  xlab("Tweets of 30 July 2016")
 timeDistDayOf
 cowplot::plot_grid(timeDist, timeDistDayOf) # ALL + FOCUSED tweets side-by-side
 
