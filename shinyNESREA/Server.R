@@ -4,7 +4,7 @@
 library(shiny)
 library(ggplot2); theme_set(new = theme_bw())
 
-df <- readRDS("~/7-NESREA/SA/WMG/socialmedia/shinyNESREA/data/nesrea-tweet-df.rds")
+df <- readRDS("~/7-NESREA/SA/WMG/socialmedia/NESREA_Twitter/shinyNESREA/data/nesrea-tweet-df.rds")
 
 shinyServer(function(input, output) {
   
