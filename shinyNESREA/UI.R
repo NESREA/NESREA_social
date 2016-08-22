@@ -12,8 +12,11 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      dateRangeInput("dates", label = "Date range", start = Sys.Date()-7,
-                     end = NULL, min = "2016-06-14", max = Sys.Date())
+      dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
+                min = "2016-06-14", max = Sys.Date()),
+      
+      dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
+                max = Sys.Date())
     ),
     
     mainPanel(
