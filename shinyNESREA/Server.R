@@ -5,11 +5,7 @@ library(shiny)
 library(twitteR)
 library(ggplot2); theme_set(new = theme_bw())
 
-<<<<<<< HEAD
-df <- readRDS("~/7-NESREA/SA/WMG/socialmedia/NESREA_Twitter/shinyNESREA/data/nesrea-tweet-df.rds")
 
-=======
->>>>>>> reactive
 shinyServer(function(input, output) {
   
   dataInput <- reactive({
