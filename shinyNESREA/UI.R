@@ -16,11 +16,15 @@ shinyUI(fluidPage(
                 min = "2016-06-14", max = Sys.Date()),
       
       dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
-                max = Sys.Date())
+                max = Sys.Date()),
+      
+      width = 3
     ),
     
     mainPanel(
-      plotOutput("twtDensity")
+      plotOutput("twtDensity"),
+      
+      width = 9
     )
   )
 )
