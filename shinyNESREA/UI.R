@@ -3,7 +3,6 @@
 
 
 library(shiny)
-tweets <- readRDS("data/nesrea-tweet-df.rds")
 
 shinyUI(fluidPage(
   titlePanel(
@@ -12,7 +11,6 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      strong("Dates"),
       
       dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
                 min = "2016-06-14", max = Sys.Date()),
@@ -22,8 +20,7 @@ shinyUI(fluidPage(
       
       hr(),
       
-      textInput("searchTerm", label = "Search", value = "NESREA",
-                placeholder = "Enter your search term here"),
+      textInput("searchTerm", label = "Search", value = "nesrea"),
       
       width = 3
     ),
