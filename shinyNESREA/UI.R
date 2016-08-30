@@ -12,11 +12,18 @@ shinyUI(fluidPage(
   
   sidebarLayout(
     sidebarPanel(
+      strong("Dates"),
+      
       dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
                 min = "2016-06-14", max = Sys.Date()),
       
       dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
                 max = Sys.Date()),
+      
+      hr(),
+      
+      textInput("searchTerm", label = "Search", value = "NESREA",
+                placeholder = "Enter your search term here"),
       
       width = 3
     ),

@@ -9,7 +9,7 @@ library(ggplot2); theme_set(new = theme_bw())
 shinyServer(function(input, output) {
   
   dataInput <- reactive({
-    tweets <- searchTwitter("NESREA", n = 100,
+    tweets <- searchTwitter(as.character(input$searchTerm), n = 100,
                             since = as.character(input$startDate),
                             until = as.character(input$endDate))
     df <- twListToDF(tweets)
