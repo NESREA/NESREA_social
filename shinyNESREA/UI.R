@@ -12,17 +12,36 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       
-      dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
-                min = "2016-06-14", max = Sys.Date()),
+      width = 3,
       
-      dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
-                max = Sys.Date()),
+      textInput("searchTerm", label = "Search", value = "",
+                placeholder = "Search term or hashtag"),
       
       hr(),
       
-      textInput("searchTerm", label = "Search", value = "nesrea"),
+      selectInput("outputstyle", label = "Select output of choice",
+                  choices = c("Density plot", "Platforms",
+                              "Sentiment", "Network")),
       
-      width = 3
+      conditionalPanel(
+        condition = "input.outputstyle == 'Density plot'",
+        dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
+                min = "2016-06-14", max = Sys.Date()),
+        dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
+                max = Sys.Date())
+        ),
+      
+      conditionalPanel(
+        condition = "input.outputstyle == 'Platforms'"
+        ),
+      
+      conditionalPanel(
+        condition = "input.outputstyle == 'Sentiment'"
+        ),
+      
+      conditionalPanel(
+        condition = "input.outputstyle == 'Network'"
+        )
     ),
     
     mainPanel(
@@ -31,6 +50,4 @@ shinyUI(fluidPage(
       width = 9
     )
   )
-)
-  
-)
+))
