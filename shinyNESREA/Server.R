@@ -4,12 +4,12 @@
 lapply(c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
             "qdap", "tm"), FUN = library, character.only = TRUE)
 theme_set(new = theme_bw())
+source("helpers.R")
 
 shinyServer(function(input, output) {
   
   dataInput <- reactive({
     input$goButton
-    
     tweets <- isolate(
       searchTwitter(as.character(input$searchTerm), n = 100,
                             since = as.character(input$startDate),
@@ -29,10 +29,11 @@ shinyServer(function(input, output) {
     else if (input$outputstyle == "Platforms") {
       oldpar <- par()
       par(mar = c(3, 3, 3, 2))
-      dataInput()$statusSource <- substr(dataInput()$statusSource,
-                                regexpr('>', dataInput()$statusSource) + 1,
-                                regexpr('</a>', dataInput()$statusSource) - 1)
-      dotchart(sort(table(dataInput()$statusSource)))
+      temp_data <- dataInput()
+      temp_data$statusSource <- substr(temp_data$statusSource,
+                                regexpr('>', temp_data$statusSource) + 1,
+                                regexpr('</a>', temp_data$statusSource) - 1)
+      dotchart(sort(table(temp_data$statusSource)))
       mtext('Number of tweets posted by platform')
       par(oldpar)
     }
