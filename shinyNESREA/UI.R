@@ -15,7 +15,9 @@ shinyUI(fluidPage(
       width = 3,
       
       textInput("searchTerm", label = "Search", value = "",
-                placeholder = "Search term or hashtag"),
+                placeholder = "Term or hashtag"),
+      
+      actionButton("goButton", label = "Go!"),
       
       hr(),
       
