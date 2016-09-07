@@ -5,8 +5,10 @@
 library(shiny)
 
 shinyUI(fluidPage(
+
   titlePanel(
-    helpText("NESREA Twitter Exploratory Data Analysis")
+    title = "NESREA Twitter Exploratory Data Analysis",
+    windowTitle = "Twitter Shiny app - NESREA"
   ),
   
   sidebarLayout(
