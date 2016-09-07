@@ -2,7 +2,7 @@
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
 
 lapply(c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
-            "qdap", "tm"), FUN = library, character.only = TRUE)
+            "qdap", "tm", "wordcloud", "RColorBrewer"), FUN = library, character.only = TRUE)
 theme_set(new = theme_bw())
 source("helpers.R")
 
@@ -37,8 +37,39 @@ shinyServer(function(input, output) {
       mtext('Number of tweets posted by platform')
       par(oldpar)
     }
-    else if (input$outputstyle == "Wordcloud") {
-      # some code...
+    else if (input$outputstyle == "Sentiment") {
+      temp_data <- dataInput()
+      spl <- split(temp_data, df$isRetweet)
+      orig <- spl[['FALSE']]
+      
+      pol <- lapply(orig$text, function(txt) {
+        gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%
+          gsub(" http[^[:blank:]]+", "", .) %>%
+          polarity(.)
+      })
+      
+      orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
+      
+      polSplit <- split(orig, sign(orig$emotionalValence))
+      polText <- sapply(polSplit, function(subdata) {
+        paste(tolower(subdata$text), collapse = ' ') %>%
+          gsub(' http|@)[^[:blank:]]+', '', .) %>%
+          gsub('[[:punct:]]', '', .)
+      }) %>%
+        structure(names = c('negative', 'neutral', 'positive'))
+      
+      polText['negative'] <- removeWords(polText['negative'],
+                                         names(polWordTable$negativeWords))
+      polText['positive'] <- removeWords(polText['positive'],
+                                         names(polWordTable$positiveWords))
+      
+      corp <- make_corpus(polText)
+      col3 <- brewer.pal(3, 'Paired')
+      comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                                  max.words = 150, min.freq = 1, 
+                                  random.order = FALSE, rot.per = 0,
+                                  colors = col3, vfont = c("sans serif", "plain"))
+      
     }
     else if (input$outputstyle == "Graph") {
       # some code...
