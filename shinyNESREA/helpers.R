@@ -1,14 +1,22 @@
-# shinyNESREA/helpers.R
-# Helper functions for the NESREA_Twitter Shiny App
+# helpers.R
+# make a corpus
+make_corpus <- function(GText, stem = TRUE) {
+  require(tm)
+  corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
+    tm_map(removePunctuation) %>%
+    tm_map(stripWhitespace) %>%
+    tm_map(content_transformer(tolower)) %>%
+    tm_map(removeWords, stopwords("english")) # remove meaningless words
+  if(stem)
+    corp <- tm_map(corp, stemDocument) # make verb & adjective, plural & singular, etc. forms identical
+  
+  names(corp) <- names(GText)
+  corp
+}
 
-# To download data
-library(twitteR)
-library(httr)
-source("~/7-NESREA/SA/WMG/socialmedia/NESREA_Twitter/nesrea-twitterAuth.R")
-setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
-tweets <- searchTwitter("NESREA", n = 200, since = "2016-06-14")
-tweetsDF <- twListToDF(tweets)
-tweetsDF$text <- stringr::str_replace_all(tweetsDF$text, "[^[:graph:]]", " ")
-saveRDS(tweetsDF,
-        "~/7-NESREA/SA/WMG/socialmedia/NESREA_Twitter/shinyNESREA/data/nesrea-tweet-df.rds")
-rm(list = ls())
+# Define colours
+color <- function() {
+  require(RColorBrewer)
+  col <- brewer.pal(3, 'Paired')
+  col
+  }
