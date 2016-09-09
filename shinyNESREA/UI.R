@@ -1,7 +1,5 @@
 # shinyNESREA_UI.R
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
-
-
 library(shiny)
 
 shinyUI(fluidPage(
@@ -15,6 +13,11 @@ shinyUI(fluidPage(
     sidebarPanel(
       
       width = 3,
+      
+      actionLink(inputId = "oauth",
+                 label = "Set up a fresh Twitter OAuth session"),
+      
+      hr(),
       
       textInput("searchTerm", label = "Search", value = "",
                 placeholder = "Term or hashtag"),
@@ -53,5 +56,7 @@ shinyUI(fluidPage(
       
       width = 9
     )
+    
   )
+  
 ))
