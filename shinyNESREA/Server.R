@@ -2,7 +2,7 @@
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
 
 lapply(c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
-            "qdap", "tm", "wordcloud", "RColorBrewer"),
+            "qdap", "wordcloud"),
        FUN = library, character.only = TRUE)
 theme_set(new = theme_bw())
 source("helpers.R")
@@ -69,14 +69,33 @@ shinyServer(function(input, output) {
       polText['positive'] <- removeWords(polText['positive'],
                                          names(polWordTable$positiveWords))
       corp <- make_corpus(polText)
-      col3 <- brewer.pal(3, 'Paired')
+      col3 <- color()
       comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
                                   max.words = 150, min.freq = 1, 
                                   random.order = FALSE, rot.per = 0,
                                   colors = col3, vfont = c("sans serif", "plain"))
     }
-    else if (input$outputstyle == "Graph") {
-      # some code...
+    else if (input$outputstyle == "Network") {
+      col3 <- color()
+      temp_data <- dataInput()
+      spl <- split(temp_data, temp_data$isRetweet)
+      RT <- mutate(spl[['TRUE']],
+                   sender = substr(text, 5, regexpr(':', text) - 1))
+      edglst <- as.data.frame(cbind(sender = tolower(RT$sender),
+                              receiver = tolower(RT$screenName)))
+      
+      edglst <- count(edglst, sender, receiver)
+      rtnet <- network(edglst, matrix.type = 'edgelist', directed = TRUE,
+                 ignore.eval = FALSE, names.eval = 'num')
+      
+      vlabs <- rtnet %v% "vertex.names"
+      vlabs[degree(rtnet, cmode = 'outdegree') == 0] <- NA
+      
+      plot(rtnet, label = vlabs, label.pos = 5, label.cex = .8,
+           vertex.cex = log(degree(rtnet)) + .5, vertex.col = col3[1],
+           edge.lwd = 'num', edge.col = 'gray70',
+           main = paste(input$searchTerm, "Retweet Network"))
+
     }
   })
   
