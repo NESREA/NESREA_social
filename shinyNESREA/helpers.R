@@ -1,7 +1,8 @@
-require(tm)
+# helpers.R
+# make a corpus
 make_corpus <- function(GText, stem = TRUE) {
-  corp <- 
-    VCorpus(VectorSource(GText)) %>% # Put the text into tm format
+  require(tm)
+  corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
     tm_map(removePunctuation) %>%
     tm_map(stripWhitespace) %>%
     tm_map(content_transformer(tolower)) %>%
@@ -12,3 +13,10 @@ make_corpus <- function(GText, stem = TRUE) {
   names(corp) <- names(GText)
   corp
 }
+
+# Define colours
+color <- function() {
+  require(RColorBrewer)
+  col <- brewer.pal(3, 'Paired')
+  col
+  }
