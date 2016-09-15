@@ -2,7 +2,7 @@
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
 
 lapply(c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
-            "qdap", "wordcloud"),
+            "qdap", "wordcloud", "tm", "stringr"),
        FUN = library, character.only = TRUE)
 theme_set(new = theme_bw())
 source("helpers.R")
@@ -18,6 +18,8 @@ shinyServer(function(input, output) {
                             until = as.character(input$endDate))
     )
     df <- twListToDF(tweets)
+    df$text <- str_replace_all(df$text, "[^[:graph:]]", " ")
+    df
   })
   
   output$twtDensity <- renderPlot({
