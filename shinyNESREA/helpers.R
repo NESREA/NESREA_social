@@ -1,7 +1,6 @@
 # helpers.R
 # make a corpus
 make_corpus <- function(GText, stem = TRUE) {
-  require(tm)
   corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
     tm_map(removePunctuation) %>%
     tm_map(stripWhitespace) %>%
