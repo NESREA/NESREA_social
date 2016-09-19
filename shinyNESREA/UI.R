@@ -14,8 +14,8 @@ shinyUI(fluidPage(
       
       width = 3,
       
-      actionLink(inputId = "oauth",
-                 label = "Set up a fresh Twitter OAuth session"),
+      strong(actionLink(inputId = "oauth",
+                 label = "New Twitter session")),
       
       hr(),
       
@@ -52,7 +52,7 @@ shinyUI(fluidPage(
       
       hr(),
       
-      a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints")
+      em(a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints"))
     ),
     
     mainPanel(
