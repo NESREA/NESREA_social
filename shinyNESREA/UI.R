@@ -48,7 +48,11 @@ shinyUI(fluidPage(
       
       conditionalPanel(
         condition = "input.outputstyle == 'Network'"
-        )
+        ),
+      
+      hr(),
+      
+      a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints")
     ),
     
     mainPanel(
@@ -56,7 +60,6 @@ shinyUI(fluidPage(
       
       width = 9
     )
-    
   )
   
 ))
