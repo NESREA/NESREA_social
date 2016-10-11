@@ -27,7 +27,7 @@ shinyUI(fluidPage(
       hr(),
       
       selectInput("outputstyle", label = "Select output of choice",
-                  choices = c("Density plot", "Platforms",
+                  choices = c("Density plot", "Platforms", "Emotions plot",
                               "Sentiment", "Network")),
       
       conditionalPanel(
@@ -43,7 +43,11 @@ shinyUI(fluidPage(
         ),
       
       conditionalPanel(
-        condition = "input.outputstyle == 'Sentiment'"
+        condition = "input.outputstyle == 'Emotions plot'"
+      ),
+      
+      conditionalPanel(
+        condition = "input.outputstyle == 'Wordcloud'"
         ),
       
       conditionalPanel(
