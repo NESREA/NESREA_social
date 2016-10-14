@@ -23,7 +23,8 @@ shinyServer(function(input, output) {
   })
   
   output$twtDensity <- renderPlot({
-	temp_data <- dataInput()
+	# Objects for rendering the various plots
+  temp_data <- dataInput()
 	spl <- split(temp_data, temp_data$isRetweet)
 	orig <- spl[['FALSE']]
 	pol <- lapply(orig$text, function(txt) {
@@ -31,7 +32,17 @@ shinyServer(function(input, output) {
         gsub(" http[^[:blank:]]+", "", .) %>%
         polarity(.)
       })
-
+	polWordTable <- sapply(pol, function(p) {
+	  words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
+	            negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
+	  gsub('-', '', words) # Get rid of nothing found's "-"
+	}) %>%
+	  apply(1, paste, collapse = ' ') %>%
+	  stripWhitespace() %>%
+	  strsplit(' ') %>%
+	  sapply(table)
+	
+	# options for various plots
   if (input$outputstyle == "Density plot") {
       tweetDistr <- ggplot(temp_data, aes(created)) +
         geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -47,16 +58,6 @@ shinyServer(function(input, output) {
       mtext('Number of tweets posted by platform')
 	}
 	else if (input$outputstyle == "Emotions plot") {
-	  polWordTable <- sapply(pol, function(p) {
-	    words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
-	              negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
-	    gsub('-', '', words) # Get rid of nothing found's "-"
-	  }) %>%
-	    apply(1, paste, collapse = ' ') %>%
-	    stripWhitespace() %>%
-	    strsplit(' ') %>%
-	    sapply(table)
-	  
 	  par(mfrow = c(1, 2))
 	  invisible(
 	    lapply(1:2, function(i) {
