@@ -4,6 +4,8 @@ library(shiny)
 
 shinyUI(fluidPage(
 
+  theme = shinythemes::shinytheme("superhero"),
+  
   titlePanel(
     title = "NESREA Twitter Exploratory Data Analysis",
     windowTitle = "Twitter Shiny app - NESREA"
@@ -27,7 +29,7 @@ shinyUI(fluidPage(
       hr(),
       
       selectInput("outputstyle",
-                  label = "Select output of choice",
+                  label = "Select output type",
                   choices = c("Density plot (week)", "Density plot (day)",
                               "Platforms", "Emotions plot", "Wordcloud",
                               "Network")),
