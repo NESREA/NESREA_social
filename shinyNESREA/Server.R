@@ -43,13 +43,21 @@ shinyServer(function(input, output) {
 	  sapply(table)
 	
 	# options for various plots
-  if (input$outputstyle == "Density plot") {
+  if (input$outputstyle == "Density plot (week)") {
       tweetDistr <- ggplot(temp_data, aes(created)) +
         geom_density(aes(fill = isRetweet), alpha = .5) +
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
         xlab("All tweets")
       tweetDistr
-    }
+  }
+	else if (input$outputstyle == "Density plot (day)") {
+	  checkday <- filter(temp_data, mday(created) == day(input$checkDate))
+	  tweetDistr <- ggplot(checkday, aes(created)) +
+	    geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
+	    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+	    xlab(paste("Tweets of", as.character(input$checkDate)))
+	  tweetDistr
+	}
 	else if (input$outputstyle == "Platforms") {
       temp_data$statusSource <- substr(temp_data$statusSource,
                                 regexpr('>', temp_data$statusSource) + 1,
