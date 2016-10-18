@@ -26,17 +26,25 @@ shinyUI(fluidPage(
       
       hr(),
       
-      selectInput("outputstyle", label = "Select output of choice",
-                  choices = c("Density plot", "Platforms", "Emotions plot",
-                              "Wordcloud", "Network")),
+      selectInput("outputstyle",
+                  label = "Select output of choice",
+                  choices = c("Density plot (week)", "Density plot (day)",
+                              "Platforms", "Emotions plot", "Wordcloud",
+                              "Network")),
       
       conditionalPanel(
-        condition = "input.outputstyle == 'Density plot'",
+        condition = "input.outputstyle == 'Density plot (week)'",
         dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
                 min = "2016-06-14", max = Sys.Date()),
         dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
                 max = Sys.Date())
         ),
+      
+      conditionalPanel(
+        condition = "input.outputstyle == 'Density plot (day)'",
+        dateInput("checkDate", label = "Date: ", value = Sys.Date(),
+                  min = Sys.Date() - 7, max = Sys.Date())
+      ),
       
       conditionalPanel(
         condition = "input.outputstyle == 'Platforms'"
