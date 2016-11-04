@@ -55,7 +55,8 @@ shinyServer(function(input, output) {
 	  tweetDistr <- ggplot(checkday, aes(created)) +
 	    geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
 	    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-	    xlab(paste("Tweets of", as.character(input$checkDate)))
+	    xlab(paste("Tweets of", format(input$checkDate,
+	                                   format = "%a %d %B %Y")))
 	  tweetDistr
 	}
 	else if (input$outputstyle == "Platforms") {
