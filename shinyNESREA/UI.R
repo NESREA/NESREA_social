@@ -44,7 +44,7 @@ shinyUI(fluidPage(
       
       conditionalPanel(
         condition = "input.outputstyle == 'Density plot (day)'",
-        dateInput("checkDate", label = "Date: ", value = Sys.Date(),
+        dateInput("checkDate", label = "Date: ", value = Sys.Date() - 1,
                   min = Sys.Date() - 7, max = Sys.Date())
       ),
       
