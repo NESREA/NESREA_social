@@ -7,7 +7,7 @@ shinyUI(fluidPage(
   theme = shinythemes::shinytheme("superhero"),
   
   titlePanel(
-    title = "NESREA Twitter Exploratory Data Analysis",
+    title = "NESREA Twitter Exploratory Dataviz",
     windowTitle = "Twitter Shiny app - NESREA"
   ),
   
@@ -17,11 +17,11 @@ shinyUI(fluidPage(
       width = 3,
       
       strong(actionLink(inputId = "oauth",
-                 label = "New Twitter session")),
+                 label = "Click to register new session")),
       
       hr(),
       
-      textInput("searchTerm", label = "Search", value = "",
+      textInput("searchTerm", label = "Search", value = "nesreanigeria",
                 placeholder = "Term or hashtag"),
       
       actionButton("goButton", label = "Go!"),
