@@ -47,6 +47,8 @@ shinyServer(function(input, output) {
       tweetDistr <- ggplot(temp_data, aes(created)) +
         geom_density(aes(fill = isRetweet), alpha = .5) +
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+        ggtitle(paste0("Density plot of tweets with the term '",
+                       input$searchTerm, "'")) +
         xlab("All tweets")
       tweetDistr
   }
@@ -55,6 +57,8 @@ shinyServer(function(input, output) {
 	  tweetDistr <- ggplot(checkday, aes(created)) +
 	    geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
 	    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+	    ggtitle(paste0("Density plot of tweets with the term '",
+	                   input$searchTerm, "'")) +
 	    xlab(paste("Tweets of", format(input$checkDate,
 	                                   format = "%a %d %B %Y")))
 	  tweetDistr
@@ -112,7 +116,7 @@ shinyServer(function(input, output) {
       plot(rtnet, label = vlabs, label.pos = 5, label.cex = .8,
            vertex.cex = log(degree(rtnet)) + .5, vertex.col = col3[1],
            edge.lwd = 'num', edge.col = 'gray70',
-           main = paste(input$searchTerm, "Retweet Network"))
+           main = paste0("Retweet Network on the term '", input$searchTerm, "'"))
 
     }
   })
