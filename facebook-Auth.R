@@ -1,8 +1,5 @@
-# Load package
-library(Rfacebook)
-# Open the Facebook Developer site and obtain the temporary access token
-BROWSE(url = "https://developers.facebook.com/tools/explorer/")
+# API access for the 'NESREA' Facebook app
+app_id <- 203440573439361
+app_secret <- "c3b0eecbe6bfeb465438a68e8205c67b"
 
-access_token <- ""
-user <- getPage("https://www.facebook.com/NESREANigeria", token = access_token)
-getPage
+Rfacebook::fbOAuth(app_id = app_id, app_secret = app_secret)
