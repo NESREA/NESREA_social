@@ -42,3 +42,4 @@ shinyNESREA/data/nesrea-tweet-df.rds
 nesrea-twitterAuth.R
 shinyNESREA/authentication.R
 NESREA_fb_oauth
+NESREA_fb_oauth.rds
