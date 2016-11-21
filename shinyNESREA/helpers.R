@@ -18,4 +18,23 @@ color <- function() {
   require(RColorBrewer)
   col <- brewer.pal(3, 'Paired')
   col
-  }
+}
+
+## Algorithm to collect and compile data from the Twitter API
+# - Open log file
+#   - Greeting message
+#     - Version info - R, twitteR, Machine, API, ...
+#     - Session info - date, time, location, IP, ...
+# - Load existing data into the workspace
+#   - make sure it's a valid dataframe
+#   - get starting dimensions and enter into the log file
+# - Download using searchTwitter()
+# - Convert into a dataframe
+# - Add to the existing dataframe
+# - Look for repetitions
+# - Delete the repetitions
+# - Get final dimensions and enter in log file
+# - Save the data as file
+# - End Session
+#   - Record termination info
+# - Close log file
