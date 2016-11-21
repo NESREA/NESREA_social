@@ -37,4 +37,5 @@ color <- function() {
 # - Save the data as file
 # - End Session
 #   - Record termination info
+#   - Compute and document changes
 # - Close log file
