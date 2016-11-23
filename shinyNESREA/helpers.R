@@ -21,7 +21,11 @@ color <- function() {
 }
 
 ## Algorithm to collect and compile data from the Twitter API
+## The operations to occur at backend and independent of Shiny app use??
+# TODO
 # - Open log file
+#   - if file exists, append
+#   - else create new file and write
 #   - Greeting message
 #     - Version info - R, twitteR, Machine, API, ...
 #     - Session info - date, time, location, IP, ...
@@ -29,12 +33,12 @@ color <- function() {
 #   - make sure it's a valid dataframe
 #   - get starting dimensions and enter into the log file
 # - Download using searchTwitter()
-# - Convert into a dataframe
-# - Add to the existing dataframe
-# - Look for repetitions
-# - Delete the repetitions
-# - Get final dimensions and enter in log file
+# - Convert into a dataframe using TwLstToDF()
+# - Add to the existing dataframe with rbind()
+# - Look for repetitions and fix
+# - Get final dimensions and enter into the log file
 # - Save the data as file
 # - End Session
 #   - Record termination info
-# - Close log file
+#   - Compute and document changes
+# - Close the log file
