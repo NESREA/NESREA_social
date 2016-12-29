@@ -1,9 +1,11 @@
 # shinyNESREA_Server.R
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
+# Inspired by Michael Levy - http://michaellevy.name/blog/conference-twitter/
 
-lapply(c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network", "sna",
-            "qdap", "wordcloud", "tm", "stringr"),
-       FUN = library, character.only = TRUE)
+packages <- c("shiny", "twitteR", "dplyr", "ggplot2", "lubridate", "network",
+              "sna", "qdap", "wordcloud", "tm", "stringr")
+lapply(packages, FUN = library, character.only = TRUE)
+
 theme_set(new = theme_bw())
 source("helpers.R")
 
