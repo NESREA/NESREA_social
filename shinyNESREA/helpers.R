@@ -1,4 +1,5 @@
 # helpers.R
+source("authentication.R")
 # make a corpus
 make_corpus <- function(GText, stem = TRUE) {
   corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
@@ -20,8 +21,7 @@ color <- function() {
   col
 }
 
-## Algorithm to collect and compile data from the Twitter API
-## The operations to occur at backend and independent of Shiny app use??
+## To collect and compile data from the Twitter API
 # TODO
 # - Open log file
 #   - if file exists, append
@@ -29,16 +29,24 @@ color <- function() {
 #   - Greeting message
 #     - Version info - R, twitteR, Machine, API, ...
 #     - Session info - date, time, location, IP, ...
+#
 # - Load existing data into the workspace
 #   - make sure it's a valid dataframe
 #   - get starting dimensions and enter into the log file
-# - Download using searchTwitter()
-# - Convert into a dataframe using TwLstToDF()
-# - Add to the existing dataframe with rbind()
-# - Look for repetitions and fix
+# - Download using search_twitter_and_store()
+register_sqlite_backend(
+  "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/nesreanigeria.db")
+twtnum <- 
+  search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
+
+# - To load data for offline use:
+## load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+
+# - Look for duplicate records and fix
 # - Get final dimensions and enter into the log file
-# - Save the data as file
+
 # - End Session
 #   - Record termination info
 #   - Compute and document changes
+
 # - Close the log file
