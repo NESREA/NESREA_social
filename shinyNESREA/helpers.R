@@ -47,7 +47,7 @@ writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
 
 # Session info
 writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
-ip_add <- system("ipconfig")
+ip_add <- system("ipconfig", intern = TRUE)
 writeLines(ip_add[grep("IPv4", ip_add)])
 
 # - Download and store tweets          
