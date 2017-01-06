@@ -30,42 +30,45 @@ color <- function() {
 ## Collect and store Twitter data
 library(twitteR)
 library(DBI)
-source("shinyNESREA/authentication.R")
+source("authentication.R")
 
 # - create/open log
-if (file.exists("shinyNESREA/data/log.txt")) {
-  conn <- file("shinyNESREA/data/log.txt")
-  open(conn, "a")
-} else {
-  conn <- file("shinyNESREA/data/log.txt", "w")
-  open(conn, "w")
-}
+#if (file.exists("shinyNESREA/data/log.txt")) {
+#  conn <- file("shinyNESREA/data/log.txt")
+#  open(conn, "a")
+#} else {
+#  conn <- file("shinyNESREA/data/log.txt", "w")
+#  open(conn, "w")
+#}
 
 # Version info
-writeLines(R.version.string)
-writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
+#writeLines(R.version.string)
+#writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
 
 # Session info
-writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
-ip_add <- system("ipconfig", intern = TRUE)
-writeLines(ip_add[grep("IPv4", ip_add)])
+#writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
+#ip_add <- system("ipconfig", intern = TRUE)
+#writeLines(ip_add[grep("IPv4", ip_add)])
 
 # - Download and store tweets          
 register_sqlite_backend(
   "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/data/nesreanigeria.db") #check...
 twtnum <- 
   search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
-db <- dbConnect(SQLite(), "nesreanigeria.db")
-result <- dbSendQuery(db, 'SELECT * FROM nesreanigeria_tweets')
-twtnum_all <- dbGetRowCount(result)
+twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
+
+#db <- dbConnect(SQLite(), "shinyNESREA/data/nesreanigeria.db")
+#result <- dbSendQuery(db, 'SELECT * FROM nesreanigeria_tweets')
+#twtnum_all <- dbGetRowCount(result)
+#dbDisconnect(db)
 
 # - Load existing data into the workspace as a dataframe
 ## load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 #   - get starting dimensions and enter into the log file
 
 # Get final dimensions and enter into the log file
-writeLines(paste("Today you stored", twtnum, "tweets"))
+#writeLines(paste("Today you stored", twtnum, "tweets"))
 
 # - End Session
-writeLines(paste("Session ended:", format(Sys.time(), "%H:%M:%S")))
-close(conn)
+#writeLines(paste("Session ended:", format(Sys.time(), "%H:%M:%S")))
+#close(conn)
