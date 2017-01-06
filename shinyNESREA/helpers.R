@@ -1,5 +1,7 @@
 # helpers.R
-source("authentication.R")
+library(DBI)
+source("shinyNESREA/authentication.R")
+
 # make a corpus
 make_corpus <- function(GText, stem = TRUE) {
   corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
@@ -24,29 +26,42 @@ color <- function() {
 ## To collect and compile data from the Twitter API
 # TODO
 # - Open log file
-#   - if file exists, append
-#   - else create new file and write
-#   - Greeting message
+if (file.exists("log.txt")) {
+  conn <- file("log.txt")
+  open(conn, "a")
+} else {
+  conn <- file("log.txt", "w")
+  open(conn, "w")
+}
+
+#   - Message
 #     - Version info - R, twitteR, Machine, API, ...
+writeLines(R.version.string)
+writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
+
 #     - Session info - date, time, location, IP, ...
-#
-# - Load existing data into the workspace
-#   - make sure it's a valid dataframe
-#   - get starting dimensions and enter into the log file
-# - Download using search_twitter_and_store()
+writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
+ip_add <- system("ipconfig"); writeLines(ip_add[grep("IPv4", ip_add)])
+
+# - Download using search_twitter_and_store()           
 register_sqlite_backend(
   "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/nesreanigeria.db")
 twtnum <- 
   search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
+db <- dbConnect(SQLite(), "nesreanigeria.db")
+result <- dbSendQuery(db, 'SELECT * FROM nesreanigeria_tweets')
+twtnum_all <- dbGetRowCount(result)
 
-# - To load data for offline use:
+
+# - Load existing data into the workspace as a dataframe
 ## load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+#   - get starting dimensions and enter into the log file
 
 # - Look for duplicate records and fix
 # - Get final dimensions and enter into the log file
+writeLines(paste("Today you stored", twtnum, "tweets"))
+
 
 # - End Session
-#   - Record termination info
-#   - Compute and document changes
-
-# - Close the log file
+writeLines(paste("Session ended:", format(Sys.time(), "%H:%M:%S")))
+close(conn)
