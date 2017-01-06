@@ -28,16 +28,16 @@ color <- function() {
 # ==============================================================================
 
 ## Collect and store Twitter data
-
+library(twitteR)
 library(DBI)
 source("shinyNESREA/authentication.R")
 
 # - create/open log
-if (file.exists("log.txt")) {
-  conn <- file("log.txt")
+if (file.exists("shinyNESREA/data/log.txt")) {
+  conn <- file("shinyNESREA/data/log.txt")
   open(conn, "a")
 } else {
-  conn <- file("log.txt", "w")
+  conn <- file("shinyNESREA/data/log.txt", "w")
   open(conn, "w")
 }
 
@@ -47,11 +47,12 @@ writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
 
 # Session info
 writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
-ip_add <- system("ipconfig"); writeLines(ip_add[grep("IPv4", ip_add)])
+ip_add <- system("ipconfig")
+writeLines(ip_add[grep("IPv4", ip_add)])
 
 # - Download and store tweets          
 register_sqlite_backend(
-  "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/nesreanigeria.db")
+  "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/data/nesreanigeria.db") #check...
 twtnum <- 
   search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
 db <- dbConnect(SQLite(), "nesreanigeria.db")
