@@ -65,10 +65,11 @@ shinyServer(function(input, output) {
 	  tweetDistr
 	}
 	else if (input$outputstyle == "Platforms") {
-      dataInput()$statusSource <- substr(dataInput()$statusSource,
-                                regexpr('>', dataInput()$statusSource) + 1,
-                                regexpr('</a>', dataInput()$statusSource) - 1)
-      dotchart(sort(table(dataInput()$statusSource)))
+	  temp_data <- dataInput()
+	  temp_data$statusSource <- substr(temp_data$statusSource,
+                                regexpr('>', temp_data$statusSource) + 1,
+                                regexpr('</a>', temp_data$statusSource) - 1)
+      dotchart(sort(table(temp_data$statusSource)))
       mtext('Number of tweets posted by platform')
 	}
 	else if (input$outputstyle == "Emotions plot") {
