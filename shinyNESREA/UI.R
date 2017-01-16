@@ -55,7 +55,8 @@ shinyUI(fluidPage(
         ),
       
       conditionalPanel(
-        condition = "input.outputstyle == 'Emotions plot'"
+        condition = "input.outputstyle == 'Emotions plot'",
+        checkboxInput("emotiveExtremes", label = "View emotive extremes")
       ),
       
       conditionalPanel(
@@ -73,6 +74,8 @@ shinyUI(fluidPage(
     
     mainPanel(
       plotOutput("twtDensity"),
+      
+      tableOutput("mostEmotive"),
       
       width = 9
     )
