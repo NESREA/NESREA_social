@@ -17,7 +17,7 @@ shinyUI(fluidPage(
       width = 3,
       
       strong(actionLink(inputId = "oauth",
-                 label = "Click to register new session")),
+                 label = "Register new session")),
       
       hr(),
       
@@ -33,6 +33,8 @@ shinyUI(fluidPage(
                   choices = c("Density plot (week)", "Density plot (day)",
                               "Platforms", "Emotions plot", "Wordcloud",
                               "Network")),
+      
+      hr(),
       
       conditionalPanel(
         condition = "input.outputstyle == 'Density plot (week)'",
@@ -53,7 +55,8 @@ shinyUI(fluidPage(
         ),
       
       conditionalPanel(
-        condition = "input.outputstyle == 'Emotions plot'"
+        condition = "input.outputstyle == 'Emotions plot'",
+        checkboxInput("emotiveExtremes", label = "View emotive extremes")
       ),
       
       conditionalPanel(
@@ -71,6 +74,8 @@ shinyUI(fluidPage(
     
     mainPanel(
       plotOutput("twtDensity"),
+      
+      tableOutput("mostEmotive"),
       
       width = 9
     )
