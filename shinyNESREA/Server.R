@@ -16,9 +16,9 @@ shinyServer(function(input, output) {
     input$goButton
     tweets <- isolate(
       searchTwitter(as.character(input$searchTerm), n = 100, # create no. input
-                            since = as.character(input$startDate),
-                            until = as.character(input$endDate))
-    )
+                    since = as.character(input$startDate),
+                    until = as.character(input$endDate))
+      )
     df <- twListToDF(tweets)
     df$text <- str_replace_all(df$text, "[^[:graph:]]", " ")
     df
@@ -43,7 +43,7 @@ shinyServer(function(input, output) {
       strsplit(' ') %>%
       sapply(table)
     
-	# options for various plots
+	# options for the various plots
   if (input$outputstyle == "Density plot (week)") {
       tweetDistr <- ggplot(dataInput(), aes(created)) +
         geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -51,17 +51,19 @@ shinyServer(function(input, output) {
         ggtitle(paste0("Density plot of tweets with the term '",
                        input$searchTerm, "'")) +
         xlab("All tweets")
+      
       tweetDistr
   }
 	else if (input$outputstyle == "Density plot (day)") {
 	  checkday <- filter(dataInput(), mday(created) == day(input$checkDate))
+	  
 	  tweetDistr <- ggplot(checkday, aes(created)) +
 	    geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
 	    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
 	    ggtitle(paste0("Density plot of tweets with the term '",
 	                   input$searchTerm, "'")) +
-	    xlab(paste("Tweets of", format(input$checkDate,
-	                                   format = "%a %d %B %Y")))
+	    xlab(paste("Tweets of",
+	               format(input$checkDate, format = "%a %d %B %Y")))
 	  tweetDistr
 	}
 	else if (input$outputstyle == "Platforms") {
@@ -83,6 +85,7 @@ shinyServer(function(input, output) {
 	else if (input$outputstyle == "Wordcloud") {
       orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
       polSplit <- split(orig, sign(orig$emotionalValence))
+      
       polText <- sapply(polSplit, function(subdata) {
         paste(tolower(subdata$text), collapse = ' ') %>%
           gsub(' http|@)[^[:blank:]]+', '', .) %>%
@@ -96,34 +99,43 @@ shinyServer(function(input, output) {
       corp <- make_corpus(polText)
       col3 <- color()
       comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                                  max.words = 150, min.freq = 1, 
-                                  random.order = FALSE, rot.per = 0,
-                                  colors = col3, vfont = c("sans serif", "plain"))
+                       max.words = 150,
+                       min.freq = 1,
+                       random.order = FALSE,
+                       rot.per = 0,
+                       colors = col3,
+                       vfont = c("sans serif", "plain"))
     }
 	else if (input$outputstyle == "Network") {
       col3 <- color()
       
       RT <- mutate(spl[['TRUE']],
                    sender = substr(text, 5, regexpr(':', text) - 1))
+      
       edglst <- as.data.frame(cbind(sender = tolower(RT$sender),
                               receiver = tolower(RT$screenName)))
-      
       edglst <- count(edglst, sender, receiver)
+    
       rtnet <- network(edglst, matrix.type = 'edgelist', directed = TRUE,
                  ignore.eval = FALSE, names.eval = 'num')
       
       vlabs <- rtnet %v% "vertex.names"
       vlabs[degree(rtnet, cmode = 'outdegree') == 0] <- NA
       
-      plot(rtnet, label = vlabs, label.pos = 5, label.cex = .8,
-           vertex.cex = log(degree(rtnet)) + .5, vertex.col = col3[1],
-           edge.lwd = 'num', edge.col = 'gray70',
-           main = paste0("Retweet Network on the term '", input$searchTerm, "'"))
-
+      plot(rtnet,
+           label = vlabs,
+           label.pos = 5,
+           label.cex = .8,
+           vertex.cex = log(degree(rtnet)) + .5,
+           vertex.col = col3[1],
+           edge.lwd = 'num',
+           edge.col = 'gray70',
+           main = paste0("Retweet Network on the term '",
+                         input$searchTerm, "'"))
     }
   })
   
-output$mostEmotive <- renderTable({
+  output$mostEmotive <- renderTable({
   if (input$emotiveExtremes == TRUE)
   {
     # Objects for rendering the various plots
@@ -137,7 +149,7 @@ output$mostEmotive <- renderTable({
     polWordTable <- sapply(pol, function(p) {
       words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
                 negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
-      gsub('-', '', words) # Get rid of nothing found's "-"
+      gsub('-', '', words)
     }) %>%
       apply(1, paste, collapse = ' ') %>%
       stripWhitespace() %>%
