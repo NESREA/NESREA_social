@@ -32,30 +32,36 @@ library(twitteR)
 library(DBI)
 source("authentication.R")
 
-# - create/open log
-#if (file.exists("shinyNESREA/data/log.txt")) {
-#  conn <- file("shinyNESREA/data/log.txt")
-#  open(conn, "a")
-#} else {
-#  conn <- file("shinyNESREA/data/log.txt", "w")
-#  open(conn, "w")
-#}
+# create session log
+log_connect <- file("data/log.txt")
+open(log_connect, "w")
+writeLines("SESSION LOG", log_connect)
+writeLines(paste("Session Time:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")),
+           log_connect)
 
 # Version info
-#writeLines(R.version.string)
-#writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))))
+writeLines(R.version.string, log_connect)
+if (any(grepl("rstudio", search()))) {
+  writeLines(paste("RStudio version:", RStudio.Version()$version), log_connect)
+  writeLines(paste("Mode of access:", RStudio.Version()$mode), log_connect)
+  }
+writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))),
+           log_connect)
+writeLines("Networking:", log_connect)
+ip_add <- system("ipconfig", intern = TRUE)
+writeLines(ip_add[grep("IPv4", ip_add)], log_connect)
 
-# Session info
-#writeLines(paste("Date accessed:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")))
-#ip_add <- system("ipconfig", intern = TRUE)
-#writeLines(ip_add[grep("IPv4", ip_add)])
-
-# - Download and store tweets          
+# Download, store and quantify tweets     
 register_sqlite_backend(
   "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/data/nesreanigeria.db") #check...
 twtnum <- 
   search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
 twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
+
+writeLines(paste("Number of tweets downloaded:", twtnum), log_connect)
+writeLines(paste("Total number of tweets in database:", twtnum_all), log_connect)
+
+close(log_connect)
 
 #db <- dbConnect(SQLite(), "shinyNESREA/data/nesreanigeria.db")
 #result <- dbSendQuery(db, 'SELECT * FROM nesreanigeria_tweets')
@@ -66,9 +72,3 @@ twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
 ## load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 #   - get starting dimensions and enter into the log file
 
-# Get final dimensions and enter into the log file
-#writeLines(paste("Today you stored", twtnum, "tweets"))
-
-# - End Session
-#writeLines(paste("Session ended:", format(Sys.time(), "%H:%M:%S")))
-#close(conn)
