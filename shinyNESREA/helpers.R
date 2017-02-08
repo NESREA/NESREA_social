@@ -60,7 +60,8 @@ twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
 
 writeLines(paste("Number of tweets downloaded:", twtnum), log_connect)
 writeLines(paste("Total number of tweets in database:", twtnum_all), log_connect)
-
+writeLines(paste("Current size of tweet database:",
+                 file.info("data/nesreanigeria.db")$size, "B"), log_connect)
 close(log_connect)
 
 #db <- dbConnect(SQLite(), "shinyNESREA/data/nesreanigeria.db")
