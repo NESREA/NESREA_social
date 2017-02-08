@@ -42,3 +42,4 @@ shinyNESREA/authentication.R
 NESREA_fb_oauth
 NESREA_fb_oauth.rds
 facebook-Auth.R
+shinyNESREA/data/log.txt 
