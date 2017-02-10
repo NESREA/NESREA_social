@@ -2,7 +2,9 @@
 # A Shiny App for Exploratory Data Analysis of the NESREA Twitter handle
 library(shiny)
 
-shinyUI(fluidPage(
+ui <- function(request){
+
+  fluidPage(
 
   theme = shinythemes::shinytheme("superhero"),
   
@@ -77,8 +79,11 @@ shinyUI(fluidPage(
       
       tableOutput("mostEmotive"),
       
+      bookmarkButton(),
+      
       width = 9
+      )
     )
   )
   
-))
+}

@@ -9,11 +9,11 @@ lapply(packages, FUN = library, character.only = TRUE)
 theme_set(new = theme_bw())
 source("helpers.R")
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   dataInput <- reactive({
     if (input$oauth)
       source("authentication.R")
-    input$goButton
+    input$goButton              # TODO: include carriage return option
     tweets <- isolate(
       searchTwitter(as.character(input$searchTerm), n = 100, # create no. input
                     since = as.character(input$startDate),
