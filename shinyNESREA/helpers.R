@@ -52,8 +52,7 @@ ip_add <- system("ipconfig", intern = TRUE)
 writeLines(ip_add[grep("IPv4", ip_add)], log_connect)
 
 # Download, store and quantify tweets     
-register_sqlite_backend(
-  "~/7-NESREA/SA/WMG/NESREA_social/shinyNESREA/data/nesreanigeria.db") #check...
+register_sqlite_backend("data/nesreanigeria.db")
 twtnum <- 
   search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
 twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
