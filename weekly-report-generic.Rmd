@@ -1,0 +1,53 @@
+---
+title: "NESREA Weekly Social Media Report"
+author: "Web Monitoring Group"
+date:
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+# load required packages and create some useful objects
+lapply(c("RSQLite", "dplyr", "ggplot2", "lubridate", "network", "sna", "qdap", "wordcloud", "tm", "stringr"), FUN = library, character.only = TRUE)
+
+today <- Sys.time()
+
+```
+# Summary
+Date of Report: `r format(today, "%a %b %M %Y 
+
+Most negative tweet: 
+
+## Facebook
+Total number of Page posts:
+
+Total number of new Likes:
+
+Overall number of Likes:
+
+Total number of Comments:
+
+***
+# Introduction
+This report of social media activity on platforms owned by the Agency is for the period `r period`. The report covers NESREA's presence on twitter.com and facebook.com and focuses primarily on users' engagement with the Agency's content published on the site by our Social Media team. The data are downloaded via the application programming interface (APIs) of the respective sites using rigorous statistical programming.[^1] This document is generated with a markup language that permits the embedding of programming syntax and outputs.[^2] For details on the source code used can be obtained at our GitHub repository, <http://github.com/NESREA/NESREA_social>
+
+# Twitter Analysis
+## Summary data for the week
+## Distribution of tweets that mention NESREA handle
+### For the week
+### On specific days
+## Platforms used
+## Emotions
+### Dot chart
+### Word cloud
+## Networks and influencers
+
+# Facebook Analysis
+
+
+[^1]: The R Programming Language for Statistical Computing was used for all the analyses.
+[^2]: The document is generated with R Markdown.
