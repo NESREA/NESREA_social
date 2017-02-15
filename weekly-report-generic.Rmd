@@ -10,43 +10,156 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-
 # load required packages and create some useful objects
-lapply(c("RSQLite", "dplyr", "ggplot2", "lubridate", "network", "sna", "qdap", "wordcloud", "tm", "stringr"), FUN = library, character.only = TRUE)
+#lapply(c("RSQLite", "dplyr", "ggplot2", "lubridate", "network", "sna", "qdap", "wordcloud", "tm", "stringr"), FUN = library, character.only = TRUE)
+library(ggplot2)
+library(lubridate)
+
 
 today <- Sys.time()
 
+twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
+all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+
+all_data$date_only <- as.Date(all_data$created)
+wk_data <- dplyr::filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-14")
+wk_data$text <- stringr::str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+
 ```
-# Summary
-Date of Report: `r format(today, "%a %b %M %Y 
+**Summary**
 
-Most negative tweet: 
+**Date of Report**: `r format(today, "%A, %d %B %Y")`
 
-## Facebook
-Total number of Page posts:
+Twitter
 
-Total number of new Likes:
+|Detail                    |Result             |
+|--------------------------|-------------------|
+|Total number of tweets    | `r nrow(all_data)`|
+|No of tweets for the week | `r nrow(wk_data)` |
+|Most positive tweet       | *(put data here)* |
+|Most negative tweet       | *(put data here)* |
 
-Overall number of Likes:
+Facebook
 
-Total number of Comments:
+| Detail                    |Result             |
+|---------------------------|-------------------|
+|Total number of Page posts | *(put data here)* |
+|Total number of new Likes  | *(put data here)* |
+|Overall number of Likes    | *(put data here)* |
+|Total number of Comments   | *(put data here)* |
 
 ***
 # Introduction
-This report of social media activity on platforms owned by the Agency is for the period `r period`. The report covers NESREA's presence on twitter.com and facebook.com and focuses primarily on users' engagement with the Agency's content published on the site by our Social Media team. The data are downloaded via the application programming interface (APIs) of the respective sites using rigorous statistical programming.[^1] This document is generated with a markup language that permits the embedding of programming syntax and outputs.[^2] For details on the source code used can be obtained at our GitHub repository, <http://github.com/NESREA/NESREA_social>
+This report of social media activity on platforms owned by the Agency is for the period `r #period`. The report covers NESREA's presence on twitter.com and facebook.com and focuses primarily on users' engagement with the Agency's content published on the site by our Social Media team. The data are downloaded via the application programming interface (APIs) of the respective sites using rigorous statistical programming.[^1] This document is generated with a markup language that permits the embedding of programming syntax and outputs.[^2] For details on the source code used can be obtained at our GitHub repository, <http://github.com/NESREA/NESREA_social>
 
 # Twitter Analysis
-## Summary data for the week
+## Summary statistics for the week
 ## Distribution of tweets that mention NESREA handle
 ### For the week
+```{r, echo=FALSE}
+distr <- ggplot(wk_data, aes(created)) +
+  geom_density(aes(fill = isRetweet), alpha = .5) +
+  theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+  xlab("Tweets")
+
+distr
+```
+
 ### On specific days
-## Platforms used
+```{r, echo=FALSE}
+dayOf <- dplyr::filter(wk_data, mday(created) == 7)
+distr_day <- ggplot(dayOf, aes(created)) +
+  geom_density(aes(fill = isRetweet), alpha = .5) +
+  theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+  xlab("Tweets on... ")
+```
+
 ## Emotions
 ### Dot chart
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tm)
+library(qdap)
+library(stringr)
+spl <- split(wk_data, wk_data$isRetweet)
+orig <- spl[['FALSE']]
+RT <- dplyr::mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
+pol <- lapply(orig$text, function(txt) {
+  gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>% 
+    gsub(" http[^[:blank:]]+", "", .) %>% 
+    polarity(.)
+})
+orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
+polWordTable <- sapply(pol, function(p) {
+  words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
+            negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
+  gsub('-', '', words) # Get rid of nothing found's "-"
+}) %>%
+  apply(1, paste, collapse = ' ') %>%
+  stripWhitespace() %>%
+  strsplit(' ') %>%
+  sapply(table)
+
+oldpar <- par()
+par(mfrow = c(1, 2))
+invisible(
+  lapply(1:2, function(i) {
+    dotchart(sort(polWordTable[[i]]), cex = .8)
+    mtext(names(polWordTable)[i])
+  }))
+
+par(oldpar) 
+```
+
+**Most positive tweet:** `r orig$text[which.max(orig$emotionalValence)]`
+
+**Most negative tweet:** `r orig$text[which.min(orig$emotionalValence)]`
+
 ### Word cloud
-## Networks and influencers
+```{r, echo=FALSE, warning=FALSE}
+library(wordcloud)
+make_corpus <- function(GText, stem = TRUE) {
+  corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
+    tm_map(removePunctuation) %>%
+    tm_map(stripWhitespace) %>%
+    tm_map(content_transformer(tolower)) %>%
+    tm_map(removeWords, stopwords("english")) # remove meaningless words
+  if(stem)
+    corp <- tm_map(corp, stemDocument) # make verb & adjective, plural & singular, etc. forms identical
+  
+  names(corp) <- names(GText)
+  corp
+}
+
+color <- function() {
+  require(RColorBrewer)
+  col <- brewer.pal(3, 'Paired')
+  col
+}
+
+polSplit <- split(orig, sign(orig$emotionalValence))
+polText <- sapply(polSplit, function(df) {
+  paste(tolower(df$text), collapse = ' ') %>%
+    gsub(' http|@)[^[:blank:]]+', '', .) %>%  
+    gsub('[[:punct:]]', '', .)  
+}) %>%
+  structure(names = c('negative', 'neutral', 'positive'))
+
+polText['negative'] <- removeWords(polText['negative'],
+                                   names(polWordTable$negativeWords))
+polText['positive'] <- removeWords(polText['positive'],
+                                   names(polWordTable$positiveWords))
+
+corp <- make_corpus(polText)
+col3 <- RColorBrewer::brewer.pal(3, 'Paired') # Define colours
+comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                 max.words = 150, min.freq = 1, 
+                 random.order = FALSE, rot.per = 0,
+                 colors = col3, vfont = c("sans serif", "plain"))
+```
+
 
 # Facebook Analysis
+In progress...
 
 
 [^1]: The R Programming Language for Statistical Computing was used for all the analyses.
