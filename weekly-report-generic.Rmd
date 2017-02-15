@@ -165,7 +165,7 @@ In progress...
 ### About the report
 This report of social media activity on platforms owned by NESREA, namely [Twitter](http::/twitter.com/nesreanigeria) and [Facebook](http://facebook.com/NESREANigeria), and focuses primarily on citizens' engagement with the Agency's via these platforms.
 
-The data are downloaded via access to the application programming interface (API)  of the respective sites and analysed with the R programming language.[^1] This document was generated with R Markdown to allow programmmatic rendering of outputs.[^2] For details on the source code used can be obtained at the Agency's [GitHub repository](http://github.com/NESREA/NESREA_social).
+The data are downloaded via access to the application programming interface (API)  of the respective sites and analysed with the R programming language.[^1] This document was generated with R Markdown to allow programmmatic rendering of outputs.[^2] The complete code behind this presentation can be found  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**.
 
 
 [^1]: The R Programming Language for Statistical Computing was used for all the analyses.
