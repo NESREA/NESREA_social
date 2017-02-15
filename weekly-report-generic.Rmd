@@ -7,16 +7,18 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-# load required packages and create some useful objects
-#lapply(c("RSQLite", "dplyr", "ggplot2", "lubridate", "network", "sna", "qdap", "wordcloud", "tm", "stringr"), FUN = library, character.only = TRUE)
-library(ggplot2)
-library(lubridate)
-
 
 today <- Sys.time()
+```
+
+**Summary**
+
+**Date of Report**: `r format(today, "%A, %d %B %Y")`
+
+Twitter
+```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+library(ggplot2)
+library(lubridate)
 
 twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
 all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
@@ -26,11 +28,6 @@ wk_data <- dplyr::filter(all_data, date_only >= "2017-02-07" & date_only <= "201
 wk_data$text <- stringr::str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 
 ```
-**Summary**
-
-**Date of Report**: `r format(today, "%A, %d %B %Y")`
-
-Twitter
 
 |Detail                    |Result             |
 |--------------------------|-------------------|
@@ -49,13 +46,10 @@ Facebook
 |Total number of Comments   | *(put data here)* |
 
 ***
-# Introduction
-This report of social media activity on platforms owned by the Agency is for the period `r #period`. The report covers NESREA's presence on twitter.com and facebook.com and focuses primarily on users' engagement with the Agency's content published on the site by our Social Media team. The data are downloaded via the application programming interface (APIs) of the respective sites using rigorous statistical programming.[^1] This document is generated with a markup language that permits the embedding of programming syntax and outputs.[^2] For details on the source code used can be obtained at our GitHub repository, <http://github.com/NESREA/NESREA_social>
 
-# Twitter Analysis
-## Summary statistics for the week
-## Distribution of tweets that mention NESREA handle
-### For the week
+### Twitter Analysis
+#### Summary statistics for the week
+#### Distribution of tweets mentioning NESREA
 ```{r, echo=FALSE}
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -65,8 +59,8 @@ distr <- ggplot(wk_data, aes(created)) +
 distr
 ```
 
-### On specific days
-```{r, echo=FALSE}
+<!--- ### On specific days -->
+```{r, echo=FALSE, eval=FALSE}  
 dayOf <- dplyr::filter(wk_data, mday(created) == 7)
 distr_day <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -74,8 +68,8 @@ distr_day <- ggplot(dayOf, aes(created)) +
   xlab("Tweets on... ")
 ```
 
-## Emotions
-### Dot chart
+### Emotions
+#### Dot chart of sentiment
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tm)
 library(qdap)
@@ -92,7 +86,7 @@ orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
 polWordTable <- sapply(pol, function(p) {
   words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
             negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
-  gsub('-', '', words) # Get rid of nothing found's "-"
+  gsub('-', '', words) 
 }) %>%
   apply(1, paste, collapse = ' ') %>%
   stripWhitespace() %>%
@@ -114,17 +108,17 @@ par(oldpar)
 
 **Most negative tweet:** `r orig$text[which.min(orig$emotionalValence)]`
 
-### Word cloud
+#### Word cloud
 ```{r, echo=FALSE, warning=FALSE}
 library(wordcloud)
 make_corpus <- function(GText, stem = TRUE) {
-  corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
+  corp <- VCorpus(VectorSource(GText)) %>% 
     tm_map(removePunctuation) %>%
     tm_map(stripWhitespace) %>%
     tm_map(content_transformer(tolower)) %>%
-    tm_map(removeWords, stopwords("english")) # remove meaningless words
+    tm_map(removeWords, stopwords("english"))
   if(stem)
-    corp <- tm_map(corp, stemDocument) # make verb & adjective, plural & singular, etc. forms identical
+    corp <- tm_map(corp, stemDocument) 
   
   names(corp) <- names(GText)
   corp
@@ -150,16 +144,28 @@ polText['positive'] <- removeWords(polText['positive'],
                                    names(polWordTable$positiveWords))
 
 corp <- make_corpus(polText)
-col3 <- RColorBrewer::brewer.pal(3, 'Paired') # Define colours
+col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
 comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
                  max.words = 150, min.freq = 1, 
                  random.order = FALSE, rot.per = 0,
                  colors = col3, vfont = c("sans serif", "plain"))
 ```
 
-
+<!---
 # Facebook Analysis
 In progress...
+
+# Website Analysis
+In progress...
+
+# Observations
+
+# Conclusions
+-->
+### About the report
+This report of social media activity on platforms owned by NESREA, namely [Twitter](http::/twitter.com/nesreanigeria) and [Facebook](http://facebook.com/NESREANigeria), and focuses primarily on citizens' engagement with the Agency's via these platforms.
+
+The data are downloaded via access to the application programming interface (API)  of the respective sites and analysed with the R programming language.[^1] This document was generated with R Markdown to allow programmmatic rendering of outputs.[^2] For details on the source code used can be obtained at the Agency's [GitHub repository](http://github.com/NESREA/NESREA_social).
 
 
 [^1]: The R Programming Language for Statistical Computing was used for all the analyses.
