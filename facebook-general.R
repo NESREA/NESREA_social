@@ -4,10 +4,6 @@ library(Rfacebook)
 library(dplyr)
 library(stringr)
 
-NESREA_page_id <- "145175075891647"
-NESREA_token <- readRDS("NESREA_fb_oauth.rds")
-API_version <- "2.8"
-
 # Insights on NESREA Page
 insights <- getInsights(object_id = NESREA_page_id, token = NESREA_token,
             metric = "page_impressions", version = API_version)
