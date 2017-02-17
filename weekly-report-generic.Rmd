@@ -1,6 +1,6 @@
 ---
 title: "NESREA Weekly Social Media Report"
-author: "Web Monitoring Group"
+author: "Prepared by Web Monitoring Group"
 date:
 output: html_document
 ---
@@ -10,33 +10,39 @@ knitr::opts_chunk$set(echo = TRUE)
 
 today <- Sys.time()
 ```
-
-**Summary**
-
 **Date of Report**: `r format(today, "%A, %d %B %Y")`
 
-Twitter
+### Summary
+
+#### Twitter
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 library(ggplot2)
 library(lubridate)
+library(dplyr)
 
 twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
 all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 all_data$date_only <- as.Date(all_data$created)
-wk_data <- dplyr::filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-14")
+wk_data <- filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-14")
+mth_data <- filter(all_data, date_only >= "2017-02-01" & date_only <= "2017-02-28")
 wk_data$text <- stringr::str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 
 ```
 
-|Detail                    |Result             |
-|--------------------------|-------------------|
-|Total number of tweets    | `r nrow(all_data)`|
-|No of tweets for the week | `r nrow(wk_data)` |
-|Most positive tweet       | *(put data here)* |
-|Most negative tweet       | *(put data here)* |
+|Detail                                   |Result             |
+|-----------------------------------------|-------------------|
+|No. of tweets in database                | `r nrow(all_data)`|
+|No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
+|No of tweets in past 7 days              | `r nrow(wk_data)` |
 
-Facebook
+
+#### Facebook
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(Rfacebook)
+
+
+```
 
 | Detail                    |Result             |
 |---------------------------|-------------------|
@@ -54,7 +60,7 @@ Facebook
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab("Tweets")
+  xlab(paste("Tweets for", format(min(wk_data$created, "%d/%m/%Y")), "to", format(max(wk_data$created, "%d/%m/%Y")) ))
 
 distr
 ```
@@ -152,8 +158,8 @@ comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
 ```
 
 <!---
-# Facebook Analysis
-In progress...
+### Facebook Analysis
+### Total number of posts
 
 # Website Analysis
 In progress...
@@ -162,7 +168,7 @@ In progress...
 
 # Conclusions
 -->
-### About the report
+### Technical information
 This report of social media activity on platforms owned by NESREA, namely [Twitter](http::/twitter.com/nesreanigeria) and [Facebook](http://facebook.com/NESREANigeria), and focuses primarily on citizens' engagement with the Agency's via these platforms.
 
 The data are downloaded via access to the application programming interface (API)  of the respective sites and analysed with the R programming language.[^1] This document was generated with R Markdown to allow programmmatic rendering of outputs.[^2] The complete code behind this presentation can be found  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**.
