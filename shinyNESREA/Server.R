@@ -136,35 +136,35 @@ shinyServer(function(input, output, session) {
   })
   
   output$mostEmotive <- renderTable({
-  if (input$emotiveExtremes == TRUE)
-  {
-    # Objects for rendering the various plots
-    spl <- split(dataInput(), dataInput()$isRetweet)
-    orig <- spl[['FALSE']]
-    pol <- lapply(orig$text, function(txt) {
-      gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%
-        gsub(" http[^[:blank:]]+", "", .) %>%
-        polarity(.)
-    })
-    polWordTable <- sapply(pol, function(p) {
-      words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
-                negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
-      gsub('-', '', words)
-    }) %>%
-      apply(1, paste, collapse = ' ') %>%
-      stripWhitespace() %>%
-      strsplit(' ') %>%
-      sapply(table)
-    
-    orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
-    
-    # Render the table
-    extremes <- data.frame(
-      mostPositive = orig$text[which.max(orig$emotionalValence)],
-      mostNegative = orig$text[which.min(orig$emotionalValence)]
-    )
-    print(extremes)
-  }
-})
+    if (input$emotiveExtremes == TRUE)
+    {
+      # Objects for rendering the various plots
+      spl <- split(dataInput(), dataInput()$isRetweet)
+      orig <- spl[['FALSE']]
+      pol <- lapply(orig$text, function(txt) {
+        gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%
+          gsub(" http[^[:blank:]]+", "", .) %>%
+          polarity(.)
+      })
+      polWordTable <- sapply(pol, function(p) {
+        words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
+                  negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
+        gsub('-', '', words)
+      }) %>%
+        apply(1, paste, collapse = ' ') %>%
+        stripWhitespace() %>%
+        strsplit(' ') %>%
+        sapply(table)
+      
+      orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
+      
+      # Render the table
+      extremes <- data.frame(
+        mostPositive = orig$text[which.max(orig$emotionalValence)],
+        mostNegative = orig$text[which.min(orig$emotionalValence)]
+      )
+      print(extremes)
+    }
+  })
   
 })
