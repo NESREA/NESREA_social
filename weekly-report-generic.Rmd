@@ -1,62 +1,99 @@
 ---
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
-date:
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-today <- Sys.time()
+today <- Sys.Date()
 ```
-**Date of Report**: `r format(today, "%A, %d %B %Y")`
+### EXECUTIVE SUMMARY  
+Date of Report: `r format(today, "%A, %d %B %Y")`  
 
-### Summary
-
-#### Twitter
+#### Twitter[^1]
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-library(ggplot2)
-library(lubridate)
-library(dplyr)
-
+require(dplyr)
+require(stringr)
 twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
 all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 all_data$date_only <- as.Date(all_data$created)
-wk_data <- filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-14")
+wk_data <- filter(all_data, date_only >= "2017-02-14" & date_only <= "2017-02-21")
 mth_data <- filter(all_data, date_only >= "2017-02-01" & date_only <= "2017-02-28")
-wk_data$text <- stringr::str_replace_all(wk_data$text, "[^[:graph:]]", " ")
-
+wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
+mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 ```
 
 |Detail                                   |Result             |
 |-----------------------------------------|-------------------|
-|No. of tweets in database                | `r nrow(all_data)`|
 |No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
 |No of tweets in past 7 days              | `r nrow(wk_data)` |
+|Most Retweeted                           | `r mostRTed`      |
+|Most Liked                               | `r mostFaved`     |
+|                                         |                   |
 
-
-#### Facebook
+#### Facebook  
+No data available for now.
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-library(Rfacebook)
+# require(Rfacebook)
 
 
 ```
-
+<!-- Deal with this one later 
 | Detail                    |Result             |
 |---------------------------|-------------------|
 |Total number of Page posts | *(put data here)* |
 |Total number of new Likes  | *(put data here)* |
 |Overall number of Likes    | *(put data here)* |
 |Total number of Comments   | *(put data here)* |
-
+|                           |                   |
+-->
 ***
+### 1.0 Introduction  
+<!-- TEXT SHOULD GO BELOW THIS LINE -->
+This is the Social Media Monitoring Report for the week beginning `r format(today - 7, "%A, %d %B %Y")`. The report is based on data obtained from the following NESREA-owned platforms:
 
-### Twitter Analysis
-#### Summary statistics for the week
-#### Distribution of tweets mentioning NESREA
+1. Twitter
+2. Facebook
+3. NESREA website
+
+ 
+
+<!-- DO NOT WRITE BELOW THIS LINE-->
+#### 1.1 Twitter Analysis
 ```{r, echo=FALSE}
+
+```
+##### 1.1.1 Summary statistics for the week
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+|       Description                     |    Result          |
+|---------------------------------------|--------------------|
+|Total number of tweets **by** NESREA:  |                    |
+|Total number of tweets **on** NESREA   |                    |
+|Average number of tweets per day:      | `r nrow(wk_data)/7`|  
+|Day of highest activity:               |                    |
+|Top 5 influential handles:             |                    |
+|Most liked tweet:                      | `r mostFaved`      |
+|Most retweeted tweet:                  | `r mostRTed`       |
+|Comparative tweet volume (week-on-week)|                    |
+|                                       |                    |
+<!--
+No of complaints received: 
+No. of complaints resolved: 
+No. of direct messages: -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+##### 1.1.2 Distribution of tweets mentioning NESREA  
+The tweets are plotted as a smoothed density plot - the pink graph represents original tweets, while the blue one is for retweets.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(ggplot2)
+require(lubridate)
+
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
@@ -65,21 +102,34 @@ distr <- ggplot(wk_data, aes(created)) +
 distr
 ```
 
-<!--- ### On specific days -->
+<!--- For specific days of the week; to be used only if there is anything of interest. Note that if there are insufficent data, the plot will not be drawn. To use this code chunk change the argument below to 'eval = TRUE' -->
+
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 ```{r, echo=FALSE, eval=FALSE}  
-dayOf <- dplyr::filter(wk_data, mday(created) == 7)
+dayOf <- dplyr::filter(wk_data, mday(created) == 6)
 distr_day <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
   xlab("Tweets on... ")
+
+distr_day
 ```
 
-### Emotions
-#### Dot chart of sentiment
+##### 1.1.3 Sentiment Analysis
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+A Sentiment Analysis was carried out using the sentiment dictionary (Hu and Liu, 2004)<!-- add bibliography entry--> to tag polarised words. Context clusters are then developed, as well use of the 'bag of words' method, generate plots to visualize 'emotional valence'.
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+###### **1.1.3.1 Dot chart of sentiments**
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(tm)
-library(qdap)
-library(stringr)
+require(tm)
+require(qdap)
+
 spl <- split(wk_data, wk_data$isRetweet)
 orig <- spl[['FALSE']]
 RT <- dplyr::mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
@@ -109,14 +159,20 @@ invisible(
 
 par(oldpar) 
 ```
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
-**Most positive tweet:** `r orig$text[which.max(orig$emotionalValence)]`
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
-**Most negative tweet:** `r orig$text[which.min(orig$emotionalValence)]`
+* **Most positive tweet:** `r orig$text[which.max(orig$emotionalValence)]`
+* **Most negative tweet:** `r orig$text[which.min(orig$emotionalValence)]`
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
-#### Word cloud
-```{r, echo=FALSE, warning=FALSE}
-library(wordcloud)
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+###### **1.1.3.2 Word cloud of sentiments**
+The word cloud below represents common words that were clustered around negative, neutral or positive terms; the size of each word represents the relative frequency of its occurence. Thus words with the largest font size occured more frequently than those with smaller fonts.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(wordcloud)
 make_corpus <- function(GText, stem = TRUE) {
   corp <- VCorpus(VectorSource(GText)) %>% 
     tm_map(removePunctuation) %>%
@@ -157,22 +213,33 @@ comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
                  colors = col3, vfont = c("sans serif", "plain"))
 ```
 
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
 <!---
 ### Facebook Analysis
 ### Total number of posts
 
 # Website Analysis
 In progress...
-
-# Observations
-
-# Conclusions
 -->
-### Technical information
-This report of social media activity on platforms owned by NESREA, namely [Twitter](http::/twitter.com/nesreanigeria) and [Facebook](http://facebook.com/NESREANigeria), and focuses primarily on citizens' engagement with the Agency's via these platforms.
+### 2.0 Observations  
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
-The data are downloaded via access to the application programming interface (API)  of the respective sites and analysed with the R programming language.[^1] This document was generated with R Markdown to allow programmmatic rendering of outputs.[^2] The complete code behind this presentation can be found  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**.
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+### 3.0 Recommendation  
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+ 
+**END**.  
+
+###### *Technical information*  
+Data were accessed via an application programming interface (API) and analysed with R, a programming language used mainly for statistical computing.[^2] This document was generated with R Markdown to allow for programmmatic rendering of all the outputs.[^3] The complete code for a generic version of this report can be viewed and/or downloaded  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**. Permissions apply.
 
 
-[^1]: The R Programming Language for Statistical Computing was used for all the analyses.
-[^2]: The document is generated with R Markdown.
+[^1]: Note that the tweets being measured are those that contain the string 'nesreanigeria', which is the official handle of the Agency.
+[^2]: The R Programming Language for Statistical Computing (Version `r getRversion()`) was used for all the analyses. <http://r-project.org>
+[^3]: This document is generated with R Markdown (version `r packageVersion("rmarkdown")`).
