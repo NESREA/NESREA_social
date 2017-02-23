@@ -1,9 +1,7 @@
 ---
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
-output:
-  word_document: default
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -23,6 +21,7 @@ all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"
 
 all_data$date_only <- as.Date(all_data$created)
 wk_data <- filter(all_data, date_only >= "2017-02-14" & date_only <= "2017-02-21")
+last_wk <- filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-21")
 mth_data <- filter(all_data, date_only >= "2017-02-01" & date_only <= "2017-02-28")
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
@@ -62,26 +61,28 @@ This is the Social Media Monitoring Report for the week beginning `r format(toda
 2. Facebook
 3. NESREA website
 
- 
-
 <!-- DO NOT WRITE BELOW THIS LINE-->
 #### 1.1 Twitter Analysis
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
+require(lubridate)
+tweets_by_us <- filter(wk_data, screenName == "NESREANigeria")
 
+busiest_day <- which.max(table(wk_data$date_only))
+busiest_day <- ymd(names(busiest_day))
 ```
 ##### 1.1.1 Summary statistics for the week
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-|       Description                     |    Result          |
-|---------------------------------------|--------------------|
-|Total number of tweets **by** NESREA:  |                    |
-|Total number of tweets **on** NESREA   |                    |
-|Average number of tweets per day:      | `r nrow(wk_data)/7`|  
-|Day of highest activity:               |                    |
-|Top 5 influential handles:             |                    |
-|Most liked tweet:                      | `r mostFaved`      |
-|Most retweeted tweet:                  | `r mostRTed`       |
-|Comparative tweet volume (week-on-week)|                    |
-|                                       |                    |
+|       Description                     |    Result                        |
+|---------------------------------------|----------------------------------|
+|Total number of tweets **by** NESREA:  | `r nrow(tweets_by_us)`           |
+|Total number of tweets **on** NESREA   | `r nrow(wk_data)`                |
+|Average number of tweets per day:      | `r nrow(wk_data)/7`              |  
+|Day of highest activity:               | `r format(busiest_day, "%d %B")` |
+|Top 5 influential handles:             | `r # yet to compute`             |
+|Most liked tweet:                      | `r mostFaved`                    |
+|Most retweeted tweet:                  | `r mostRTed`                     |
+|Comparative tweet volume (week-on-week)| `r nrow(wk_data) - nrow(last_wk)`|
+|                                       |                                  |
 <!--
 No of complaints received: 
 No. of complaints resolved: 
@@ -92,7 +93,6 @@ No. of direct messages: -->
 The tweets are plotted as a smoothed density plot - the pink graph represents original tweets, while the blue one is for retweets.
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 require(ggplot2)
-require(lubridate)
 
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -239,6 +239,17 @@ In progress...
 ###### *Technical information*  
 Data were accessed via an application programming interface (API) and analysed with R, a programming language used mainly for statistical computing.[^2] This document was generated with R Markdown to allow for programmmatic rendering of all the outputs.[^3] The complete code for a generic version of this report can be viewed and/or downloaded  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**. Permissions apply.
 
+```{r, echo=FALSE}
+victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
+remi <- person("Remi", "Agunbiade", email = "remi.agunbiade@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
+amaka <- person("Amaka", "Ejiofor", email = "amaka.ejiofor@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
+eze <- person("Ezechinyere", "Achilefu", comment = "Member, Web Monitoring Group")
+```
+
+Submitted by:
+
+`r paste(victor$given, victor$family)`  
+`r victor$comment`
 
 [^1]: Note that the tweets being measured are those that contain the string 'nesreanigeria', which is the official handle of the Agency.
 [^2]: The R Programming Language for Statistical Computing (Version `r getRversion()`) was used for all the analyses. <http://r-project.org>
