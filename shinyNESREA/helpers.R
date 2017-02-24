@@ -62,13 +62,3 @@ writeLines(paste("Total number of tweets in database:", twtnum_all), log_connect
 writeLines(paste("Current size of tweet database:",
                  file.info("data/nesreanigeria.db")$size, "B"), log_connect)
 close(log_connect)
-
-#db <- dbConnect(SQLite(), "shinyNESREA/data/nesreanigeria.db")
-#result <- dbSendQuery(db, 'SELECT * FROM nesreanigeria_tweets')
-#twtnum_all <- dbGetRowCount(result)
-#dbDisconnect(db)
-
-# - Load existing data into the workspace as a dataframe
-## load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
-#   - get starting dimensions and enter into the log file
-
