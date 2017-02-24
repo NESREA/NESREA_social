@@ -41,7 +41,7 @@ writeLines(paste("Session Time:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")),
 
 # Version info
 writeLines(R.version.string, log_connect)
-if (any(grepl("rstudio", search()))) {
+if ("tools:rstudio" %in% search()) {
   writeLines(paste("RStudio version:", RStudio.Version()$version), log_connect)
   writeLines(paste("Mode of access:", RStudio.Version()$mode), log_connect)
   }
