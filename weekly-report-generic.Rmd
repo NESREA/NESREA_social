@@ -20,18 +20,19 @@ twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
 all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 all_data$date_only <- as.Date(all_data$created)
-wk_data <- filter(all_data, date_only >= "2017-02-14" & date_only <= "2017-02-21")
-last_wk <- filter(all_data, date_only >= "2017-02-07" & date_only <= "2017-02-21")
+wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
+last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
 mth_data <- filter(all_data, date_only >= "2017-02-01" & date_only <= "2017-02-28")
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
 mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
+no.wk <- nrow(wk_data)
 ```
 
 |Detail                                   |Result             |
 |-----------------------------------------|-------------------|
 |No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
-|No of tweets in past 7 days              | `r nrow(wk_data)` |
+|No of tweets in past 7 days              | `r no.wk`         |
 |Most Retweeted                           | `r mostRTed`      |
 |Most Liked                               | `r mostFaved`     |
 |                                         |                   |
@@ -76,12 +77,12 @@ busiest_day <- ymd(names(busiest_day))
 |---------------------------------------|----------------------------------|
 |Total number of tweets **by** NESREA:  | `r nrow(tweets_by_us)`           |
 |Total number of tweets **on** NESREA   | `r nrow(wk_data)`                |
-|Average number of tweets per day:      | `r nrow(wk_data)/7`              |  
+|Average number of tweets per day:      | `r floor(nrow(wk_data)/7)`              |  
 |Day of highest activity:               | `r format(busiest_day, "%d %B")` |
 |Top 5 influential handles:             | `r # yet to compute`             |
 |Most liked tweet:                      | `r mostFaved`                    |
 |Most retweeted tweet:                  | `r mostRTed`                     |
-|Comparative tweet volume (week-on-week)| `r nrow(wk_data) - nrow(last_wk)`|
+|Comparative tweet volume (week-on-week)| `r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)  `|
 |                                       |                                  |
 <!--
 No of complaints received: 
