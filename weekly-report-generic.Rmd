@@ -98,7 +98,8 @@ require(ggplot2)
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab(paste("Tweets for", format(min(wk_data$created, "%d/%m/%Y")), "to", format(max(wk_data$created, "%d/%m/%Y")) ))
+  xlab("Date") +
+  ggtitle(paste("Distribution of tweets for", format(min(wk_data$created), "%d"), "-", format(max(wk_data$created), "%d %B %Y")))
 
 distr
 ```
