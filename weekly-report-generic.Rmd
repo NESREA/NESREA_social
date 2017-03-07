@@ -92,13 +92,15 @@ No. of direct messages: -->
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 ##### 1.1.2 Distribution of tweets mentioning NESREA  
 The tweets are plotted as a smoothed density plot - the pink graph represents original tweets, while the blue one is for retweets.
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 require(ggplot2)
 
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab(paste("Tweets for", format(min(wk_data$created, "%d/%m/%Y")), "to", format(max(wk_data$created, "%d/%m/%Y")) ))
+  xlab("Date") +
+  ggtitle(paste("Distribution of tweets for", format(min(wk_data$created), "%d %b"), "to", format(max(wk_data$created), "%d %b %Y")))
 
 distr
 ```
@@ -109,21 +111,24 @@ distr
 
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 ```{r, echo=FALSE, eval=FALSE}  
-dayOf <- dplyr::filter(wk_data, mday(created) == 6)
+dayOf <- dplyr::filter(wk_data, mday(created) == 7)
 distr_day <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab("Tweets on... ")
+  xlab("Time") +
+  ggtitle("Tweets on... ")
 
 distr_day
 ```
 
-##### 1.1.3 Sentiment Analysis
+##### 1.1.3 Sentiment Analysis[^2]
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-A Sentiment Analysis was carried out using the sentiment dictionary (Hu and Liu, 2004)<!-- add bibliography entry--> to tag polarised words. Context clusters are then developed, as well use of the 'bag of words' method, generate plots to visualize 'emotional valence'.
+A Sentiment Analysis was carried out and the data displayed in the form of a dot chart and a word cloud.
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
 ###### **1.1.3.1 Dot chart of sentiments**
+The dot charts plot positive and negative words, respectively. 
+
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
@@ -238,7 +243,7 @@ In progress...
 **END**.  
 
 ###### *Technical information*  
-Data were accessed via an application programming interface (API) and analysed with R, a programming language used mainly for statistical computing.[^2] This document was generated with R Markdown to allow for programmmatic rendering of all the outputs.[^3] The complete code for a generic version of this report can be viewed and/or downloaded  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**. Permissions apply.
+Data were accessed via an application programming interface (API) and analysed with R, a programming language used mainly for statistical computing.[^3] This document was generated with R Markdown to allow for programmmatic rendering of all the outputs.[^4] The complete code for a generic version of this report can be viewed and/or downloaded  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**. Permissions apply.
 
 ```{r, echo=FALSE}
 victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
@@ -253,5 +258,6 @@ Submitted by:
 `r victor$comment`
 
 [^1]: Note that the tweets being measured are those that contain the string 'nesreanigeria', which is the official handle of the Agency.
-[^2]: The R Programming Language for Statistical Computing (Version `r getRversion()`) was used for all the analyses. <http://r-project.org>
-[^3]: This document is generated with R Markdown (version `r packageVersion("rmarkdown")`).
+[^2]: A Sentiment Analysis was carried out using the sentiment dictionary (Hu and Liu, 2004) to tag polarised words. Context clusters are then developed, as well use of the ‘bag of words’ method, generate plots to visualize ‘emotional valence’.
+[^3]: The R Programming Language for Statistical Computing (Version `r getRversion()`) was used for all the analyses. <http://r-project.org>
+[^4]: This document is generated with R Markdown (version `r packageVersion("rmarkdown")`).
