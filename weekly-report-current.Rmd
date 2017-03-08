@@ -1,0 +1,263 @@
+---
+title: "NESREA Weekly Social Media Report"
+author: "Prepared by Web Monitoring Group"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+today <- Sys.Date()
+```
+### EXECUTIVE SUMMARY  
+Date of Report: `r format(today, "%A, %d %B %Y")`  
+
+#### Twitter
+```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+require(dplyr)
+require(stringr)
+twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
+all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+
+all_data$date_only <- as.Date(all_data$created)
+wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
+last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
+mth_data <- filter(all_data, date_only >= "2017-03-01" & date_only <= "2017-03-31")
+wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
+mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
+no.wk <- nrow(wk_data)
+```
+
+|Detail                                   |Result             |
+|-----------------------------------------|-------------------|
+|No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
+|No of tweets in past 7 days              | `r no.wk`         |
+|Most Retweeted                           | `r mostRTed`      |
+|Most Liked                               | `r mostFaved`     |
+|                                         |                   |
+
+#### Facebook  
+No data available for now.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# require(Rfacebook)
+
+
+```
+<!-- Deal with this one later 
+| Detail                    |Result             |
+|---------------------------|-------------------|
+|Total number of Page posts | *(put data here)* |
+|Total number of new Likes  | *(put data here)* |
+|Overall number of Likes    | *(put data here)* |
+|Total number of Comments   | *(put data here)* |
+|                           |                   |
+-->
+***
+### 1.0 Introduction  
+<!-- TEXT SHOULD GO BELOW THIS LINE -->
+This is the Social Media Monitoring Report for the week beginning `r format(today - 7, "%A, %d %B %Y")`. The report is based on data obtained from the following NESREA-owned platforms:
+
+1. Twitter
+2. Facebook
+3. NESREA website
+
+<!-- DO NOT WRITE BELOW THIS LINE-->
+#### 1.1 Twitter Analysis
+```{r, echo=FALSE, message=FALSE}
+require(lubridate)
+tweets_by_us <- filter(wk_data, screenName == "NESREANigeria")
+
+busiest_day <- which.max(table(wk_data$date_only))
+busiest_day <- ymd(names(busiest_day))
+```
+##### 1.1.1 Summary statistics for the week
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+|       Description                     |    Result                        |
+|---------------------------------------|----------------------------------|
+|Total number of tweets **by** NESREA:  | `r nrow(tweets_by_us)`           |
+|Total number of tweets **on** NESREA   | `r nrow(wk_data)`                |
+|Average number of tweets per day:      | `r floor(nrow(wk_data)/7)`              |  
+|Day of highest activity:               | `r format(busiest_day, "%d %B")` |
+|Top 5 influential handles:             | `r # yet to compute`             |
+|Most liked tweet:                      | `r mostFaved`                    |
+|Most retweeted tweet:                  | `r mostRTed`                     |
+|Comparative tweet volume (week-on-week)| `r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)  `|
+|                                       |                                  |
+<!--
+No of complaints received: 
+No. of complaints resolved: 
+No. of direct messages: -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+##### 1.1.2 Distribution of tweets mentioning NESREA  
+The tweets are plotted as a smoothed density plot - the pink graph represents original tweets, while the blue one is for retweets.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(ggplot2)
+
+distr <- ggplot(wk_data, aes(created)) +
+  geom_density(aes(fill = isRetweet), alpha = .5) +
+  theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+  xlab("Date") +
+  ggtitle(paste("Distribution of tweets for", format(min(wk_data$created), "%d %b"), "to", format(max(wk_data$created), "%d %b %Y")))
+
+distr
+```
+
+<!--- For specific days of the week; to be used only if there is anything of interest. Note that if there are insufficent data, the plot will not be drawn. To use this code chunk change the argument below to 'eval = TRUE' -->
+
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+```{r, echo=FALSE, eval=FALSE}  
+dayOf <- dplyr::filter(wk_data, mday(created) == 7)
+distr_day <- ggplot(dayOf, aes(created)) +
+  geom_density(aes(fill = isRetweet), alpha = .5) +
+  theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+  xlab("Time") +
+  ggtitle("Tweets on... ")
+
+distr_day
+```
+
+##### 1.1.3 Sentiment Analysis
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+A Sentiment Analysis was carried out and the data displayed in the form of a dot chart and a word cloud.  
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+###### **1.1.3.1 Dot chart of sentiments**
+The dot charts plot positive and negative words, respectively.  
+
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+The most positive sentiment shared in the week under review was thank, while the most negative sentiment was waste. This negative sentiment most likely is related to the Koko waste incidence.
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+require(tm)
+require(qdap)
+
+spl <- split(wk_data, wk_data$isRetweet)
+orig <- spl[['FALSE']]
+RT <- dplyr::mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
+pol <- lapply(orig$text, function(txt) {
+  gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>% 
+    gsub(" http[^[:blank:]]+", "", .) %>% 
+    polarity(.)
+})
+orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
+polWordTable <- sapply(pol, function(p) {
+  words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
+            negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
+  gsub('-', '', words) 
+}) %>%
+  apply(1, paste, collapse = ' ') %>%
+  stripWhitespace() %>%
+  strsplit(' ') %>%
+  sapply(table)
+
+oldpar <- par()
+par(mfrow = c(1, 2))
+invisible(
+  lapply(1:2, function(i) {
+    dotchart(sort(polWordTable[[i]]), cex = .8)
+    mtext(names(polWordTable)[i])
+  }))
+
+par(oldpar) 
+```
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+* **Most positive tweet:** `r orig$text[which.max(orig$emotionalValence)]`
+* **Most negative tweet:** `r orig$text[which.min(orig$emotionalValence)]`
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+###### **1.1.3.2 Word cloud of sentiments**  
+The word cloud below represents common words that were clustered around negative, neutral or positive terms; the size of each word represents the relative frequency of its occurence. Thus words with the largest font size occured more frequently than those with smaller fonts.  
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(wordcloud)
+make_corpus <- function(GText, stem = TRUE) {
+  corp <- VCorpus(VectorSource(GText)) %>% 
+    tm_map(removePunctuation) %>%
+    tm_map(stripWhitespace) %>%
+    tm_map(content_transformer(tolower)) %>%
+    tm_map(removeWords, stopwords("english"))
+  if(stem)
+    corp <- tm_map(corp, stemDocument) 
+  
+  names(corp) <- names(GText)
+  corp
+}
+
+color <- function() {
+  require(RColorBrewer)
+  col <- brewer.pal(3, 'Paired')
+  col
+}
+
+polSplit <- split(orig, sign(orig$emotionalValence))
+polText <- sapply(polSplit, function(df) {
+  paste(tolower(df$text), collapse = ' ') %>%
+    gsub(' http|@)[^[:blank:]]+', '', .) %>%  
+    gsub('[[:punct:]]', '', .)  
+}) %>%
+  structure(names = c('negative', 'neutral', 'positive'))
+
+polText['negative'] <- removeWords(polText['negative'],
+                                   names(polWordTable$negativeWords))
+polText['positive'] <- removeWords(polText['positive'],
+                                   names(polWordTable$positiveWords))
+
+corp <- make_corpus(polText)
+col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
+comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                 max.words = 150, min.freq = 1, 
+                 random.order = FALSE, rot.per = 0,
+                 colors = col3, vfont = c("sans serif", "plain"))
+```
+
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+It can be seen from the word cloud that negative sentiments are still being expressed with a relatively high frequency on Twitter over the situation in Port Harcourt. Please recall that this visualization refers to tweets mentioning @nesreanigeria
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+<!---
+### Facebook Analysis
+### Total number of posts
+
+# Website Analysis
+In progress...
+-->
+### 2.0 Observations  
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+1.  The Agency's twitter presence and following is strong. It is important that the work and success so far enjoyed via twitter is replicated across other social media platforms. 
+2.  The Port Harcourt soot problem is still trending.
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+
+### 3.0 Recommendation  
+<!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
+1.  Social media response time should be improved. It is very important that responses from from the Agency to questions or queries are given within a 24-hour time frame. 
+2.  The Port Harcourt issue needs to be addressed continually in the days and weeks ahead and NESREA needs to be seen to be playing its part in line with its mandate.   
+<!-- DO NOT ENTER TEXT BELOW THIS LINE -->
+ 
+```{r, echo=FALSE}
+victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
+remi <- person("Remi", "Agunbiade", email = "remi.agunbiade@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
+amaka <- person("Amaka", "Ejiofor", email = "amaka.ejiofor@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
+eze <- person("Ezechinyere", "Achilefu", comment = "Member, Web Monitoring Group")
+```
+
+
+Submitted by:  
+
+
+**`r paste(victor$given, victor$family)`**  
+`r victor$comment`
+
+```{r, echo=FALSE, eval=FALSE} 
+sessionInfo()
+```
