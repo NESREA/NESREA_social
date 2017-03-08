@@ -1,7 +1,9 @@
 ---
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +14,7 @@ today <- Sys.Date()
 ### EXECUTIVE SUMMARY  
 Date of Report: `r format(today, "%A, %d %B %Y")`  
 
-#### Twitter[^1]
+#### Twitter
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 require(dplyr)
 require(stringr)
@@ -22,7 +24,7 @@ all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"
 all_data$date_only <- as.Date(all_data$created)
 wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
 last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
-mth_data <- filter(all_data, date_only >= "2017-02-01" & date_only <= "2017-02-28")
+mth_data <- filter(all_data, date_only >= "2017-03-01" & date_only <= "2017-03-31")
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
 mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
@@ -108,9 +110,9 @@ distr
 <!--- For specific days of the week; to be used only if there is anything of interest. Note that if there are insufficent data, the plot will not be drawn. To use this code chunk change the argument below to 'eval = TRUE' -->
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-The 1st of March witnessed high traffic of tweets and retweets compared to other days of thweek under review
+
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
-```{r, echo=FALSE, eval=TRUE}  
+```{r, echo=FALSE, eval=FALSE}  
 dayOf <- dplyr::filter(wk_data, mday(created) == 7)
 distr_day <- ggplot(dayOf, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -121,13 +123,13 @@ distr_day <- ggplot(dayOf, aes(created)) +
 distr_day
 ```
 
-##### 1.1.3 Sentiment Analysis[^2]
+##### 1.1.3 Sentiment Analysis
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-A Sentiment Analysis was carried out and the data displayed in the form of a dot chart and a word cloud.
+A Sentiment Analysis was carried out and the data displayed in the form of a dot chart and a word cloud.  
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
 ###### **1.1.3.1 Dot chart of sentiments**
-The dot charts plot positive and negative words, respectively. 
+The dot charts plot positive and negative words, respectively.  
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 The most positive sentiment shared in the week under review was thank, while the most negative sentiment was waste. This negative sentiment most likely is related to the Koko waste incidence.
@@ -175,8 +177,8 @@ par(oldpar)
 
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
-###### **1.1.3.2 Word cloud of sentiments**
-The word cloud below represents common words that were clustered around negative, neutral or positive terms; the size of each word represents the relative frequency of its occurence. Thus words with the largest font size occured more frequently than those with smaller fonts.
+###### **1.1.3.2 Word cloud of sentiments**  
+The word cloud below represents common words that were clustered around negative, neutral or positive terms; the size of each word represents the relative frequency of its occurence. Thus words with the largest font size occured more frequently than those with smaller fonts.  
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 require(wordcloud)
 make_corpus <- function(GText, stem = TRUE) {
@@ -220,7 +222,7 @@ comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-
+It can be seen from the word cloud that negative sentiments are still being expressed with a relatively high frequency on Twitter over the situation in Port Harcourt. Please recall that this visualization refers to tweets mentioning @nesreanigeria
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
 <!---
@@ -232,19 +234,16 @@ In progress...
 -->
 ### 2.0 Observations  
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-The Agency's twitter presence and following is strong. It is important that the work and success so far enjoyed via twitter is replicated across other social media platforms
+1.  The Agency's twitter presence and following is strong. It is important that the work and success so far enjoyed via twitter is replicated across other social media platforms. 
+2.  The Port Harcourt soot problem is still trending.
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
 
 ### 3.0 Recommendation  
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
-Based on the observation, it is recommended that the Agency integrate social media response time into their work plan. It is very important that responses from from the Agency to questions or queries are given within a 24-hour time frame.
+1.  Social media response time should be improved. It is very important that responses from from the Agency to questions or queries are given within a 24-hour time frame. 
+2.  The Port Harcourt issue needs to be addressed continually in the days and weeks ahead and NESREA needs to be seen to be playing its part in line with its mandate.   
 <!-- DO NOT ENTER TEXT BELOW THIS LINE -->
  
-**END**.  
-
-###### *Technical information*  
-Data were accessed via an application programming interface (API) and analysed with R, a programming language used mainly for statistical computing.[^3] This document was generated with R Markdown to allow for programmmatic rendering of all the outputs.[^4] The complete code for a generic version of this report can be viewed and/or downloaded  **[here](https://raw.githubusercontent.com/NESREA/NESREA_social/master/weekly-report-generic.Rmd)**. Permissions apply.
-
 ```{r, echo=FALSE}
 victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
 remi <- person("Remi", "Agunbiade", email = "remi.agunbiade@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
@@ -252,12 +251,13 @@ amaka <- person("Amaka", "Ejiofor", email = "amaka.ejiofor@nesrea.gov.ng", comme
 eze <- person("Ezechinyere", "Achilefu", comment = "Member, Web Monitoring Group")
 ```
 
-Submitted by:
 
-`r paste(victor$given, victor$family)`  
+Submitted by:  
+
+
+**`r paste(victor$given, victor$family)`**  
 `r victor$comment`
 
-[^1]: Note that the tweets being measured are those that contain the string 'nesreanigeria', which is the official handle of the Agency.
-[^2]: A Sentiment Analysis was carried out using the sentiment dictionary (Hu and Liu, 2004) to tag polarised words. Context clusters are then developed, as well use of the ‘bag of words’ method, generate plots to visualize ‘emotional valence’.
-[^3]: The R Programming Language for Statistical Computing (Version `r getRversion()`) was used for all the analyses. <http://r-project.org>
-[^4]: This document is generated with R Markdown (version `r packageVersion("rmarkdown")`).
+```{r, echo=FALSE, eval=FALSE} 
+sessionInfo()
+```
