@@ -136,7 +136,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$mostEmotive <- renderTable({
-    if (input$emotiveExtremes == TRUE)
+    if (input$emotiveExtremes && input$outputstyle == "Emotions plot")
     {
       # Objects for rendering the various plots
       spl <- split(dataInput(), dataInput()$isRetweet)

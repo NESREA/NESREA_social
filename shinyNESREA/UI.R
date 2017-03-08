@@ -58,7 +58,9 @@ ui <- function(request){
       
       conditionalPanel(
         condition = "input.outputstyle == 'Emotions plot'",
-        checkboxInput("emotiveExtremes", label = "View emotive extremes")
+        checkboxInput("emotiveExtremes",
+                      label = "View emotive extremes",
+                      value = FALSE)
       ),
       
       conditionalPanel(
