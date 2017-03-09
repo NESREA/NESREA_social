@@ -43,13 +43,15 @@ ui <- function(request){
         dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
                 min = "2016-06-14", max = Sys.Date()),
         dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
-                max = Sys.Date())
+                max = Sys.Date()),
+        hr()
         ),
       
       conditionalPanel(
         condition = "input.outputstyle == 'Density plot (day)'",
         dateInput("checkDate", label = "Date: ", value = Sys.Date() - 1,
-                  min = Sys.Date() - 7, max = Sys.Date())
+                  min = Sys.Date() - 7, max = Sys.Date()),
+        hr()
       ),
       
       conditionalPanel(
@@ -60,7 +62,8 @@ ui <- function(request){
         condition = "input.outputstyle == 'Emotions plot'",
         checkboxInput("emotiveExtremes",
                       label = "View emotive extremes",
-                      value = FALSE)
+                      value = FALSE),
+        hr()
       ),
       
       conditionalPanel(
@@ -70,8 +73,6 @@ ui <- function(request){
       conditionalPanel(
         condition = "input.outputstyle == 'Network'"
         ),
-      
-      hr(),
       
       em(a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints"))
     ),
