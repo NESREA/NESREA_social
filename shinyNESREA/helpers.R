@@ -53,7 +53,7 @@ writeLines(ip_add[grep("IPv4", ip_add)], log_connect)
 
 # Download, store and quantify tweets
 if (!"nesreanigeria.db" %in% list.files(path = "data/", all.files = TRUE))
-  RSQLite::dbConnect(SQLite(), dbname = "nesreanigeria.db")
+  RSQLite::dbConnect(SQLite(), dbname = "data/nesreanigeria.db")
 
 register_sqlite_backend("data/nesreanigeria.db")
 twtnum <- 
