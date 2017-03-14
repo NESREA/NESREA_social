@@ -29,18 +29,36 @@ color <- function() {
 
 ## Collect and store Twitter data
 library(twitteR)
-library(DBI)
 source("authentication.R")
 
-# create session log
+# Download, store and quantify tweets
+if (!"nesreanigeria.db" %in% contentDataDirectory) {
+  RSQLite::dbConnect(SQLite(), dbname = "data/nesreanigeria.db")
+  message("New SQLite database file created")
+  Sys.sleep(3)
+}
+
+register_sqlite_backend("data/nesreanigeria.db")
+twtnum <- search_twitter_and_store("nesreanigeria",
+                                   table_name = "nesreanigeria_tweets")
+twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
+
+# Create current session log
+contentDataDirectory <- list.files(path = "data/", all.files = TRUE)
+
+if (!"log.txt" %in% contentDataDirectory) {
+  invisible(file.create("data/log.txt"))
+  message("New log file created.")
+  Sys.sleep(1)
+}
+
 log_connect <- file("data/log.txt")
 open(log_connect, "w")
+
 writeLines("SESSION LOG", log_connect)
 writeLines(paste("Session Time:", format(Sys.time(), "%a %d %b %Y, %H:%M:%S")),
            log_connect)
-
-# Version info
-writeLines(R.version.string, log_connect)
+writeLines(R.version.string, log_connect)   # Version info for R, packages, etc
 if ("tools:rstudio" %in% search()) {
   writeLines(paste("RStudio version:", RStudio.Version()$version), log_connect)
   writeLines(paste("Mode of access:", RStudio.Version()$mode), log_connect)
@@ -50,16 +68,10 @@ writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))),
 writeLines("Networking:", log_connect)
 ip_add <- system("ipconfig", intern = TRUE)
 writeLines(ip_add[grep("IPv4", ip_add)], log_connect)
-
-# Download, store and quantify tweets     
-register_sqlite_backend("data/nesreanigeria.db")
-twtnum <- 
-  search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
-twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
-
 writeLines(paste("Number of tweets downloaded during this session:", twtnum),
            log_connect)
 writeLines(paste("Total number of tweets in database:", twtnum_all), log_connect)
 writeLines(paste("Current size of tweet database:",
                  file.info("data/nesreanigeria.db")$size, "B"), log_connect)
+
 close(log_connect)
