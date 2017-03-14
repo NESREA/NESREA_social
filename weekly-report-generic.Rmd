@@ -7,18 +7,26 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+
 today <- Sys.Date()
+
 ```
 ### EXECUTIVE SUMMARY  
 Date of Report: `r format(today, "%A, %d %B %Y")`  
 
 #### Twitter[^1]
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-require(dplyr)
-require(stringr)
-twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
-all_data <- twitteR::load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+library(dplyr)
+library(stringr)
+library(twitteR)
 
+# Download any additionally availabe tweets and add up to database before extraction for analysis
+register_sqlite_backend("shinyNESREA/data/nesreanigeria.db") #TODO: Change path as required!
+# source("shinyNESREA/authentication.R")
+# search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
+all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
+
+# Processing...
 all_data$date_only <- as.Date(all_data$created)
 wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
 last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
