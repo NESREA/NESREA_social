@@ -18,3 +18,34 @@ highestRTs <- max(recentRTs$retweetCount)
 highestRTs
 mostRTed <- which(recentRTs$retweetCount == highestRTs)
 recentRTs$text[mostRTed]  # UNEP
+
+
+################################################################
+#                                                              #
+#    Checking whether there is enough location-based data      #
+#                                                              #
+################################################################
+
+# load the data from disk
+twitteR::register_sqlite_backend("shinyNESREA/data/nesreanigeria.db")
+dataset <- twitteR::load_tweets_db(as.data.frame = TRUE,
+                                   table_name = "nesreanigeria_tweets")
+
+colnames(dataset)     # checking for relevant variables
+
+all(is.na(dataset$longitude))     # are they all NA?
+
+targetIndex <- which(!is.na(dataset$longitude))  # which ones are not NAs?
+length(targetIndex)
+targetIndex
+
+# extract tweet with geolocation data
+dataset$longitude[targetIndex]
+dataset[targetIndex, ]
+View(dataset[targetIndex, ])
+
+# Proportion of dataset that has geolocation data
+proportion <- length(dataset$longitude[targetIndex]) / nrow(dataset)
+proportion 
+paste0(round(proportion * 100, 2), "%")
+#END
