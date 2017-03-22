@@ -31,6 +31,8 @@ color <- function() {
 library(twitteR)
 source("authentication.R")
 
+contentDataDirectory <- list.files(path = "data/", all.files = TRUE)
+
 # Download, store and quantify tweets
 if (!"nesreanigeria.db" %in% contentDataDirectory) {
   RSQLite::dbConnect(SQLite(), dbname = "data/nesreanigeria.db")
@@ -44,8 +46,6 @@ twtnum <- search_twitter_and_store("nesreanigeria",
 twtnum_all <- nrow(load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets"))
 
 # Create current session log
-contentDataDirectory <- list.files(path = "data/", all.files = TRUE)
-
 if (!"log.txt" %in% contentDataDirectory) {
   invisible(file.create("data/log.txt"))
   message("New log file created.")
@@ -68,7 +68,7 @@ writeLines(paste("twitteR version:", as.character(packageVersion("twitteR"))),
 writeLines("Networking:", log_connect)
 ip_add <- system("ipconfig", intern = TRUE)
 writeLines(ip_add[grep("IPv4", ip_add)], log_connect)
-writeLines(paste("Number of tweets downloaded during this session:", twtnum),
+writeLines(paste("Number of tweets added to database:", twtnum),
            log_connect)
 writeLines(paste("Total number of tweets in database:", twtnum_all), log_connect)
 writeLines(paste("Current size of tweet database:",
