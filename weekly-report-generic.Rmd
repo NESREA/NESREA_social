@@ -13,11 +13,18 @@ today <- Sys.Date()
 Date of Report: `r format(today, "%A, %d %B %Y")`  
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+# PRELIMINARIES: CREATING BASIC OBJECTS AND FUNCTIONS USED IN THE DOCUMENT
+
+# load relevant packages
 library(dplyr)
 library(stringr)
 library(twitteR)
 library(lubridate)
+library(Rfacebook)
 
+                      ##############
+                      #  TWITTER   #
+                      ##############
 # Download any additionally availabe tweets and add up to database before extraction for analysis
 register_sqlite_backend("shinyNESREA/data/nesreanigeria.db") #TODO: Change path as required!
 # source("shinyNESREA/authentication.R")
@@ -26,18 +33,51 @@ all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 # Processing...
 all_data$date_only <- as.Date(all_data$created)
-
 wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
 last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 no.wk <- nrow(wk_data)
-
 month_begin <- floor_date(Sys.Date(), "month")
 month_end <- ceiling_date(Sys.Date(), "month")
 mth_data <- filter(all_data, date_only >= month_begin & date_only <= month_end)
-
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
 mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
+
+                        ############
+                        # Facebook #
+                        ############
+# Direct authentication applied
+source("fb_authentication.R")
+chooseInsight <- function(type = c("page_fan_adds", "page_fan_removes", "page_views_login", "page_views_logout", "page_views", "page_story_adds", "page_impressions", "page_posts_imporessions", "page_consumptions", "post_consumptions_by_type", "page_fans_country")) {result <- getInsights(object_id = NESREA_page_id, token = NESREA_token, metric = type, version = API_version); result <- select(result, value:end_time); result$end_time <- substr(result$end_time, start = 1, stop = regexpr("T", result$end_time) - 1); result}
+newFans <- chooseInsight("page_fan_adds");
+fansLeft <- chooseInsight("page_fan_removes")
+newStories <- chooseInsight("page_story_adds")
+pageImpressions <- chooseInsight("page_impressions")
+postImpressions <- chooseInsight("page_posts_impressions")
+pageConsumptions <- chooseInsight("page_consumptions")
+# Note that the code is obfuscated to save space. For a more user-friendly version, see the script 'facebook-general.R'
+
+# PUblic posts
+# Load data on Page posts
+page_posts <- getPage(page = "nesreanigeria",
+                      token = NESREA_token, feed = TRUE) %>%
+  select(., c(message:type, likes_count:shares_count))
+
+colnames(page_posts) <- gsub("_count$|_time$", "", colnames(page_posts))
+page_posts$message <- page_posts$message %>%
+  gsub("[^[:graph:]]", "", .) %>%
+  str_trim(.)
+page_posts$type <- as.factor(page_posts$type)
+page_posts$created <- substr(page_posts$created, start = 1,
+                        stop = regexpr("T", page_posts$created) - 1)
+mth_Posts <- filter(page_posts, created >= month_begin && created <= month_end)
+wk_Posts <- filter(page_posts, created >= Sys.Date()-7 && created <= Sys.Date())
+
+# Most liked post
+
+# Miscellaneous string objects
+ourFbPosts <- "No. of Page posts by us in"
+
 ```
 
 |Twitter                                  |                   |
@@ -45,28 +85,16 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 |No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
 |No of tweets in past 7 days              | `r no.wk`         |
 |Most Retweeted                           | `r mostRTed`      |
-|Most Liked                               | `r mostFaved`     |
-|                                         |                   |
+|Most Liked                               | `r mostFaved`     |  
 
-|Facebook                                 |                   |
-|-----------------------------------------|-------------------|
-|No data available for now.               |                   |
-|                                         |                   |
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-# library(Rfacebook)
-
-
-```
-<!-- Deal with this one later 
-| Detail                    |Result             |
-|---------------------------|-------------------|
-|Total number of Page posts | *(put data here)* |
-|Total number of new Likes  | *(put data here)* |
-|Overall number of Likes    | *(put data here)* |
-|Total number of Comments   | *(put data here)* |
-|                           |                   |
--->
+|Facebook                                  |                            |
+|------------------------------------------|----------------------------|
+|`r paste(ourFbPosts, format(today, "%B"))`|`r nrow(mth_Posts)`         |
+|`r paste(ourFbPosts, "past 7 days")`      |`r nrow(wk_Posts)`          |
+|Most Liked Post  (Overall)                |`r max(page_posts$liked)`   |
+|Most Liked Post (`r format(today, "%B")`) |`r ##no code yet`           |
+|Most Shared Post                          |`r max(page_posts$shares)`  |
+|Most Commented                            |`r max(page_posts$comments)`|  
 ***
 ### 1.0 Introduction  
 <!-- TEXT SHOULD GO BELOW THIS LINE -->
@@ -91,7 +119,7 @@ busiest_day <- ymd(names(busiest_day))
 |---------------------------------------|----------------------------------|
 |Total number of tweets **by** NESREA:  | `r nrow(tweets_by_us)`           |
 |Total number of tweets **on** NESREA   | `r nrow(wk_data)`                |
-|Average number of tweets per day:      | `r floor(nrow(wk_data)/7)`              |  
+|Average number of tweets per day:      | `r floor(nrow(wk_data)/7)`       |
 |Day of highest activity:               | `r format(busiest_day, "%d %B")` |
 |Top 5 influential handles:             | `r print("---")`                 |
 |Most liked tweet:                      | `r mostFaved`                    |
