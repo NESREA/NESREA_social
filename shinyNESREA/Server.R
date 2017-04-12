@@ -10,12 +10,14 @@ theme_set(new = theme_bw())
 source("helpers.R")
 
 shinyServer(function(input, output, session) {
+
   dataInput <- reactive({
     if (input$oauth)
       source("authentication.R")
-    input$goButton              # TODO: include carriage return option
+    input$goButton
     tweets <- isolate(
-      searchTwitter(as.character(input$searchTerm), n = 100, # create no. input
+      searchTwitter(as.character(input$searchTerm),
+                    n = 100, # create no. input
                     since = as.character(input$startDate),
                     until = as.character(input$endDate))
       )
@@ -50,8 +52,7 @@ shinyServer(function(input, output, session) {
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
         ggtitle(paste0("Distribution of tweets mentioning \"",
                        input$searchTerm, "\"")) +
-        xlab("Date") +
-        ylab("No. of tweets")
+        xlab("Date")
       
       tweetDistr
   }
@@ -64,8 +65,7 @@ shinyServer(function(input, output, session) {
 	    ggtitle(paste0("Distribution of tweets mentioning \"",
 	                   input$searchTerm, "\" (Daily Results)")) +
 	    xlab(paste0("Time of Day (",
-	               format(input$checkDate, format = "%a %d %B %Y"), ")")) +
-	    ylab("No. of tweets")
+	               format(input$checkDate, format = "%a %d %B %Y"), ")"))
 	  tweetDistr
 	}
 	else if (input$outputstyle == "Platforms") {

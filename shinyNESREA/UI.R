@@ -23,8 +23,10 @@ ui <- function(request){
       
       hr(),
       
+      
       textInput("searchTerm", label = "Search", value = "nesreanigeria",
-                placeholder = "Term or hashtag"),
+              placeholder = "Term or hashtag"),
+      
       
       actionButton("goButton", label = "Go!"),
       
