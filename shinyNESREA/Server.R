@@ -46,7 +46,7 @@ shinyServer(function(input, output, session) {
 	# options for the various plots
   if (input$outputstyle == "Density plot (week)") {
       tweetDistr <- ggplot(dataInput(), aes(created)) +
-        geom_density(aes(fill = isRetweet), alpha = .5) +
+        geom_density(aes(fill = isRetweet), alpha = .7) +
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
         ggtitle(paste0("Density plot of tweets with the term '",
                        input$searchTerm, "'")) +
