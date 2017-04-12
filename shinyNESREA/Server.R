@@ -50,7 +50,7 @@ shinyServer(function(input, output, session) {
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
         ggtitle(paste0("Density plot of tweets with the term '",
                        input$searchTerm, "'")) +
-        xlab("All tweets")
+        xlab("Date")
       
       tweetDistr
   }
