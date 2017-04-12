@@ -48,8 +48,8 @@ shinyServer(function(input, output, session) {
       tweetDistr <- ggplot(dataInput(), aes(created)) +
         geom_density(aes(fill = isRetweet), alpha = .7) +
         theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-        ggtitle(paste0("Density plot of tweets with the term '",
-                       input$searchTerm, "'")) +
+        ggtitle(paste0("Distribution of tweets mentioning \"",
+                       input$searchTerm, "\"")) +
         xlab("Date") +
         ylab("No. of tweets")
       
@@ -61,10 +61,11 @@ shinyServer(function(input, output, session) {
 	  tweetDistr <- ggplot(checkday, aes(created)) +
 	    geom_density(aes(fill = isRetweet), adjust = 2.5, alpha = .5) +
 	    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-	    ggtitle(paste0("Density plot of tweets with the term '",
-	                   input$searchTerm, "'")) +
-	    xlab(paste("Tweets of",
-	               format(input$checkDate, format = "%a %d %B %Y")))
+	    ggtitle(paste0("Distribution of tweets mentioning \"",
+	                   input$searchTerm, "\" (Daily Results)")) +
+	    xlab(paste0("Time of Day (",
+	               format(input$checkDate, format = "%a %d %B %Y"), ")")) +
+	    ylab("No. of tweets")
 	  tweetDistr
 	}
 	else if (input$outputstyle == "Platforms") {
