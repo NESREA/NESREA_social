@@ -18,25 +18,32 @@ ui <- function(request){
       
       width = 3,
       
-      strong(actionLink(inputId = "oauth",
-                 label = "Register new session")),
+      tags$div(title = "Click here to submit authentication credentials and 
+               start a new session",
+               strong(actionLink(inputId = "oauth",
+                                 label = "Register new session"))),
       
       hr(),
       
       
-      textInput("searchTerm", label = "Search", value = "nesreanigeria",
-              placeholder = "Term or hashtag"),
+      tags$div(title = "Type in what you're searching for here",
+               textInput("searchTerm", label = "Search", value = "nesreanigeria",
+              placeholder = "Term or hashtag")),
       
       
       actionButton("goButton", label = "Go!"),
       
       hr(),
       
-      selectInput("outputstyle",
-                  label = "Select output type",
-                  choices = c("Density plot (week)", "Density plot (day)",
-                              "Platforms", "Emotions plot", "Wordcloud",
-                              "Network")),
+      tags$div(title = "Choose the type of output you want to view",
+               selectInput("outputstyle",
+                           label = "Select output type",
+                           choices = c("Density plot (week)", 
+                                       "Density plot (day)",
+                                       "Platforms",
+                                       "Emotions plot",
+                                       "Wordcloud",
+                                       "Network"))),
       
       hr(),
       
@@ -80,7 +87,8 @@ ui <- function(request){
     ),
     
     mainPanel(
-      plotOutput("twtDensity"),
+      tags$div(title = "Plots will be displayed here.",
+               plotOutput("twtDensity")),
       
       tableOutput("mostEmotive"),
       
