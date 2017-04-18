@@ -17,7 +17,7 @@ shinyServer(function(input, output, session) {
     input$goButton
     tweets <- isolate(
       searchTwitter(as.character(input$searchTerm),
-                    n = 100, # create no. input
+                    n = input$numLoaded,
                     since = as.character(input$startDate),
                     until = as.character(input$endDate))
       )
@@ -120,4 +120,10 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  output$twtnum <- renderText({
+    temp <- dataInput()
+    paste0("Number of tweets downloaded during this session = ",
+          nrow(temp), ". Select a value to load more:")
+    })
+
 })

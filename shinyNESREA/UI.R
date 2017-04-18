@@ -90,9 +90,18 @@ ui <- function(request){
       tags$div(title = "Plots will be displayed here.",
                plotOutput("twtDensity")),
       
+      div(style = "display:inline-block; vertical-align:top;padding:20px;",
+          textOutput("twtnum", inline = TRUE)),
+      
+      div(style = "display:inline-block; vertical-align:top;",
+          selectInput("numLoaded",
+                      label = "",
+                      width = "70px",
+                      choices = c(25, 50, 100, 150, 200, 250, 300))),
+      
       tableOutput("mostEmotive"),
       
-      bookmarkButton(),
+      tags$span(bookmarkButton()),
       
       width = 9
       )
