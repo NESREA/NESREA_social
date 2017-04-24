@@ -52,7 +52,7 @@ shinyServer(function(input, output, session) {
                                   regexpr('>', temp_data$statusSource) + 1,
                                   regexpr('</a>', temp_data$statusSource) - 1)
         dotchart(sort(table(temp_data$statusSource)))
-        mtext('Number of tweets posted by platform')
+        mtext(textOnTweetsByPlatform)
   	}
   	else if (input$outputstyle == "Emotions plot") {
   	  par(mfrow = c(1, 2))
@@ -121,9 +121,10 @@ shinyServer(function(input, output, session) {
   })
   
   output$twtnum <- renderText({
+    
     temp <- dataInput()
-    paste0("Number of tweets downloaded during this session = ",
-          nrow(temp), ". Select a value to load more:")
+    paste(nrow(temp), textOnLoadedTweets)
+    
     })
 
 })

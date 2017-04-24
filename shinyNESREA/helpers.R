@@ -1,9 +1,17 @@
 # helpers.R
+
+# Objects
+textOnLoadedTweets <- 
+  "tweets were downloaded. Select a value to extend the download limit: "
+textOnTweetsByPlatform <- 'Number of tweets posted by platform'
+
+
+
+
 # Helper functions and backend capabilities
 # ==============================================================================
 
 # make a corpus
-
 make_corpus <- function(GText, stem = TRUE) {
   corp <- VCorpus(VectorSource(GText)) %>% # Put the text into tm format
     tm_map(removePunctuation) %>%
