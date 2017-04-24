@@ -30,11 +30,6 @@ ui <- function(request){
                textInput("searchTerm", label = "Search", value = "nesreanigeria",
               placeholder = "Term or hashtag")),
       
-      
-      actionButton("goButton", label = "Go!"),
-      
-      hr(),
-      
       tags$div(title = "Choose the type of output you want to view",
                selectInput("outputstyle",
                            label = "Select output type",
@@ -45,22 +40,18 @@ ui <- function(request){
                                        "Wordcloud",
                                        "Network"))),
       
-      hr(),
-      
       conditionalPanel(
         condition = "input.outputstyle == 'Density plot (week)'",
         dateInput("startDate", label = "From: ", value = Sys.Date() - 7,
                 min = "2016-06-14", max = Sys.Date()),
         dateInput("endDate", "To: ", value = Sys.Date(), min = "2016-06-14",
-                max = Sys.Date()),
-        hr()
+                max = Sys.Date())
         ),
       
       conditionalPanel(
         condition = "input.outputstyle == 'Density plot (day)'",
         dateInput("checkDate", label = "Date: ", value = Sys.Date() - 1,
-                  min = Sys.Date() - 7, max = Sys.Date()),
-        hr()
+                  min = Sys.Date() - 7, max = Sys.Date())
       ),
       
       conditionalPanel(
@@ -71,8 +62,7 @@ ui <- function(request){
         condition = "input.outputstyle == 'Emotions plot'",
         checkboxInput("emotiveExtremes",
                       label = "View emotive extremes",
-                      value = FALSE),
-        hr()
+                      value = FALSE)
       ),
       
       conditionalPanel(
@@ -83,6 +73,12 @@ ui <- function(request){
         condition = "input.outputstyle == 'Network'"
         ),
       
+      div(style = "border: 1px dotted black; background: dark-grey;
+          width: 60px",
+          actionButton("goButton", label = "Go!")),
+      
+      hr(),
+      
       em(a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints"))
     ),
     
@@ -90,18 +86,19 @@ ui <- function(request){
       tags$div(title = "Plots will be displayed here.",
                plotOutput("twtDensity")),
       
-      div(style = "display:inline-block; vertical-align:top;padding:20px;",
+      div(style = "display:inline-block; vertical-align:top; padding-top:20px;
+          font-size: small;",
           textOutput("twtnum", inline = TRUE)),
       
       div(style = "display:inline-block; vertical-align:top;",
           selectInput("numLoaded",
                       label = "",
                       width = "70px",
-                      choices = c(25, 50, 100, 150, 200, 250, 300))),
+                      choices = c(25, 50, 100, 150, 200, 250, 300, 500, 1000))),
       
       tableOutput("mostEmotive"),
       
-      tags$span(bookmarkButton()),
+      bookmarkButton(),
       
       width = 9
       )
