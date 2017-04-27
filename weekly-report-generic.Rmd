@@ -234,20 +234,22 @@ polText <- sapply(polSplit, function(df) {
   paste(tolower(df$text), collapse = ' ') %>%
     gsub(' http|@)[^[:blank:]]+', '', .) %>%  
     gsub('[[:punct:]]', '', .)  
-}) %>%
-  structure(names = c('negative', 'neutral', 'positive'))
-
-polText['negative'] <- removeWords(polText['negative'],
-                                   names(polWordTable$negativeWords))
-polText['positive'] <- removeWords(polText['positive'],
-                                   names(polWordTable$positiveWords))
-
-corp <- make_corpus(polText)
-col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
-comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                 max.words = 150, min.freq = 1, 
-                 random.order = FALSE, rot.per = 0,
-                 colors = col3, vfont = c("sans serif", "plain"))
+})
+if (length(polText) != 3) {
+  cat("Insufficient data to render the wordcloud")
+} else { structure(polText, names = c('negative', 'neutral', 'positive'))
+  polText['negative'] <- removeWords(polText['negative'],
+                                 names(polWordTable$negativeWords))
+  polText['positive'] <- removeWords(polText['positive'],
+                                     names(polWordTable$positiveWords))
+  
+  corp <- make_corpus(polText)
+  col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
+  comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                   max.words = 150, min.freq = 1, 
+                   random.order = FALSE, rot.per = 0,
+                   colors = col3, vfont = c("sans serif", "plain"))
+}
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
