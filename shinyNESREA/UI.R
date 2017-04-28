@@ -79,7 +79,8 @@ ui <- function(request){
       
       hr(),
       
-      em(a(href = "mailto:victor.ordu@nesrea.gov.ng", "Feedback/Complaints"))
+      em(a(href = "https://github.com/NESREA/NESREA_social/issues/new",
+           "Feedback/Bug Reports"))
     ),
     
     mainPanel(
@@ -90,17 +91,21 @@ ui <- function(request){
           font-size: small;",
           textOutput("twtnum", inline = TRUE)),
       
-      div(style = "display:inline-block; vertical-align:top;",
-          selectInput("numLoaded",
-                      label = "",
-                      width = "70px",
-                      choices = c(25, 50, 100, 150, 200, 250, 300, 500, 1000))),
+      div(
+        style = "display:inline-block; vertical-align:top;",
+        selectInput("numLoaded",
+                    label = "",
+                    width = "70px",
+                    choices = c(25, 50, 100, 150, 200, 250, 300, 500, 1000))),
+      
+      div(style = "display:inline-block; vertical-align:top;
+          padding-left: 10px; padding-top: 20px; margin-left: 30px",
+          bookmarkButton()),
       
       tableOutput("mostEmotive"),
       
-      bookmarkButton(),
-      
       width = 9
+      
       )
     )
   )
