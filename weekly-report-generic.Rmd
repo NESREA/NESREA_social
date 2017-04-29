@@ -12,9 +12,7 @@ today <- Sys.Date()
 #### Executive Summary 
 Date of Report: `r format(today, "%A, %d %B %Y")`  
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-# PRELIMINARIES: CREATING BASIC OBJECTS AND FUNCTIONS USED IN THE DOCUMENT
-
+```{r, echo=FALSE, message=FALSE}
 # load relevant packages
 library(dplyr)
 library(stringr)
@@ -25,10 +23,8 @@ library(Rfacebook)
                       ##############
                       #  TWITTER   #
                       ##############
-# Download any additionally availabe tweets and add up to database before extraction for analysis
-register_sqlite_backend("shinyNESREA/data/nesreanigeria.db") #TODO: Change path as required!
-# source("shinyNESREA/authentication.R")
-# search_twitter_and_store("nesreanigeria", table_name = "nesreanigeria_tweets")
+# Access stored tweets
+register_sqlite_backend("shinyNESREA/data/nesreanigeria.db") 
 all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 # Processing...
@@ -36,48 +32,14 @@ all_data$date_only <- as.Date(all_data$created)
 wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
 last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+
+# Statistics
 no.wk <- nrow(wk_data)
 month_begin <- floor_date(Sys.Date(), "month")
 month_end <- ceiling_date(Sys.Date(), "month")
 mth_data <- filter(all_data, date_only >= month_begin & date_only <= month_end)
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
 mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
-
-                        ############
-                        # Facebook #
-                        ############
-# Direct authentication applied
-source("fb_authentication.R")
-chooseInsight <- function(type = c("page_fan_adds", "page_fan_removes", "page_views_login", "page_views_logout", "page_views", "page_story_adds", "page_impressions", "page_posts_imporessions", "page_consumptions", "post_consumptions_by_type", "page_fans_country")) {result <- getInsights(object_id = NESREA_page_id, token = NESREA_token, metric = type, version = API_version); result <- select(result, value:end_time); result$end_time <- substr(result$end_time, start = 1, stop = regexpr("T", result$end_time) - 1); result}
-newFans <- chooseInsight("page_fan_adds");
-fansLeft <- chooseInsight("page_fan_removes")
-newStories <- chooseInsight("page_story_adds")
-pageImpressions <- chooseInsight("page_impressions")
-postImpressions <- chooseInsight("page_posts_impressions")
-pageConsumptions <- chooseInsight("page_consumptions")
-# Note that the code is obfuscated to save space. For a more user-friendly version, see the script 'facebook-general.R'
-
-# PUblic posts
-# Load data on Page posts
-page_posts <- getPage(page = "nesreanigeria",
-                      token = NESREA_token, feed = TRUE) %>%
-  select(., c(message:type, likes_count:shares_count))
-
-colnames(page_posts) <- gsub("_count$|_time$", "", colnames(page_posts))
-page_posts$message <- page_posts$message %>%
-  gsub("[^[:graph:]]", "", .) %>%
-  str_trim(.)
-page_posts$type <- as.factor(page_posts$type)
-page_posts$created <- substr(page_posts$created, start = 1,
-                        stop = regexpr("T", page_posts$created) - 1)
-mth_Posts <- filter(page_posts, created >= month_begin && created <= month_end)
-wk_Posts <- filter(page_posts, created >= Sys.Date()-7 && created <= Sys.Date())
-
-# Most liked post
-
-# Miscellaneous string objects
-ourFbPosts <- "No. of Page posts by us in"
-
 ```
 
 |Twitter                                  |                   |
@@ -87,6 +49,84 @@ ourFbPosts <- "No. of Page posts by us in"
 |Most Retweeted                           | `r mostRTed`      |
 |Most Liked                               | `r mostFaved`     |  
 
+```{r, echo=FALSE, message=FALSE}
+                        ############
+                        # Facebook #
+                        ############
+# Direct authentication applied
+source("fb_authentication.R")
+
+# Selects type of insight to be loaded (wrapper for Rfacebook::getinsights())
+chooseInsight <- function(type = c("page_fan_adds", "page_fan_removes",
+                                   "page_views_login", "page_views_logout",
+                                   "page_views", "page_story_adds",
+                                   "page_impressions",
+                                   "page_posts_imporessions",
+                                   "page_consumptions",
+                                   "post_consumptions_by_type",
+                                   "page_fans_country")) {
+  result <- getInsights(object_id = NESREA_page_id,
+                        token = NESREA_token,
+                        metric = type,
+                        version = API_version) %>%
+    select(value:end_time)
+  
+  result$end_time <- substr(result$end_time,
+                            start = 1,
+                            stop = regexpr("T", result$end_time) - 1)
+  result
+}
+
+# Apply the function
+newFans <- chooseInsight("page_fan_adds");
+fansLeft <- chooseInsight("page_fan_removes")
+newStories <- chooseInsight("page_story_adds")
+pageImpressions <- chooseInsight("page_impressions")
+postImpressions <- chooseInsight("page_posts_impressions")
+pageConsumptions <- chooseInsight("page_consumptions")
+
+# PUblic posts
+# Load data on Page posts
+page_posts <- getPage(page = "nesreanigeria",
+                      since = format(Sys.Date()-7, "%Y/%m/%d"),
+                      until = format(Sys.Date(), "%Y/%m/%d"),
+                      reactions = TRUE,
+                      token = NESREA_token,
+                      feed = TRUE,
+                      verbose = FALSE)
+if (dim(page_posts)[1] == 0) {
+  page_posts <- NULL
+  mth_Posts <- NULL
+  wk_Posts <- NULL
+  noPosts <- "No posts in the last week"
+} else {
+  page_posts <- select(c(message:type, likes_count:shares_count))
+
+  colnames(page_posts) <- gsub("_count$|_time$", "", colnames(page_posts))
+  
+  page_posts$message <- page_posts$message %>%
+    gsub("[^[:graph:]]", "", .) %>%
+    str_trim(.)
+  
+  page_posts$type <- as.factor(page_posts$type)
+  
+  page_posts$created <- substr(page_posts$created,
+                               start = 1,
+                               stop = regexpr("T", page_posts$created) - 1)
+  
+  mth_Posts <- filter(page_posts,
+                      created >= month_begin && created <= month_end)
+  
+  wk_Posts <- filter(page_posts,
+                     created >= Sys.Date()-7 && created <= Sys.Date())
+  
+}
+
+# Miscellaneous string object
+ourFbPosts <- "No. of Page posts by us in"
+
+```
+
 |Facebook                                  |                            |
 |------------------------------------------|----------------------------|
 |`r paste(ourFbPosts, format(today, "%B"))`|`r nrow(mth_Posts)`         |
@@ -94,7 +134,9 @@ ourFbPosts <- "No. of Page posts by us in"
 |Most Liked Post  (Overall)                |`r max(page_posts$liked)`   |
 |Most Liked Post (`r format(today, "%B")`) |`r ##no code yet`           |
 |Most Shared Post                          |`r max(page_posts$shares)`  |
-|Most Commented                            |`r max(page_posts$comments)`|  
+|Most Commented                            |`r max(page_posts$comments)`|
+|                        |`r if (is.null(page_posts)) paste (noPosts)`  |
+
 ***
 ### 1.0 Introduction  
 <!-- TEXT SHOULD GO BELOW THIS LINE -->
@@ -230,6 +272,11 @@ color <- function() {
 }
 
 polSplit <- split(orig, sign(orig$emotionalValence))
+
+if (dim(polSplit[[1]])[1] == 0 | dim(polSplit[[2]])[1] == 0 |
+    dim(polSplit[[3]])[1] == 0) { # -1, 0 or +1 emotional valence has no data
+  cat("Insufficient data to render the wordcloud\n")
+} else {
 polText <- sapply(polSplit, function(df) {
   paste(tolower(df$text), collapse = ' ') %>%
     gsub(' http|@)[^[:blank:]]+', '', .) %>%  
@@ -237,17 +284,18 @@ polText <- sapply(polSplit, function(df) {
 }) %>%
   structure(names = c('negative', 'neutral', 'positive'))
 
-polText['negative'] <- removeWords(polText['negative'],
-                                   names(polWordTable$negativeWords))
-polText['positive'] <- removeWords(polText['positive'],
-                                   names(polWordTable$positiveWords))
-
-corp <- make_corpus(polText)
-col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
-comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                 max.words = 150, min.freq = 1, 
-                 random.order = FALSE, rot.per = 0,
-                 colors = col3, vfont = c("sans serif", "plain"))
+  polText['negative'] <- removeWords(polText['negative'],
+                                 names(polWordTable$negativeWords))
+  polText['positive'] <- removeWords(polText['positive'],
+                                     names(polWordTable$positiveWords))
+  
+  corp <- make_corpus(polText)
+  col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
+  comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                   max.words = 150, min.freq = 1, 
+                   random.order = FALSE, rot.per = 0,
+                   colors = col3, vfont = c("sans serif", "plain"))
+}
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->

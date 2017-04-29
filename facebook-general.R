@@ -4,10 +4,10 @@ library(Rfacebook)
 library(dplyr)
 library(stringr)
 
-source("fb_authentication.R")
+source("fb_authentication.R")    # contains credentials for accessing API data
 
 # Insights on NESREA Page
-# Define a function to simplify our use of Rfacebook::getInsights()
+# First of all, define a function to simplify our use of getInsights()
 chooseInsight <- function(type = c("page_fan_adds", "page_fan_removes",
                               "page_views_login", "page_views_logout",
                               "page_views", "page_story_adds",
@@ -40,7 +40,7 @@ allInsights <- data.frame(newFans[, 1], fansLeft[, 1], pageViewsLogin[, 1],
                           postImpressions[, 1], pageConsumptions[, 1],
                           endtime = pageConsumptions[, 2])
 colnames(allInsights) <- gsub("[^[:alpha:]]", "", colnames(allInsights))
-
+summary(allInsights)
 
 # PUblic posts
 page_posts <- getPage(page = "nesreanigeria",
