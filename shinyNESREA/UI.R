@@ -9,7 +9,7 @@ ui <- function(request){
   theme = shinythemes::shinytheme("superhero"),
   
   titlePanel(
-    title = "NESREA Twitter Exploratory Dataviz",
+    title = "NESREA SMExplorer",
     windowTitle = "Twitter Shiny app - NESREA"
   ),
   
