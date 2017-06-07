@@ -136,7 +136,7 @@ processBagofWords <- function(x, table) {
 prepareObjects <- function(data) {
   spl <- split(data, data$isRetweet)
   main <- spl[['FALSE']]
-  pol <- lapply(as.vector(main$text), function(txt) {
+  pol <- lapply(main$text, function(txt) {
     gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>%
       gsub(" http[^[:blank:]]+", "", .) %>%
       polarity(.)
