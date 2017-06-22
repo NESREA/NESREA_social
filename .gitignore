@@ -20,18 +20,6 @@ twitterAuth.R
 reports/*
 NESREA_Twitter.Rproj
 =======
-Rplot.png
-Rplot01.png
-Rplot02.png
-Rplot03.png
-Rplot04.png
-Rplot05.png
-make_corpus-michael-levy.jpg-large
-report-27jul2016.Rmd
-twitteR.pdf
-twitter-26jul2016.pptx
-twitterAuth.R
-reports/*
 NESREA_tweets.rds
 victor_twitterAuth.R
 nesrea_twitterAuth.R
@@ -52,3 +40,5 @@ weekly-report-current.docx
 weekly-report-current.html
 shinyNESREA/data/nesreanigeria.db 
 weekly-report-generic_files/figure-html
+packrat/lib*/
+packrat/src/* 
