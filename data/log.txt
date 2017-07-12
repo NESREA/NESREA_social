@@ -1,0 +1,11 @@
+SESSION LOG
+Session Time: Fri 30 Jun 2017, 12:43:08
+R version 3.3.3 (2017-03-06)
+RStudio version: 1.0.136
+Mode of access: desktop
+twitteR version: 1.1.9
+Networking:
+   IPv4 Address. . . . . . . . . . . : 192.168.0.136
+Number of tweets added to database: 52
+Total number of tweets in database: 2059
+Current size of tweet database: 669696 B
