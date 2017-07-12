@@ -42,6 +42,12 @@ Version: 1.95-4.8
 Hash: 79c7d5a8684e44e0e3426d3093aa7d90
 Requires: bitops
 
+Package: RSQLite
+Source: CRAN
+Version: 2.0
+Hash: e00e8973c7bddeb271bba447033c5199
+Requires: BH, DBI, Rcpp, bit64, blob, memoise, pkgconfig, plogr
+
 Package: Rcpp
 Source: CRAN
 Version: 0.12.7
@@ -56,7 +62,6 @@ GithubRepo: Rfacebook
 GithubUsername: pablobarbera
 GithubRef: master
 GithubSha1: 800cf343d20c39282fbd69171437bdec9fcdacd5
-GithubSubdir: Rfacebook
 
 Package: XML
 Source: CRAN
@@ -93,6 +98,12 @@ Package: bitops
 Source: CRAN
 Version: 1.0-6
 Hash: 67d0775189fd0041d95abca618c5c07e
+
+Package: blob
+Source: CRAN
+Version: 1.1.0
+Hash: e29764e47f2faf0cd5b74cbcddc3fa9c
+Requires: tibble
 
 Package: caTools
 Source: CRAN
@@ -276,6 +287,12 @@ Version: 0.7.7
 Hash: fea2343a1119d61b0cc5c0a950d103a3
 Requires: mime
 
+Package: memoise
+Source: CRAN
+Version: 1.1.0
+Hash: 410fcd334bc626db100237cc1370f2e9
+Requires: digest
+
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -309,11 +326,21 @@ Source: CRAN
 Version: 0.4.8-1
 Hash: 6ad605ba7b4b476d84be6632393f5765
 
+Package: pkgconfig
+Source: CRAN
+Version: 2.0.1
+Hash: 0dda4a2654a22b36a715c2b0b6fbacac
+
 Package: pkgmaker
 Source: CRAN
 Version: 0.22
 Hash: 2e5fc2a6b7eaeb1e1d397a8dc5f54480
 Requires: digest, registry, stringr, xtable
+
+Package: plogr
+Source: CRAN
+Version: 0.1-1
+Hash: fb19215402e2d9f1c7f803dcaa806fc2
 
 Package: plotrix
 Source: CRAN
