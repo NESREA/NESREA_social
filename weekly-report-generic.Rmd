@@ -20,6 +20,9 @@ library(twitteR)
 library(lubridate)
 library(Rfacebook)
 
+## NOTE: TO UPDATE DATABASE FIRST, COPY CODE BELOW & RUN IN CONSOLE
+##                      source("data/download.R")
+
                       ##############
                       #  TWITTER   #
                       ##############
