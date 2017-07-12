@@ -24,7 +24,7 @@ library(Rfacebook)
                       #  TWITTER   #
                       ##############
 # Access stored tweets
-register_sqlite_backend("shinyNESREA/data/nesreanigeria.db") 
+register_sqlite_backend("data/nesreanigeria.db") 
 all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 # Processing...
