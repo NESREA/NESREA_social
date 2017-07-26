@@ -7,21 +7,20 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-today <- Sys.Date()
-```
-#### Executive Summary 
-Date of Report: `r format(today, "%A, %d %B %Y")`  
-
-```{r, echo=FALSE, message=FALSE}
-# load relevant packages
 library(dplyr)
 library(stringr)
 library(twitteR)
 library(lubridate)
 library(Rfacebook)
+library(ggplot2)
+library(tm)
+library(qdap)
+library(wordcloud)
+```
+#### Executive Summary 
+Date of Report: `r format(today(), "%A, %d %B %Y")`  
 
-## NOTE: TO UPDATE DATABASE FIRST, COPY CODE BELOW & RUN IN CONSOLE
-##                      source("data/download.R")
+```{r, echo=FALSE, message=FALSE}
 
                       ##############
                       #  TWITTER   #
@@ -30,16 +29,21 @@ library(Rfacebook)
 register_sqlite_backend("data/nesreanigeria.db") 
 all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
+# Check the date of the newest stored tweet
+# if less than today()
+if (as.Date(all_data$created[nrow(all_data)]) < today())
+  source("data/download.R")
+
 # Processing...
 all_data$date_only <- as.Date(all_data$created)
-wk_data <- filter(all_data, date_only >= (Sys.Date()-7) & date_only <= (Sys.Date()-1))
-last_wk <- filter(all_data, date_only >= (Sys.Date()-14) & date_only <= (Sys.Date()-8))
+wk_data <- filter(all_data, date_only >= (today()-7) & date_only <= (today()-1))
+last_wk <- filter(all_data, date_only >= (today()-14) & date_only <= (today()-8))
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 
 # Statistics
 no.wk <- nrow(wk_data)
-month_begin <- floor_date(Sys.Date(), "month")
-month_end <- ceiling_date(Sys.Date(), "month")
+month_begin <- floor_date(today(), "month")
+month_end <- ceiling_date(today(), "month")
 mth_data <- filter(all_data, date_only >= month_begin & date_only <= month_end)
 mostRTed <- wk_data$text[which.max(wk_data$retweetCount)]
 mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
@@ -47,7 +51,7 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 
 |Twitter                                  |                   |
 |-----------------------------------------|-------------------|
-|No. of tweets in `r format(today, "%B")` | `r nrow(mth_data)`|
+|No. of tweets in `r format(today(), "%B")` | `r nrow(mth_data)`|
 |No of tweets in past 7 days              | `r no.wk`         |
 |Most Retweeted                           | `r mostRTed`      |
 |Most Liked                               | `r mostFaved`     |  
@@ -88,8 +92,8 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 # # PUblic posts
 # # Load data on Page posts
 # page_posts <- getPage(page = "nesreanigeria",
-#                       since = format(Sys.Date()-7, "%Y/%m/%d"),
-#                       until = format(Sys.Date(), "%Y/%m/%d"),
+#                       since = format(today()-7, "%Y/%m/%d"),
+#                       until = format(today(), "%Y/%m/%d"),
 #                       reactions = TRUE,
 #                       token = NESREA_token,
 #                       feed = TRUE,
@@ -118,7 +122,7 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 #                       created >= month_begin && created <= month_end)
 #   
 #   wk_Posts <- filter(page_posts,
-#                      created >= Sys.Date()-7 && created <= Sys.Date())
+#                      created >= today()-7 && created <= today())
 #   
 # }
 # 
@@ -129,10 +133,10 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 <!--
 |Facebook                                  |                            |
 |------------------------------------------|----------------------------|
-|`r # paste(ourFbPosts, format(today, "%B"))`|`r # nrow(mth_Posts)`         |
+|`r # paste(ourFbPosts, format(today(), "%B"))`|`r # nrow(mth_Posts)`         |
 |`r #paste(ourFbPosts, "past 7 days")`      |`r # nrow(wk_Posts)`          |
 |Most Liked Post  (Overall)                |`r # max(page_posts$liked)`   |
-|Most Liked Post (`r # format(today, "%B")`) |`r # no code yet`           |
+|Most Liked Post (`r # format(today(), "%B")`) |`r # no code yet`           |
 |Most Shared Post                          |`r # max(page_posts$shares)`  |
 |Most Commented                            |`r # max(page_posts$comments)`|
 |                        |`r # if (is.null(page_posts)) paste (noPosts)`  |
@@ -140,7 +144,7 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 ***
 ### 1.0 Introduction  
 <!-- TEXT SHOULD GO BELOW THIS LINE -->
-This is the Social Media Monitoring Report for the week beginning `r format(today - 7, "%A, %d %B %Y")`. The report is based on data obtained from the following NESREA-owned platforms:
+This is the Social Media Monitoring Report for the week beginning `r format(today() - 7, "%A, %d %B %Y")`. The report is based on data obtained from the following NESREA-owned platforms:
 
 1. Twitter
 2. Facebook
@@ -174,8 +178,6 @@ busiest_day <- ymd(names(busiest_day))
 The tweets are plotted as a smoothed density plot - the pink graph represents original tweets, while the blue one is for retweets.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-library(ggplot2)
-
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
@@ -210,9 +212,6 @@ The dot charts plot positive and negative words, respectively.
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(tm)
-library(qdap)
-
 spl <- split(wk_data, wk_data$isRetweet)
 orig <- spl[['FALSE']]
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
@@ -251,7 +250,6 @@ par(oldpar)
 ###### **1.1.3.2 Word cloud of sentiments**
 The word cloud below represents common words that were clustered around negative, neutral or positive terms; the size of each word represents the relative frequency of its occurence. Thus words with the largest font size occured more frequently than those with smaller fonts.
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-library(wordcloud)
 make_corpus <- function(GText, stem = TRUE) {
   corp <- VCorpus(VectorSource(GText)) %>% 
     tm_map(removePunctuation) %>%
