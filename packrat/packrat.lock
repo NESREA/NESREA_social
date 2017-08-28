@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.1
-RVersion: 3.3.3
+RVersion: 3.4.1
 Repos: CRAN=http://cran.rstudio.com/,
     CRANextra=http://www.stats.ox.ac.uk/pub/RWin
 
@@ -54,14 +54,15 @@ Version: 0.12.7
 Hash: f0ba7322cfb66f1b563462faa9c2b2ab
 
 Package: Rfacebook
-Source: github
-Version: 0.6.13
-Hash: 4da748a8423482e1b167622b94d8fa4c
+Source: CRAN
+Version: 0.6.15
+Hash: 0c3f33184b66c0fc90558ee66269cabd
 Requires: httpuv, httr, rjson
-GithubRepo: Rfacebook
-GithubUsername: pablobarbera
-GithubRef: master
-GithubSha1: 800cf343d20c39282fbd69171437bdec9fcdacd5
+
+Package: SnowballC
+Source: CRAN
+Version: 0.5.1
+Hash: 6f14c834eea7672f25b83d9ba35b85ca
 
 Package: XML
 Source: CRAN
@@ -156,8 +157,8 @@ Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr, tibble
 
 Package: evaluate
 Source: CRAN
-Version: 0.9
-Hash: cf338d73ba4ee3a4fefec612cdfd38db
+Version: 0.10.1
+Hash: 54d95f4ec6d0300100413ed0127d89ae
 Requires: stringr
 
 Package: foreach
@@ -235,14 +236,14 @@ Requires: R6, curl, jsonlite, mime, openssl
 
 Package: igraph
 Source: CRAN
-Version: 1.0.1
-Hash: 26ac36402e881905359daabfd9ba4057
-Requires: NMF, irlba, magrittr
+Version: 1.1.2
+Hash: 07d33f151f94269a4573d354104e81aa
+Requires: irlba, magrittr, pkgconfig
 
 Package: irlba
 Source: CRAN
 Version: 2.1.2
-Hash: 23fb0f166f3a2bdc2ac7b014b94b57a7
+Hash: 1600a8e3c31405b352c652429c46ecd2
 
 Package: iterators
 Source: CRAN
@@ -256,9 +257,9 @@ Hash: 24cc0ffeb1771d710173d9803a131870
 
 Package: knitr
 Source: CRAN
-Version: 1.14
-Hash: e7b411f5a5512295a260a45683fa0c4a
-Requires: digest, evaluate, formatR, highr, markdown, stringr, yaml
+Version: 1.17
+Hash: f6b2bf543ee3e25f5b92bb46f9958c5f
+Requires: digest, evaluate, highr, markdown, stringr, yaml
 
 Package: labeling
 Source: CRAN
