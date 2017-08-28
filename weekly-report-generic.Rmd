@@ -32,7 +32,7 @@ all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 # Check the date of the newest stored tweet
 # if less than today()
 if (as.Date(all_data$created[nrow(all_data)]) < today())
-  source("data/download.R")
+  warning("The database may be outdated.\nRun 'regOAuth() followed by 'updateDB()' to update it before knitting the document.")
 
 # Processing...
 all_data$date_only <- as.Date(all_data$created)
