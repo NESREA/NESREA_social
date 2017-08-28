@@ -16,6 +16,8 @@ library(ggplot2)
 library(tm)
 library(qdap)
 library(wordcloud)
+
+source("twitter-functions.R")
 ```
 #### Executive Summary 
 Date of Report: `r format(today(), "%A, %d %B %Y")`  
