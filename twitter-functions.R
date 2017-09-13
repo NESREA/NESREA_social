@@ -1,7 +1,8 @@
 # Some Twitter functions for quick one-off operations
 
+# .................................
 # Registers OAuth for a new session
-# ````````````````````````````````
+# `````````````````````````````````
 regOAuth <- function() {
   load("data/key.RData", envir = globalenv())
   setup_twitter_oauth(consumer_key = consumer_key,
@@ -12,7 +13,7 @@ regOAuth <- function() {
      envir = globalenv())
 }
 
-
+# .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
 collect_tweets <- function(string = character())
@@ -29,6 +30,7 @@ collect_tweets <- function(string = character())
   twt <- twitteR::twListToDF(twt)
 }
 
+# .................................
 # Displays a density plot of tweets
 # `````````````````````````````````
 display_twts <- function(x)
@@ -49,10 +51,29 @@ display_twts <- function(x)
   plot
 }
 
+# .......................
 # Updates NESREA database
 # ```````````````````````
 updateDB <- function() {
   register_sqlite_backend("data/nesreanigeria.db")
   n <- search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
   cat(sprintf(ngettext(n, "%d tweet loaded.", "%d tweets loaded."), n))
+}
+
+# ...........................................................
+# Searches and displays tweet(s) containing a particular word
+# ```````````````````````````````````````````````````````````
+show_tweets_containing_word <- function(word = character(), df = wk_data) {
+    if (!is.character(word))
+      stop("Expected a string as input")
+    if (length(word > 1)) {
+      word <- word[1]
+      warning("First element of 'word' used; the rest was discarded.")
+    }
+    
+    index <- grepl(word, df$text, fixed = TRUE)
+    if (any(index)) {
+      success <- df$text[index]
+      print(success)
+    } else { cat("Word not found") }
 }
