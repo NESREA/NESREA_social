@@ -1,18 +1,5 @@
 # Some Twitter functions for quick one-off operations
 
-# .................................
-# Registers OAuth for a new session
-# `````````````````````````````````
-regOAuth <- function() {
-  load("data/key.RData", envir = globalenv())
-  setup_twitter_oauth(consumer_key = consumer_key,
-                      consumer_secret = consumer_secret,
-                      access_token = access_token,
-                      access_secret = access_secret)
-  rm(consumer_key, consumer_secret, access_secret, access_token,
-     envir = globalenv())
-}
-
 # .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
@@ -54,7 +41,7 @@ display_twts <- function(x)
 # .......................
 # Updates NESREA database
 # ```````````````````````
-updateDB <- function() {
+update_nesrea_db <- function() {
   register_sqlite_backend("data/nesreanigeria.db")
   n <- search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
   cat(sprintf(ngettext(n, "%d tweet loaded.", "%d tweets loaded."), n))
@@ -76,4 +63,74 @@ show_tweets_containing_word <- function(word = character(), df = wk_data) {
       success <- df$text[index]
       print(success)
     } else { cat("Word not found") }
+}
+
+# ..................
+# compare_mentions()
+# ``````````````````
+# Prints a proportions table of number of tweets for various search terms
+## Parameters: x - character vector of search terms
+##             n - max. number of tweets to download (default is 50)  
+
+compare_mentions <- function(x, n = 50L) {
+  if (!is.character(x))
+    stop("'x' is not a character vector.")
+  if (!is.atomic(x))
+    stop("'x': Expected an atomic vector.")
+  if (!is.integer(n))
+    stop("'n' is not an integer type.")
+  twtNum <- sapply(x, function(term) {
+    dat <- suppressWarnings(searchTwitter(term, n))
+    # # len <- length(dat)
+    # if (length(dat) == n) {
+    #   warning("Max. number of tweets downloaded for ", sQuote(trm),
+    #                  ".\nYou may want to extend the download limit beyond ",
+    #                  n,
+    #                  ".")
+    # }
+    # attr(len, which = "max") <- n
+    # len
+  })
+  # names(twtNum) <- as.character(x)
+  # table(twtNum)
+}
+
+# .......
+# chart()
+# ```````
+## Generates a barplot that compares the propotion of tweets with differnt
+## search terms, colours it and gives it appropriate labels
+## Parameters: tbl - object returned by compare_mentions()
+
+chart <- function(tbl) {
+  if (!is.table(tbl))
+    stop("Argument is not a table.")
+  barplot(tbl, col = "brown", main = "Comparative barplot of tweets")
+}
+
+# ..............................................
+# Checks/reminds correct working directory usage
+# ``````````````````````````````````````````````
+check_wd <- function() {
+  MyComputer <- Sys.info()["nodename"]
+  if (MyComputer == "SA-DG" | MyComputer == "NESREA") {
+    setwd("~/7-NESREA/SA/WMG/NESREA_social/")
+  } else { warning("You may not have set your working directory yet.") }
+}
+
+# ..............................................
+# Logs on to Twitter API using Oauth credentials
+# ``````````````````````````````````````````````
+logon_to_twitter <- function() {
+  keys <- "data/key.RData"
+  if (!file.exists(keys)) {
+    warning("You must supply OAuth credentials to proceed.")
+  } else { load(keys, envir = globalenv()) }
+  
+  setup_twitter_oauth(consumer_key = consumer_key,
+                      consumer_secret = consumer_secret,
+                      access_token = access_token,
+                      access_secret = access_secret)
+  rm(consumer_key, consumer_secret, access_token, access_secret,
+     envir = globalenv())
 }
