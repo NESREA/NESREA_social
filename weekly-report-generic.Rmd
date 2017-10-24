@@ -4,21 +4,46 @@ author: "Prepared by Web Monitoring Group"
 output: html_document
 ---
 
+<!--
+******************************************************************************
+*                         GENERAL NOTICE                                     *
+* This is a generic reporting format for the NESREA Web Monitoring Group.    *
+* To easily use it click on 'Knit' in the toolbar above (applies to RStudio).*
+******************************************************************************
+                                                                           -->
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-library(dplyr)
-library(stringr)
-library(twitteR)
-library(lubridate)
-library(Rfacebook)
-library(ggplot2)
-library(tm)
-library(qdap)
-library(wordcloud)
-
-source("twitter-functions.R")
 ```
+
+```{r, echo = FALSE, message = FALSE}
+packrat::off()
+
+pkglist <- c("dplyr",
+             "ggplot2",
+             "lubridate",
+             "qdap",
+             "stringr",
+             "tm",
+             "twitteR",
+             "wordcloud")
+not_installed <- pkglist[!pkglist %in% installed.packages()[, "Package"]]
+install.packages(not_installed)
+lapply(pkglist, library, character.only = TRUE)
+
+
+source_but_also_check_for <- function(ff) {
+  if (file.exists(ff)) {
+    source(ff)
+  } else {
+      warning(paste(sQuote(ff), "was not found in the working directory"))
+    }
+}
+
+source_but_also_check_for("twitter-functions.R")
+
+rm(source_but_also_check_for, pkglist, not_installed)
+```
+
 #### Executive Summary 
 Date of Report: `r format(today(), "%A, %d %B %Y")`  
 
@@ -34,7 +59,7 @@ all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 # Check the date of the newest stored tweet
 # if less than today()
 if (as.Date(all_data$created[nrow(all_data)]) < today())
-  warning("The database may be outdated.\nRun 'regOAuth() followed by 'updateDB()' to update it before knitting the document.")
+  warning("The database may be outdated.\nRun 'logon_to_twitter() followed by 'update_nesrea_db()' to update it before knitting the document.")
 
 # Processing...
 all_data$date_only <- as.Date(all_data$created)

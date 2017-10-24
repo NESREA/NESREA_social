@@ -5,7 +5,7 @@ library(twitteR)
 library(ggplot2)
 
 tables <- 
-  dbListTables(register_sqlite_backend("shinyNESREA/data/nesreanigeria.db"))
+  dbListTables(register_sqlite_backend("data/nesreanigeria.db"))
 tables
 
 tweetdata <- load_tweets_db(as.data.frame = TRUE,
