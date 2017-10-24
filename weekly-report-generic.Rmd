@@ -16,15 +16,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, echo = FALSE, message = FALSE}
-pkglist <- c("dplyr",
-          "ggplot2",
-          "lubridate",
-          "qdap",
-          "stringr",
-          "tm",
-          "twitteR",
-          "wordcloud")
+packrat::off()
 
+pkglist <- c("dplyr",
+             "ggplot2",
+             "lubridate",
+             "qdap",
+             "stringr",
+             "tm",
+             "twitteR",
+             "wordcloud")
+not_installed <- pkglist[!pkglist %in% installed.packages()[, "Package"]]
+install.packages(not_installed)
 lapply(pkglist, library, character.only = TRUE)
 
 
@@ -38,7 +41,7 @@ source_but_also_check_for <- function(ff) {
 
 source_but_also_check_for("twitter-functions.R")
 
-rm(source_but_also_check_for, pkglist)
+rm(source_but_also_check_for, pkglist, not_installed)
 ```
 
 #### Executive Summary 
