@@ -3,26 +3,44 @@ title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
 output: html_document
 ---
+
 <!--
-GENERAL NOTE:
-This is the generic reporting format for the Web Monitoring Group
-To use this reporting format effectively click on 'Knit' in RStudio
--->
+******************************************************************************
+*                         GENERAL NOTICE                                     *
+* This is a generic reporting format for the NESREA Web Monitoring Group.    *
+* To easily use it click on 'Knit' in the toolbar above (applies to RStudio).*
+******************************************************************************
+                                                                           -->
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-library(dplyr)
-library(stringr)
-library(twitteR)
-library(lubridate)
-library(Rfacebook)
-library(ggplot2)
-library(tm)
-library(qdap)
-library(wordcloud)
-
-source("twitter-functions.R")
 ```
+
+```{r, echo = FALSE, message = FALSE}
+pkglist <- c("dplyr",
+          "ggplot2",
+          "lubridate",
+          "qdap",
+          "stringr",
+          "tm",
+          "twitteR",
+          "wordcloud")
+
+lapply(pkglist, library, character.only = TRUE)
+
+
+source_but_also_check_for <- function(ff) {
+  if (file.exists(ff)) {
+    source(ff)
+  } else {
+      warning(paste(sQuote(ff), "was not found in the working directory"))
+    }
+}
+
+source_but_also_check_for("twitter-functions.R")
+
+rm(source_but_also_check_for, pkglist)
+```
+
 #### Executive Summary 
 Date of Report: `r format(today(), "%A, %d %B %Y")`  
 
