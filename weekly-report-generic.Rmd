@@ -15,7 +15,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, include = FALSE}
 packrat::off()
 
 pkglist <- c("dplyr",
@@ -27,7 +27,8 @@ pkglist <- c("dplyr",
              "twitteR",
              "wordcloud")
 not_installed <- pkglist[!pkglist %in% installed.packages()[, "Package"]]
-install.packages(not_installed)
+if (length(not_installed))
+  install.packages(not_installed)
 lapply(pkglist, library, character.only = TRUE)
 
 
@@ -242,21 +243,23 @@ The dot charts plot positive and negative words, respectively.
 spl <- split(wk_data, wk_data$isRetweet)
 orig <- spl[['FALSE']]
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
+
 pol <- lapply(orig$text, function(txt) {
   gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>% 
     gsub(" http[^[:blank:]]+", "", .) %>% 
     polarity(.)
 })
 orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
+
 polWordTable <- sapply(pol, function(p) {
-  words = c(positiveWords = paste(p[[1]]$pos.words[[1]], collapse = ' '),
-            negativeWords = paste(p[[1]]$neg.words[[1]], collapse = ' '))
-  gsub('-', NA, words) 
+  words <- c(positiveWords = paste(p$all$pos.words[[1]], collapse = ' '),
+            negativeWords = paste(p$all$neg.words[[1]], collapse = ' '))
+  gsub('-', '', words) 
 }) %>%
   apply(1, paste, collapse = ' ') %>%
   stripWhitespace() %>%
   strsplit(' ') %>%
-  sapply(table)
+  sapply(table, simplify = FALSE)
 
 oldpar <- par()
 par(mfrow = c(1, 2))
@@ -298,10 +301,11 @@ color <- function() {
 
 polSplit <- split(orig, sign(orig$emotionalValence))
 
-if (dim(polSplit[[1]])[1] == 0 | dim(polSplit[[2]])[1] == 0 |
-    dim(polSplit[[3]])[1] == 0) { # -1, 0 or +1 emotional valence has no data
-  cat("Insufficient data to render the wordcloud\n")
-} else {
+if (nrow(polSplit[[1]]) == 0 | 
+    nrow(polSplit[[2]]) == 0 |
+    nrow(polSplit[[3]]) == 0)
+  warning("Insufficient data to render the wordcloud\n")
+
 polText <- sapply(polSplit, function(df) {
   paste(tolower(df$text), collapse = ' ') %>%
     gsub(' http|@)[^[:blank:]]+', '', .) %>%  
@@ -320,7 +324,6 @@ polText <- sapply(polSplit, function(df) {
                    max.words = 150, min.freq = 1, 
                    random.order = FALSE, rot.per = 0,
                    colors = col3, vfont = c("sans serif", "plain"))
-}
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
