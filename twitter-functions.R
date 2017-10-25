@@ -114,7 +114,7 @@ chart <- function(tbl) {
 check_wd <- function() {
   MyComputer <- Sys.info()["nodename"]
   if (MyComputer == "SA-DG" | MyComputer == "NESREA") {
-    setwd("~/7-NESREA/SA/WMG/NESREA_social/")
+    setwd("~/Documents/7-NESREA/SA/WMG/NESREA_social/")
   } else { warning("You may not have set your working directory yet.") }
 }
 
