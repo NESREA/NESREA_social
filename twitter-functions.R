@@ -73,10 +73,13 @@ show_tweets_containing_word <- function(word = character(), df = wk_data) {
 ##             n - max. number of tweets to download (default is 50)  
 
 compare_mentions <- function(x, n = 50L) {
+  require(magrittr)
   if (!is.character(x))
     stop("'x' is not a character vector.")
   if (!is.atomic(x))
     stop("'x': Expected an atomic vector.")
+  if (is.numeric(n))
+    n <- as.integer(n)
   if (!is.integer(n))
     stop("'n' is not an integer type.")
   twtNum <- sapply(x, function(term) {
@@ -90,9 +93,9 @@ compare_mentions <- function(x, n = 50L) {
     # }
     # attr(len, which = "max") <- n
     # len
-  })
-  # names(twtNum) <- as.character(x)
-  # table(twtNum)
+    }) %>%
+    sapply(length) %>%
+    as.table(.)
 }
 
 # .......
