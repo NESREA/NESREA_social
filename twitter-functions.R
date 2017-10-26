@@ -44,7 +44,7 @@ display_twts <- function(x)
 update_nesrea_db <- function() {
   register_sqlite_backend("data/nesreanigeria.db")
   n <- search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
-  cat(sprintf(ngettext(n, "%d tweet loaded.", "%d tweets loaded."), n))
+  cat(sprintf(ngettext(n, "%d tweet loaded.\n", "%d tweets loaded.\n"), n))
 }
 
 # ...........................................................
