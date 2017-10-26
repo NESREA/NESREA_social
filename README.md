@@ -8,7 +8,7 @@ This project is focused on the development of social media reports carried out b
 `Rscript build-report.R`  
 This will produce a document that is placed in the `Reports` folder, and which has a filename that contains the date the report was generated, after the pattern `weekly-report_YYYY-MM-DD.docx`.
 
-2. The report is generated from tweets stored in a local SQLite database `data/nesreanigeria.db` and may likely be outdated at the time the report is being generated. To update it, the user should run  
+2. The tweets are stored in a local SQLite database `data/nesreanigeria.db`, which may likely be outdated at the time the report is being generated. To update it, the user should run  
 `Rscript download-nesrea-tweets.R`  
 
-To access all of the available features in this projec, in addition to the above, open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
+To access all of the available features in this project, in addition to the above, open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
