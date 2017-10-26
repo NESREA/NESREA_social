@@ -1,7 +1,9 @@
 ---
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 <!--
