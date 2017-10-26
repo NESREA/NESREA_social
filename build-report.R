@@ -11,3 +11,5 @@ rmarkdown::render("weekly-report-generic.Rmd",
                   output_format = "word_document",
                   output_file = filename,
                   output_dir = folder)
+
+file.remove("weekly-report-generic.Rmd.Rout")
