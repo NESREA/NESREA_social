@@ -1,7 +1,9 @@
 ---
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 <!--
@@ -29,7 +31,7 @@ pkglist <- c("dplyr",
 not_installed <- pkglist[!pkglist %in% installed.packages()[, "Package"]]
 if (length(not_installed))
   install.packages(not_installed)
-lapply(pkglist, library, character.only = TRUE)
+suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 
 source_but_also_check_for <- function(ff) {
@@ -244,11 +246,11 @@ spl <- split(wk_data, wk_data$isRetweet)
 orig <- spl[['FALSE']]
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
 
-pol <- lapply(orig$text, function(txt) {
+pol <- suppressWarnings(lapply(orig$text, function(txt) {
   gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>% 
     gsub(" http[^[:blank:]]+", "", .) %>% 
     polarity(.)
-})
+}))
 orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
 
 polWordTable <- sapply(pol, function(p) {
@@ -265,11 +267,11 @@ oldpar <- par()
 par(mfrow = c(1, 2))
 invisible(
   lapply(1:2, function(i) {
-    dotchart(sort(polWordTable[[i]]), cex = .8)
+    suppressWarnings(dotchart(sort(polWordTable[[i]]), cex = .8))
     mtext(names(polWordTable)[i])
   }))
 
-par(oldpar) 
+suppressWarnings(par(oldpar))
 ```
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
@@ -293,12 +295,6 @@ make_corpus <- function(GText, stem = TRUE) {
   corp
 }
 
-color <- function() {
-  require(RColorBrewer)
-  col <- brewer.pal(3, 'Paired')
-  col
-}
-
 polSplit <- split(orig, sign(orig$emotionalValence))
 
 if (nrow(polSplit[[1]]) == 0 | 
@@ -319,11 +315,14 @@ polText <- sapply(polSplit, function(df) {
                                      names(polWordTable$positiveWords))
   
   corp <- make_corpus(polText)
-  col3 <- RColorBrewer::brewer.pal(3, 'Paired') 
-  comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                   max.words = 150, min.freq = 1, 
-                   random.order = FALSE, rot.per = 0,
-                   colors = col3, vfont = c("sans serif", "plain"))
+  col3 <- RColorBrewer::brewer.pal(3, 'Paired')
+  suppressWarnings(comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                                    max.words = 150,
+                                    min.freq = 1,
+                                    random.order = FALSE,
+                                    rot.per = 0,
+                                    colors = col3,
+                                    vfont = c("sans serif", "plain")))
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
