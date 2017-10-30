@@ -43,7 +43,7 @@ source_but_also_check_for <- function(ff) {
     }
 }
 
-source_but_also_check_for("twitter-functions.R")
+source_but_also_check_for("twitter/functions.R")
 
 rm(source_but_also_check_for, pkglist, not_installed)
 ```

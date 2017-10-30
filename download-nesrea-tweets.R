@@ -2,7 +2,7 @@
 packrat::off()
 
 library(twitteR)
-source("twitter-functions.R")
+source("twitter/functions.R")
 
 logon_to_twitter()
 
