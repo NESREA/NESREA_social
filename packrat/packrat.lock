@@ -14,6 +14,11 @@ Source: CRAN
 Version: 0.7
 Hash: 1ab72df487f06ad5f0de05446cdd4bd6
 
+Package: NLP
+Source: CRAN
+Version: 0.1-11
+Hash: fb5df0f46574cb600b9ea437b200450e
+
 Package: R6
 Source: CRAN
 Version: 2.2.0
@@ -281,6 +286,11 @@ Version: 0.4.1
 Hash: c0b89e928595f6133fe9d5dc139060b0
 Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
 
+Package: slam
+Source: CRAN
+Version: 0.1-40
+Hash: 72064713f4746f9bb8a0435c8bf61bd1
+
 Package: stringi
 Source: CRAN
 Version: 1.1.2
@@ -298,11 +308,23 @@ Version: 1.2
 Hash: 3b35b556ef7acddb0d28fe6a27ad50e4
 Requires: Rcpp, assertthat, lazyeval
 
+Package: tm
+Source: CRAN
+Version: 0.7-1
+Hash: 5b3296a336dd966b6b18974f71e3a9b2
+Requires: BH, NLP, Rcpp, slam
+
 Package: twitteR
 Source: CRAN
 Version: 1.1.9
 Hash: 494835cf1d1ed474231ad11a7dde1adb
 Requires: DBI, bit64, httr, rjson
+
+Package: wordcloud
+Source: CRAN
+Version: 2.5
+Hash: d4101279a079bed8acd169427d655143
+Requires: RColorBrewer, Rcpp, slam
 
 Package: yaml
 Source: CRAN
