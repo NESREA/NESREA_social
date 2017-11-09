@@ -2,8 +2,9 @@
 title: "NESREA Weekly Social Media Report"
 author: "Prepared by Web Monitoring Group"
 output:
-  word_document: default
+  pdf_document: default
   html_document: default
+  word_document: default
 ---
 
 <!--
@@ -28,7 +29,7 @@ pkglist <- c("dplyr",
              "tm",
              "twitteR",
              "wordcloud")
-not_installed <- pkglist[!pkglist %in% installed.packages()[, "Package"]]
+not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
 if (length(not_installed))
   install.packages(not_installed)
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
@@ -42,7 +43,7 @@ source_but_also_check_for <- function(ff) {
     }
 }
 
-source_but_also_check_for("twitter-functions.R")
+source_but_also_check_for("twitter/functions.R")
 
 rm(source_but_also_check_for, pkglist, not_installed)
 ```
@@ -241,7 +242,7 @@ A Sentiment Analysis was carried out and the data displayed in the form of a dot
 The dot charts plot positive and negative words, respectively. 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE}
 spl <- split(wk_data, wk_data$isRetweet)
 orig <- spl[['FALSE']]
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
@@ -297,32 +298,31 @@ make_corpus <- function(GText, stem = TRUE) {
 
 polSplit <- split(orig, sign(orig$emotionalValence))
 
-if (nrow(polSplit[[1]]) == 0 | 
-    nrow(polSplit[[2]]) == 0 |
-    nrow(polSplit[[3]]) == 0)
+if (length(polSplit) != 3) {
   warning("Insufficient data to render the wordcloud\n")
-
-polText <- sapply(polSplit, function(df) {
-  paste(tolower(df$text), collapse = ' ') %>%
-    gsub(' http|@)[^[:blank:]]+', '', .) %>%  
-    gsub('[[:punct:]]', '', .)  
-}) %>%
-  structure(names = c('negative', 'neutral', 'positive'))
-
-  polText['negative'] <- removeWords(polText['negative'],
-                                 names(polWordTable$negativeWords))
-  polText['positive'] <- removeWords(polText['positive'],
-                                     names(polWordTable$positiveWords))
+  } else {
+  polText <- sapply(polSplit, function(df) {
+    paste(tolower(df$text), collapse = ' ') %>%
+      gsub(' http|@)[^[:blank:]]+', '', .) %>%  
+      gsub('[[:punct:]]', '', .)
+    }) %>%
+    structure(names = c('negative', 'neutral', 'positive'))
   
-  corp <- make_corpus(polText)
-  col3 <- RColorBrewer::brewer.pal(3, 'Paired')
-  suppressWarnings(comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                                    max.words = 150,
-                                    min.freq = 1,
-                                    random.order = FALSE,
-                                    rot.per = 0,
-                                    colors = col3,
-                                    vfont = c("sans serif", "plain")))
+    polText['negative'] <- removeWords(polText['negative'],
+                                   names(polWordTable$negativeWords))
+    polText['positive'] <- removeWords(polText['positive'],
+                                       names(polWordTable$positiveWords))
+    
+    corp <- make_corpus(polText)
+    col3 <- RColorBrewer::brewer.pal(3, 'Paired')
+    suppressWarnings(comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
+                                      max.words = 150,
+                                      min.freq = 1,
+                                      random.order = FALSE,
+                                      rot.per = 0,
+                                      colors = col3,
+                                      vfont = c("sans serif", "plain")))
+  }
 ```
 
 <!-- INSERT ADDITIONAL TEXT BELOW THIS LINE -->
