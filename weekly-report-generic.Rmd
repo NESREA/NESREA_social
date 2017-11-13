@@ -18,20 +18,28 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r startup, message=FALSE, include=FALSE}
+## The existence of required dependencies is checked for. If absent, these are
+## automatically downloaded and installed. Then packages are (quietly) loaded.
 pkglist <- c("dplyr",
              "ggplot2",
              "lubridate",
              "qdap",
+             "RSQLite",
+             "SnowballC",
              "stringr",
              "tm",
              "twitteR",
              "wordcloud")
+
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
+
 if (length(not_installed))
   install.packages(not_installed)
+
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
-
+## We want to not only source certain project files, but also ensure that
+## such files exist. Once done, clean up is done
 source_but_also_check_for <- function(ff) {
   if (file.exists(ff)) {
     source(ff)
@@ -40,8 +48,7 @@ source_but_also_check_for <- function(ff) {
     }
 }
 
-source_but_also_check_for("twitter/functions.R")
-
+source_but_also_check_for("twitter/tw-functions.R")
 rm(source_but_also_check_for, pkglist, not_installed)
 ```
 
@@ -56,12 +63,13 @@ This is the NESREA Social Media Monitoring Report.
                       ##############
                       #  TWITTER   #
                       ##############
-# Access stored tweets
+## Access stored tweets
 register_sqlite_backend("data/nesreanigeria.db") 
 all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 
-# Column of Date objects for easy categorisation
+## Add a column of Date objects for easy categorisation. Also carry out a 
+## check to see whether the database needs to be updated.
 all_data$date_only <- as.Date(all_data$created)
 
 if (all_data$date_only[nrow(all_data)] < today()) {
@@ -70,9 +78,12 @@ if (all_data$date_only[nrow(all_data)] < today()) {
 
 wk_data <- filter(all_data, date_only >= (today()-7) & date_only <= (today()-1))
 last_wk <- filter(all_data, date_only >= (today()-14) & date_only <= (today()-8))
+
+## Remove characters from the text of tweets that are not human-readable, as 
+## they would be of no practical use in the analysis.
 wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
 
-# Statistics
+# Some objects to be used to generate and/or display statistics
 no.wk <- nrow(wk_data)
 month_begin <- floor_date(today(), "month")
 month_end <- ceiling_date(today(), "month")
@@ -82,8 +93,8 @@ mostFaved <- wk_data$text[which.max(wk_data$favoriteCount)]
 tweets_by_us <- filter(wk_data, screenName == "NESREANigeria")
 busiest_day <- which.max(table(wk_data$date_only))
 busiest_day <- ymd(names(busiest_day))
-
 ```
+
 # Summary Statistics
 ## Twitter
 |       Description                        |      Result                                      |
@@ -101,7 +112,6 @@ busiest_day <- ymd(names(busiest_day))
 |Most retweeted tweet                      |`r mostRTed`                                      |
 |Comparative tweet volume (week-on-week)   |`r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)`|
 |                                          |                                                  |
-
 
 ```{r, message=FALSE}
 #                         ############
@@ -177,7 +187,7 @@ busiest_day <- ymd(names(busiest_day))
 # ourFbPosts <- "No. of Page posts by us in"
 ```
 <!--
-Data from Facebook
+## Facebook
 |                                            |                              |
 |--------------------------------------------|------------------------------|
 |`r #paste(ourFbPosts, format(today(), "%B"))`|`r # nrow(mth_Posts)`         |
@@ -303,4 +313,7 @@ eze <- person("Ezechinyere", "Achilefu", email = "ezechinyere.achilefu@nesrea.go
 Submitted by:
 
 `r paste(victor$given, victor$family)`  
-`r victor$comment`
+`r victor$comment`  
+
+***  
+Built with *R `r getRversion()`*.
