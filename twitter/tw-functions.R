@@ -46,7 +46,9 @@ update_nesrea_db <- function() {
   require(twitteR)
   register_sqlite_backend("data/nesreanigeria.db")
   n <- search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
-  cat(sprintf(ngettext(n, "%d tweet loaded.\n", "%d tweets loaded.\n"), n))
+  cat("* Updating database with NESREANigeria tweets\n")
+  cat("** ",
+      sprintf(ngettext(n, "%d tweet loaded\n", "%d tweets loaded\n"), n))
 }
 
 # ...........................................................
@@ -59,7 +61,7 @@ show_tweets_containing_word <- function(word = character(), df = data.frame()) {
       word <- word[1]
       warning("First element of 'word' used; the rest was discarded.")
     }
-    
+
     index <- grepl(word, df$text, fixed = TRUE)
     if (any(index)) {
       success <- df$text[index]
@@ -72,7 +74,7 @@ show_tweets_containing_word <- function(word = character(), df = data.frame()) {
 # ``````````````````
 # Prints a proportions table of number of tweets for various search terms
 ## Parameters: x - character vector of search terms
-##             n - max. number of tweets to download (default is 50)  
+##             n - max. number of tweets to download (default is 50)
 
 compare_mentions <- function(x, n = 50L) {
   require(magrittr)
@@ -107,7 +109,6 @@ compare_mentions <- function(x, n = 50L) {
 ## Generates a barplot that compares the propotion of tweets with differnt
 ## search terms, colours it and gives it appropriate labels
 ## Parameters: tbl - object returned by compare_mentions()
-
 chart <- function(tbl) {
   if (!is.table(tbl))
     stop("Argument is not a table.")
@@ -132,12 +133,15 @@ check_wd <- function() {
 logon_to_twitter <- function() {
   keys <- "data/key.RData"
   if (!file.exists(keys)) {
-    warning("You must supply OAuth credentials to proceed.")
+    warning("You must supply OAuth credentials to proceed")
   } else { load(keys, envir = globalenv()) }
   twitteR::setup_twitter_oauth(consumer_key = consumer_key,
                                consumer_secret = consumer_secret,
                                access_token = access_token,
                                access_secret = access_secret)
+  cat("* Authentication successful\n")
+
+  ## Remove keys from the workspace
   rm(consumer_key, consumer_secret, access_token, access_secret,
      envir = globalenv())
 }
