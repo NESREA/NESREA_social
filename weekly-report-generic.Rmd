@@ -20,11 +20,12 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r startup, message=FALSE, include=FALSE}
 ## The existence of required dependencies is checked for. If absent, these are
 ## automatically downloaded and installed. Then packages are (quietly) loaded.
-pkglist <- c("dplyr",
+pkglist <- c("DBI",
+             "RSQLite",
+             "dplyr",
              "ggplot2",
              "lubridate",
              "qdap",
-             "RSQLite",
              "SnowballC",
              "stringr",
              "tm",
@@ -114,77 +115,17 @@ busiest_day <- ymd(names(busiest_day))
 |                                          |                                                  |
 
 ```{r, message=FALSE}
-#                         ############
-#                         # Facebook #
-#                         ############
-# # Direct authentication applied
-# source("fb_authentication.R")
-# 
-# # Selects type of insight to be loaded (wrapper for Rfacebook::getinsights())
-# chooseInsight <- function(type = c("page_fan_adds", "page_fan_removes",
-#                               "page_views_login", "page_views_logout",
-#                               "page_views", "page_story_adds",
-#                               "page_impressions", "page_posts_imporessions",
-#                               "page_consumptions", "post_consumptions_by_type",
-#                               "page_fans_country")) {
-#   result <- getInsights(object_id = NESREA_page_id,
-#                         token = NESREA_token,
-#                         metric = type,
-#                         version = API_version)
-#   result <- select(result, value:end_time)
-#   result$end_time <- substr(result$end_time,
-#                             start = 1,
-#                             stop = regexpr("T", result$end_time) - 1)
-#   result 
-# }
-# 
-# # Apply the function
-# newFans <- chooseInsight("page_fan_adds")
-# fansLeft <- chooseInsight("page_fan_removes")
-# newStories <- chooseInsight("page_story_adds")
-# pageImpressions <- chooseInsight("page_impressions")
-# postImpressions <- chooseInsight("page_posts_impressions")
-# pageConsumptions <- chooseInsight("page_consumptions")
-# 
-# # PUblic posts
-# # Load data on Page posts
-# page_posts <- getPage(page = "nesreanigeria",
-#                       since = format(today()-7, "%Y/%m/%d"),
-#                       until = format(today(), "%Y/%m/%d"),
-#                       reactions = TRUE,
-#                       token = NESREA_token,
-#                       feed = TRUE,
-#                       verbose = FALSE)
-# if (dim(page_posts)[1] == 0) {
-#   page_posts <- NULL
-#   mth_Posts <- NULL
-#   wk_Posts <- NULL
-#   noPosts <- "No posts in the last week"
-# } else {
-#   page_posts <- select(c(message:type, likes_count:shares_count))
-# 
-#   colnames(page_posts) <- gsub("_count$|_time$", "", colnames(page_posts))
-#   
-#   page_posts$message <- page_posts$message %>%
-#     gsub("[^[:graph:]]", "", .) %>%
-#     str_trim(.)
-#   
-#   page_posts$type <- as.factor(page_posts$type)
-#   
-#   page_posts$created <- substr(page_posts$created,
-#                                start = 1,
-#                                stop = regexpr("T", page_posts$created) - 1)
-#   
-#   mth_Posts <- filter(page_posts,
-#                       created >= month_begin && created <= month_end)
-#   
-#   wk_Posts <- filter(page_posts,
-#                      created >= today()-7 && created <= today())
-#   
-# }
-# 
-# # Miscellaneous string object
-# ourFbPosts <- "No. of Page posts by us in"
+                        ############
+                        # Facebook #
+                        ############
+
+## Load data on Facebook Page posts
+connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
+allPgPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts')
+
+dbDisconnect(connxn)
+rm(connxn)
+
 ```
 <!--
 ## Facebook
