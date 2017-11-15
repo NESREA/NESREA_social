@@ -40,8 +40,8 @@ page_posts$created <- substr(page_posts$created, start = 1,
 page_posts
 
 ## Get full details of each Facebook Page post
-### Iterate through the data frame of Page posts, using 'id' as identifier
-### and download the relevant details per post and store in a list on disk.
+## - Iterate through the data frame of Page posts, using 'id' as identifier
+##   and download the relevant details per post and store in a list on disk.
 rdsfile <- "facebook/nesrea-post-details.rds"
 if (!file.exists(rdsfile)) {
   cat("* Harvesting details on Facebook page posts\n")
