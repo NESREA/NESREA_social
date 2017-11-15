@@ -28,3 +28,18 @@ chooseInsight <- function(type = c("page_fan_adds",
                             stop = regexpr("T", result$end_time) - 1)
   result 
 }
+
+# ....................................................
+## prepare_data(): Processes FB data prior to analysis
+# ````````````````````````````````````````````````````
+prepare_data <- function(df = data.frame()) {
+  ## validate if the data frame is the kind we use
+  cnames <- c("message", "created", "type", "link", "id", "story", "likes",
+              "comments", "shares")
+  if (!identical(colnames(df), cnames))
+    stop("Loaded data are not compatible with this function")
+  
+  df$created <- as.Date(df$created)
+  df$type <- as.factor(df$type)
+  df
+}
