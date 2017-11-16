@@ -40,20 +40,34 @@ chooseInsight <- function(type = c(
 prepare_data <- function(df = data.frame()) {
   ## validate if the data frame is the kind we use
   cnames <-
-    c("message",
-      "created",
+    c(
+      "from_id",
+      "from_name",
+      "message",
+      "created_time",
       "type",
       "link",
       "id",
       "story",
-      "likes",
-      "comments",
-      "shares")
+      "likes_count",
+      "comments_count",
+      "shares_count"
+    )
+  
   if (!identical(colnames(df), cnames))
     stop("Loaded data are not compatible with this function")
   
-  df$created <- as.Date(df$created)
+   df$message <- df$message %>%
+    gsub("[^[:graph:]]", " ", .) %>%
+    str_trim(.)
+  
   df$type <- as.factor(df$type)
+  
+  df$created <-
+    substr(df$created,
+           start = 1,
+           stop = regexpr("T", df$created) - 1) %>%
+    as.Date(df$created)
   df
 }
 
