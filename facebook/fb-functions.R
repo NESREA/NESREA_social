@@ -63,11 +63,10 @@ prepare_data <- function(df = data.frame()) {
   
   df$type <- as.factor(df$type)
   
-  df$created <-
-    substr(df$created,
-           start = 1,
-           stop = regexpr("T", df$created) - 1) %>%
-    as.Date(df$created)
+  df$created_time <- df$created_time %>%
+    gsub("T", " ", .) %>%
+    gsub("\\+", " \\+", .) %>%
+    as.POSIXct(.)
   df
 }
 
