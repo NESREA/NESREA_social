@@ -118,15 +118,16 @@ busiest_day <- ymd(names(busiest_day))
 |Comparative tweet volume (week-on-week)   |`r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)`|
 |                                          |                                                  |
 
+Load data on Facebook Page posts
 ```{r, message=FALSE}
                         ############
                         # Facebook #
                         ############
-
-## Load data on Facebook Page posts
 connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
+
 allPgPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
   prepare_data(.)
+glimpse(allPgPosts)
 
 dbDisconnect(connxn)
 rm(connxn)
