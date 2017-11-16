@@ -16,7 +16,7 @@ library(dplyr)
 library(stringr)
 
 invisible(
-  sapply(c("facebook/fb-functions.R", "facebook/fb_auth.R"), source)
+  sapply(c("fb-functions.R", "fb_auth.R"), source)
 )
 
 ## Insights on NESREA Page
@@ -32,7 +32,9 @@ colnames(allInsights)[1:8] <- gsub("^page_", "", insight.type)
 colnames(allInsights)[9] <- "date"
 allInsights$date <- as.Date(allInsights$date)
 str(allInsights)
+```
 
+```{r page posts, include=FALSE}
 ## PUblic posts
 page_posts <- getPage(page = "nesreanigeria", n = 100,
                       token = nesreaToken, feed = TRUE) %>%
@@ -48,7 +50,5 @@ page_posts$type <- as.factor(page_posts$type)
 
 page_posts$created <- substr(page_posts$created, start = 1,
                         stop = regexpr("T", page_posts$created) - 1)
-page_posts
-
 ```
 
