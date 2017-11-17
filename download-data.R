@@ -1,11 +1,16 @@
 ## download-data.R
 
-txt <- "downloads completed\n"
+tw <- "* Twitter"
+fb <- "* Facebook"
+beg <- "downloads started\n"
+end <- "downloads completed\n"
 
+cat(tw, beg)
 source("twitter/download-nesrea-tweets.R")
-cat("* Twitter", txt)
+cat(tw, end)
 
+cat(fb, beg)
 source("facebook/download-nesrea-fbposts.R")
-cat("* Facebook", txt)
+cat(fb, end)
 
-rm(txt)
+rm(tw, fb, beg, end)
