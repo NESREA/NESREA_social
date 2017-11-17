@@ -1,9 +1,11 @@
 ---
-title: "NESREA Weekly Social Media Report"
-author: "Prepared by Web Monitoring Group"
+title: "Weekly Social Media Report"
+author: "null"
+params:
+  client: NESREA
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 <!--
@@ -22,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ## automatically downloaded and installed. Then packages are (quietly) loaded.
 pkglist <- c("DBI",
              "RSQLite",
+             "Rfacebook",
              "dplyr",
              "ggplot2",
              "lubridate",
@@ -56,8 +59,8 @@ source_but_also_check_for(c("twitter/tw-functions.R",
 rm(source_but_also_check_for, pkglist, not_installed)
 ```
 
-# Introduction
-This is the NESREA Social Media Monitoring Report.  
+# 1.0 Introduction
+This is the `r params$client` Social Media Monitoring Report.  
 
 **Date of Report**: `r format(today(), "%A, %d %B %Y")`  
 **Period of Reporting**: `r format(today() - 7, "%A, %d %B %Y")`
@@ -100,16 +103,16 @@ busiest_day <- which.max(table(wk_data$date_only))
 busiest_day <- ymd(names(busiest_day))
 ```
 
-# Summary Statistics
-## Twitter
+# 2.0 Summary Statistics
+## 2.1 Twitter
 |       Description                        |      Result                                      |
 |------------------------------------------|--------------------------------------------------|
 |No. of followers (overall)                |                                                  |
 |No. of new followers (in last 7 days)     |                                                  |
 |No. of tweets in `r format(today(), "%B")`|`r nrow(mth_data)`                                |
 |No. of tweets in last 7 days              |`r no.wk`                                         |
-|Total number of tweets **by** NESREA      |`r nrow(tweets_by_us)`                            |
-|Total number of tweets **on** NESREA      |`r nrow(wk_data)`                                 |
+|Total number of tweets **by** `r params$client`      |`r nrow(tweets_by_us)`                            |
+|Total number of tweets **on** `r params$client`      |`r nrow(wk_data)`                                 |
 |Average number of tweets per day          |`r floor(nrow(wk_data)/7)`                        |
 |Day of highest activity                   |`r format(busiest_day, "%d %B")`                  |
 |Top 5 influential handles                 |`r print("---")`                                  |
@@ -118,33 +121,54 @@ busiest_day <- ymd(names(busiest_day))
 |Comparative tweet volume (week-on-week)   |`r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)`|
 |                                          |                                                  |
 
-Load data on Facebook Page posts
+
 ```{r, message=FALSE}
                         ############
                         # Facebook #
                         ############
+## Load data on Facebook Page posts
 connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
 
-allPgPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
-  prepare_data(.)
-glimpse(allPgPosts)
+fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
+  prepare_data(.) %>%
+  select(message:shares_count) %>%
+  mutate(created_mth = format(as.Date(created_time), "%B"))
 
 dbDisconnect(connxn)
+
+fbPosts$created_mth <-
+  fbPosts$created_mth %>%
+  factor(levels = month.name, ordered = TRUE)
+
+fbPosts$created_time <- as.Date(fbPosts$created_time)
+
+thisMth <- format(today(), "%B")
+mth_Posts <- filter(fbPosts, created_mth == thisMth)
+wk_Posts <- filter(mth_Posts, created_time >= (today() - 7))
+
+attach(fbPosts)
+```
+
+## 2.2 Facebook
+|                                           |                              |
+|-------------------------------------------|------------------------------|
+|`r params$client` Page Posts (All-time)    |    `r nrow(fbPosts)`         |
+|Posts in `r thisMth`                       |`r nrow(mth_Posts)`|
+|Posts in the past 7 days                  |`r nrow(wk_Posts)`          |
+|Most Liked  (Overall) |`r message[match(max(likes_count), likes_count)]`|
+|Most Liked Post in `r thisMth` |`r # no code yet`             |
+|Most Shared (Overall)|`r message[match(max(likes_count), shares_count)]`|
+|Most Shared Post in `r thisMth`            | `r # no code yet`|
+|Most Commented  (Overall)|`r message[match(max(comments_count), comments_count)]`|
+|                        |`r # if (is.null(fbPosts)) paste(noPosts)`  |
+
+```{r midway-clean}
+detach(fbPosts)
 rm(connxn)
 ```
-<!--
-## Facebook
-|                                            |                              |
-|--------------------------------------------|------------------------------|
-|`r #paste(ourFbPosts, format(today(), "%B"))`|`r # nrow(mth_Posts)`         |
-|`r #paste(ourFbPosts, "past 7 days")`        |`r # nrow(wk_Posts)`          |
-|Most Liked Post  (Overall)                  |`r # max(page_posts$liked)`   |
-|Most Liked Post (`r #format(today(), "%B")`) |`r # no code yet`             |
-|Most Shared Post                            |`r # max(page_posts$shares)`  |
-|Most Commented                              |`r # max(page_posts$comments)`|
-|                        |`r # if (is.null(page_posts)) paste(noPosts)`  |
--->
 
+# 3.0 Exploratory Analysis
+## 3.1 Twitter
 ```{r, warning=FALSE, message=FALSE}
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
@@ -245,9 +269,12 @@ if (length(polSplit) != 3) {
   }
 ```
 
-### 2.0 Observations  
+## 3.2 Facebook
+**UNDER CONSTRUCTION**
 
-### 3.0 Recommendation  
+# 4.0 Observations  
+
+# 5.0 Recommendations
 
 ```{r, echo=FALSE}
 victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
