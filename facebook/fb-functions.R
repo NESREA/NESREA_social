@@ -38,7 +38,6 @@ chooseInsight <- function(type = c(
 ## prepare_data(): Processes FB data prior to analysis
 # ````````````````````````````````````````````````````
 prepare_data <- function(df = data.frame()) {
-  ## validate if the data frame is the kind we use
   cnames <-
     c(
       "from_id",
@@ -57,9 +56,9 @@ prepare_data <- function(df = data.frame()) {
   if (!identical(colnames(df), cnames))
     stop("Loaded data are not compatible with this function")
   
-   df$message <- df$message %>%
+  df$message <- df$message %>%
     gsub("[^[:graph:]]", " ", .) %>%
-    str_trim(.)
+    stringr::str_trim(.)
   
   df$type <- as.factor(df$type)
   
@@ -76,28 +75,45 @@ prepare_data <- function(df = data.frame()) {
 ## conn - an SQLite database connection
 ## data - a dataframe returned by Rfacebook::getPage()
 store_post_details <- function(conn, data = data.frame()) {
-  ## Pick an ID and use it to download details related to a particular post
-  cat(paste0("** Obtaining details for individual posts\n"))
   
-  sapply(data$id, function(ID) {
-    ## Download details for an individual post
+  ## Pick an ID and use it to download details related to a particular post
+  ## This function takes a while, so it's good to keep user abreast on progress
+  ## Set up variables as much as possible to reduce indexing computations
+  cat(paste0("\n*** Obtaining details for individual posts\n"))
+  len <- length(data$id)
+  PB <- txtProgressBar(max = len, style = 3, char = "-")
+  
+  for (i in 1:len) {
+    post_IDs <- data$id
+    ID <- post_IDs[i]
+    
     post_details <- getPost(post = ID, token = nesreaToken)
     
-    ## Names of tables in the database
+    ## Names of tables of interest in the local database
     local.tables <-
       c("nesreanigeria_fblikes", "nesreanigeria_fbcomments")
     
     sapply(local.tables, function(tb_name) {
+      
+      ## Extract the string 'like' or 'comments' from the table names 
       abbr <- substr(tb_name,
                      regexpr("fb", tb_name, ignore.case = TRUE) + 2,
                      nchar(tb_name))
       
-      ## Collect data frame; add a column for post ID
-      detail_df <- post_details[[abbr]] %>%
-        mutate(post_id = ID)
-      
-      ## Append the new data to the local table
-      dbWriteTable(conn, tb_name, detail_df, append = TRUE)
+      ## Some posts e.g. 'Events', do not come in desired format,
+      ## so there's a need to condition on that possibility
+      if (abbr %in% names(post_details)) {
+        
+        ## Collect data frame; add a column for post ID
+        detail_df <- post_details[[abbr]] %>%
+          mutate(post_id = ID)
+        
+        ## Append the new data to the existing local table
+        ## or create a brand new table if first-time use
+        dbWriteTable(conn, tb_name, detail_df, append = TRUE)
+      }
     })
-  })
+    
+    setTxtProgressBar(PB, i)   # increment the progress bar
+  }
 }

@@ -1,46 +1,56 @@
 ## download-nesrea-fbposts.R
-library(DBI)
-library(RSQLite)
-library(Rfacebook)
-library(dplyr)
-library(stringr)
 
-invisible(sapply(c(
-  "facebook/fb-functions.R", "facebook/fb_auth.R"
-), source))
+## Obtain the data on individual Facebook Page posts
+## NB: Admin role required!
+
+## Prep
+pkgs <- c("DBI", "RSQLite", "Rfacebook", "dplyr", "stringr")
+suppressPackageStartupMessages(lapply(pkgs, library, character.only = TRUE))
+
+source("facebook/fb-functions.R")
+load("facebook/NESREA_fboauth")    # load 'nesreaToken'
 
 
-# Insights on NESREA Page -------------------------------------------------
+## Begin
+cat("** Updating local Facebook data\n")
 
-insight.type <-
-  c(
-    "page_fan_adds",
-    "page_fan_removes",
-    "page_views_login",
-    "page_views",
-    "page_story_adds",
-    "page_impressions",
-    "page_posts_impressions",
-    "page_consumptions"
-  )
+## Set up database connections
+sql.conn <- dbConnect(SQLite(), "data/nesreanigeria.db")
 
-allInsights <-
-  as.data.frame(lapply(insight.type, chooseInsight)) %>%
-  select(matches("value|end_time.7")) %>%
-  distinct(.)
+if (dbIsValid(sql.conn)) {
+  cat("*** Database successfully connected\n")
+} else {
+  cat("*** There was a problem connecting to the database\n")
+}
 
-colnames(allInsights)[1:8] <- gsub("^page_", "", insight.type)
-colnames(allInsights)[9] <- "date"
-allInsights$date <- as.Date(allInsights$date)
-str(allInsights)
+## Get all Page posts from Newsfeed
+cat("*** Downloading Page posts from the Newsfeed\n")
+posts <-
+  getPage(page = "nesreanigeria",
+          nesreaToken,
+          n = 100,
+          feed = TRUE)
 
-# Download public posts (max. of 100) -------------------------------------
-page_posts <-
-  getPage(
-    page = "nesreanigeria",
-    n = 100,
-    token = nesreaToken,
-    feed = TRUE
-  )
+store_post_details(sql.conn, posts)
 
-page_posts
+cat("\n** Checking for duplications\n")
+
+tbls <- dbListTables(sql.conn) %>%
+  subset(grepl("fb", .))
+
+sapply(tbls, function(x) {
+  temp <- dbReadTable(sql.conn, x) %>%
+    distinct(.)
+  dbWriteTable(sql.conn, x, temp, overwrite = TRUE)
+})
+cat("*** Done\n")
+## Disconnect and clean up
+dbDisconnect(sql.conn)
+
+if (!dbIsValid(sql.conn)) {
+  cat("** Database successfully disconnected\n")
+  rm(sql.conn, tbls, posts)
+}
+
+## Goodbye
+cat("** Updates to local Facebook data completed\n")

@@ -23,14 +23,3 @@ colnames(allInsights)[1:8] <- gsub("^page_", "", insight.type)
 colnames(allInsights)[9] <- "date"
 allInsights$date <- as.Date(allInsights$date)
 str(allInsights)
-
-# Download public posts (max. of 100) -------------------------------------
-page_posts <-
-  getPage(
-    page = "nesreanigeria",
-    n = 100,
-    token = nesreaToken,
-    feed = TRUE
-  )
-
-page_posts

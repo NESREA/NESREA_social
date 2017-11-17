@@ -8,47 +8,60 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
-
-```{r dependencies}
-library(Rfacebook)
-library(dplyr)
-
-invisible(
-  sapply(c("fb-functions.R", "fb_auth.R"), source)
+# Preliminaries
+Load and attach packages, as well as custom functions
+```{r dependencies, echo=TRUE, results='hide'}
+suppressPackageStartupMessages(
+  lapply(c("DBI", "RSQLite", "Rfacebook", "dplyr", "ggplot2"),
+         library,
+         character.only = TRUE)
 )
+
+source("fb-functions.R")
 ```
 
-Downloading the Page's Newsfeed
-```{r page posts}
-## PUblic posts
-page_posts <-
-  getPage(
-    page = "nesreanigeria",
-    n = 100,
-    token = nesreaToken,
-    feed = TRUE
-  )
-```
-```{r page posts #2}
+# Data collection
+Fetch the Page's Newsfeed from the local database. A summary of the available data is displayed.
+```{r retrieve-feed}
+con <- dbConnect(SQLite(), "../data/nesreanigeria.db")
+page_posts <- dbReadTable(con, "nesreanigeria_fbposts")
+  
 glimpse(page_posts)
 ```
 
-Note that the function `getPage()` can be used to harvest data from others' public posts via the `page` argument.
+Note that the function `getPage()` is used to collect these posts through the Facebook API/Rfacebook package. It can equally be used to harvest data from others' public posts via the `page` argument.
 
 
-Insights on NESREA's Facebook Page
-```{r}
+# Data cleaning  
+We have a user-defined function we have called `prepare_data()` that lives in the file *fb-functions* that was sourced earlier and it will help us do some data cleaning very quickly.  
 
-insight.type <- c("page_fan_adds", "page_fan_removes", "page_views_login",
-                  "page_views", "page_story_adds", "page_impressions",
-                  "page_posts_impressions", "page_consumptions")
+The function:
 
-allInsights <- as.data.frame(lapply(insight.type, chooseInsight)) %>%
-  select(matches("value|end_time.7")) %>%
-  distinct(.)
+- takes a data frame as an argument
+- checks that the column names match those of typical Facebook post data
+- removes non-human readable characters from the 'message' variable
+- changes 'type' from a character to a categorical variable
+- converts 'time' into a Date-Time object (POSIX standard)
+- returns the modified data frame  
 
-colnames(allInsights)[1:8] <- gsub("^page_", "", insight.type)
-colnames(allInsights)[9] <- "date"
-allInsights$date <- as.Date(allInsights$date)
-str(allInsights)
+This is what the function definition looks like:  
+```{r, results='hold'}
+prepare_data
 ```
+
+Also columns 1 and 2 are redundant for the purpose of these particular analyses and will be removed. This is how it's done and the data now look like this  
+```{r clean-data, echo=TRUE}
+page_posts <- page_posts %>%
+  prepare_data() %>%
+  select(message:shares_count)
+
+glimpse(page_posts)
+```
+
+
+
+```{r cleanup}
+dbDisconnect(con)
+suppressWarnings(rm(con))
+```
+
