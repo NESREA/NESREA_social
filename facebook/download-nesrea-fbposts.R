@@ -44,9 +44,9 @@ sapply(tbls, function(x) {
   dbWriteTable(sql.conn, x, temp, overwrite = TRUE)
 })
 cat("*** Done\n")
+
 ## Disconnect and clean up
 dbDisconnect(sql.conn)
-
 if (!dbIsValid(sql.conn)) {
   cat("** Database successfully disconnected\n")
   rm(sql.conn, tbls, posts)
