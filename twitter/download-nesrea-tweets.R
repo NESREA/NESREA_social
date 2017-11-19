@@ -1,6 +1,5 @@
-# Update NESREA database
-packrat::off()
-
+## download-nesrea-tweets.R
+## Update NESREA database
 library(twitteR)
 source("twitter/tw-functions.R")
 
