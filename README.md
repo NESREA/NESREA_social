@@ -11,9 +11,9 @@ Please download and install the following software to get the most out of this p
 1. Creating a report in MS Word is **super easy**. On the command line, navigate to **this** directory and run  
 `Rscript build-report.R`  
 This will:
-+ produce a document that is placed in the `Reports` folder
++ produce a document that is placed in the `Reports/` folder
 + assign a filename after the pattern `weekly-report_YYYY-MM-DD.docx`
-+ if `Reports` does not exist, it will be automatically created
++ create the `Reports/` folder, if it does not exist already
 
 2. The data are stored in a local SQLite database `data/nesreanigeria.db`. SQLite is automatically installed with package dependencies. To update the database, the user should run  
 `Rscript download-data.R`  
