@@ -4,7 +4,7 @@ filename <- paste0("weekly-report_", Sys.Date(), ".docx")
 folder <- "Reports"
 folderlist <- list.dirs(recursive = FALSE, full.names = FALSE)
 
-if (!any(grepl(as.character(folder), folderlist)))
+if (as.character(folder) %in% folderlist)
   dir.create(folder)
 
 if (interactive()) {
@@ -24,3 +24,5 @@ rmarkdown::render(
 )
 
 system(paste("open", file.path(folder, filename)))
+
+rm(filename, folder, folderlist)
