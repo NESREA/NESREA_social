@@ -8,7 +8,7 @@ Please download and install the following software to get the most out of this p
 * __pandoc__: <http://pandoc.org/installing.html>
 
 ## Quick start
-1. Creating a report in MS Word is **super easy**. On the command line, navigate to **this** directory and run  
+1. Generating a report is **super easy**. On the command line, navigate to **this** directory and run  
 `Rscript build-report.R`  
 This will:
 + build a Microsoft Word (.docx) document
