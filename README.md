@@ -4,8 +4,8 @@ Easy social media reporting for [NESREA](http://www.nesrea.gov.ng)'s Web Monitor
 
 ## System requirements
 Please download and install the following software to get the most out of this project:
-* Rtools: <https://cran.r-project.org/bin/windows/Rtools/>
-* pandoc: <http://pandoc.org/installing.html>
+* __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
+* __pandoc__: <http://pandoc.org/installing.html>
 
 ## Quick start
 1. Creating a report in MS Word is **super easy**. On the command line, navigate to **this** directory and run  
