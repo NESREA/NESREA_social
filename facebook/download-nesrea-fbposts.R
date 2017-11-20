@@ -30,6 +30,8 @@ posts <-
           nesreaToken,
           n = 100,
           feed = TRUE)
+dbWriteTable(sql.conn, "nesreanigeria_fbposts", posts, overwrite = TRUE)
+cat("-- from Newsfeed were stored")
 
 store_post_details(sql.conn, posts)
 
@@ -43,7 +45,6 @@ sapply(tbls, function(x) {
     distinct(.)
   dbWriteTable(sql.conn, x, temp, overwrite = TRUE)
 })
-cat("*** Done\n")
 
 ## Disconnect and clean up
 dbDisconnect(sql.conn)
