@@ -58,6 +58,49 @@ page_posts <- page_posts %>%
 glimpse(page_posts)
 ```
 
+```{r}
+summary(page_posts)
+```
+
+```{r}
+ggplot(page_posts, aes(created_time)) +
+  geom_density(fill = "lightblue") +
+  ggtitle("Distribution of Facebook posts")
+```
+
+```{r}
+scatter <- function(metric) {
+gg <- ggplot(page_posts, aes(created_time, metric)) +
+  geom_point() +
+  ggtitle(paste("Distribution of Facebook post", as.character(metric)))
+gg
+}
+
+scatter("likes_count")
+```
+
+
+```{r}
+ggplot(page_posts) +  aes(type) + geom_bar()
+```
+
+```{r}
+# plot_num_vars <- function(var) {
+#   sapply(var, function(x) {
+#   gg <- ggplot(page_posts) + aes(as.name(x)) + geom_histogram()
+#   gg
+#   })
+# }
+# 
+
+ggplot(page_posts, aes(likes_count)) + geom_histogram() 
+ggplot(page_posts, aes(shares_count)) + geom_histogram()
+ggplot(page_posts, aes(comments_count)) + geom_histogram()
+```
+
+```{r}
+
+```
 
 
 ```{r cleanup}
