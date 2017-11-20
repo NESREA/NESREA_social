@@ -55,6 +55,7 @@ GithubRepo: Rfacebook
 GithubUsername: pablobarbera
 GithubRef: master
 GithubSha1: c7cd323d8c4ae07b558938d9c2e680f7ab6bf40b
+GithubSubdir: Rfacebook
 
 Package: SnowballC
 Source: CRAN
@@ -64,7 +65,6 @@ Hash: 6f14c834eea7672f25b83d9ba35b85ca
 Package: XML
 Source: CRAN
 Version: 3.98-1.9
-Hash: 02079c4025bbfa0f63400cc0bb414952
 
 Package: assertthat
 Source: CRAN
@@ -423,10 +423,22 @@ Hash: 1e70c4e1dcc1c51847edc9f4bc11a81e
 Requires: R6, RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr,
     viridisLite
 
+Package: shiny
+Source: CRAN
+Version: 1.0.5
+Hash: 4d47532a807122bfd6bc3818310f9d2e
+Requires: R6, digest, htmltools, httpuv, jsonlite, mime, sourcetools,
+    xtable
+
 Package: slam
 Source: CRAN
 Version: 0.1-40
 Hash: 72064713f4746f9bb8a0435c8bf61bd1
+
+Package: sourcetools
+Source: CRAN
+Version: 0.1.6
+Hash: 226d56d7469587da40b0f96180e711b4
 
 Package: stringdist
 Source: CRAN
@@ -503,6 +515,11 @@ Source: CRAN
 Version: 0.6.1
 Hash: 3902149dad80bcb14fcd88d8c7fd7f3b
 Requires: rJava
+
+Package: xtable
+Source: CRAN
+Version: 1.8-2
+Hash: 7293235cfcc14cdff1ce7fd1a0212031
 
 Package: yaml
 Source: CRAN

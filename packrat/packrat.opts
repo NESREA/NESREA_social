@@ -5,6 +5,7 @@ vcs.ignore.lib: TRUE
 vcs.ignore.src: FALSE
 external.packages:
     XML
+    devtools
     rmarkdown
 local.repos: 
 load.external.packages.on.startup: TRUE
