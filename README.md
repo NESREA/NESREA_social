@@ -1,19 +1,30 @@
 # NESREA_social
 
-This project is focused on the development of social media reports carried out by [NESREA](http://www.nesrea.gov.ng)'s Web Monitoring Group.
+Easy social media reporting for [NESREA](http://www.nesrea.gov.ng)'s Web Monitoring Group.
 
-## Quick tips
-Please note these instructions:
+## Prerequisites
+* __R__: <http://cran.r-project.org>
+* __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
+* __pandoc__: <http://pandoc.org/installing.html>
 
-1. Creating a report in MS Word is **super easy**. On the command line, navigate to **this** directory and run  
-`Rscript build-report.R`  
-This will produce a document that is placed in the `Reports` folder, and which has a filename that contains the date the report was generated, after the pattern `weekly-report_YYYY-MM-DD.docx`. If `Reports` does not exist on your computer, it will be automatically created.
+## Quick start
+Generating a report is **super easy**. On the command line, navigate to **this** directory and run  
+```
+Rscript build-report.R
+```
 
-2. The tweets are stored in a local SQLite database `data/nesreanigeria.db`, which may likely be outdated at the time the report is being generated. To update it, the user should run  
-`Rscript download-nesrea-tweets.R`  
+This will:
++ build a Microsoft Word (.docx) document
++ assign a filename in the format `weekly-report_YYYY-MM-DD.docx` e.g. *weekly-report-2017-10-01*
++ create a `Reports/` sub-folder, if it does not already exist
++ save the report in the `Reports/` folder
 
-*System requirements:* To easily build these documents in the Windows command line, you will need to have [Rtools](https://cran.r-project.org/bin/windows/Rtools/) and [pandoc](http://pandoc.org/installing.html) installed.
+The data are stored in a local **SQLite** database, `data/nesreanigeria.db`; SQLite itself is automatically installed. To update this database, the user should run  
+```
+Rscript download-data.R
+```
 
-To access all of the other features available in this project (in addition to the aforementioned) open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
+To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
 
-
+***
+Contact: <socialmedia@nesrea.gov.ng>.

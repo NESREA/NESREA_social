@@ -34,7 +34,8 @@ display_twts <- function(x)
     stop("The data do not match the type required for the analysis.")
   plot <- ggplot(x, aes(created)) +
     geom_density(aes(fill = isRetweet), alpha = 0.7) +
-    theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
+    theme(legend.justification = c(1, 1),
+          legend.position = c(1, 1)) +
     xlab("All tweets")
   plot
 }
@@ -45,14 +46,22 @@ display_twts <- function(x)
 update_nesrea_db <- function() {
   require(twitteR)
   register_sqlite_backend("data/nesreanigeria.db")
-  n <- search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
-  cat(sprintf(ngettext(n, "%d tweet loaded.\n", "%d tweets loaded.\n"), n))
+  
+  cat("** Updating database with NESREANigeria tweets\n")
+  n <-
+    search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
+  
+  cat("** ",
+      sprintf(ngettext(
+        n, "%d tweet loaded\n", "%d tweets loaded\n"
+      ), n))
 }
 
 # ...........................................................
 # Searches and displays tweet(s) containing a particular word
 # ```````````````````````````````````````````````````````````
-show_tweets_containing_word <- function(word = character(), df = data.frame()) {
+show_tweets_containing_word <-
+  function(word = character(), df = data.frame()) {
     if (!is.character(word))
       stop("Expected a string as input")
     if (length(word > 1)) {
@@ -64,15 +73,17 @@ show_tweets_containing_word <- function(word = character(), df = data.frame()) {
     if (any(index)) {
       success <- df$text[index]
       print(success)
-    } else { cat("Word not found") }
-}
+    } else {
+      cat("Word not found")
+    }
+  }
 
 # ..................
 # compare_mentions()
 # ``````````````````
 # Prints a proportions table of number of tweets for various search terms
 ## Parameters: x - character vector of search terms
-##             n - max. number of tweets to download (default is 50)  
+##             n - max. number of tweets to download (default is 50)
 
 compare_mentions <- function(x, n = 50L) {
   require(magrittr)
@@ -86,16 +97,7 @@ compare_mentions <- function(x, n = 50L) {
     stop("'n' is not an integer type.")
   twtNum <- sapply(x, function(term) {
     dat <- suppressWarnings(searchTwitter(term, n))
-    # # len <- length(dat)
-    # if (length(dat) == n) {
-    #   warning("Max. number of tweets downloaded for ", sQuote(trm),
-    #                  ".\nExtend the download limit beyond ",
-    #                  n,
-    #                  ".")
-    # }
-    # attr(len, which = "max") <- n
-    # len
-    }) %>%
+  }) %>%
     sapply(length) %>%
     as.table(.)
   twtNum
@@ -107,7 +109,6 @@ compare_mentions <- function(x, n = 50L) {
 ## Generates a barplot that compares the propotion of tweets with differnt
 ## search terms, colours it and gives it appropriate labels
 ## Parameters: tbl - object returned by compare_mentions()
-
 chart <- function(tbl) {
   if (!is.table(tbl))
     stop("Argument is not a table.")
@@ -123,7 +124,9 @@ check_wd <- function() {
   if (MyComputer == "SA-DG" | MyComputer == "NESREA") {
     if (!identical(getwd(), path.expand(workdir)))
       setwd(workdir)
-  } else { warning("Make sure to correctly set the working directory.") }
+  } else {
+    warning("Make sure to correctly set the working directory.")
+  }
 }
 
 # ..............................................
@@ -132,12 +135,22 @@ check_wd <- function() {
 logon_to_twitter <- function() {
   keys <- "data/key.RData"
   if (!file.exists(keys)) {
-    warning("You must supply OAuth credentials to proceed.")
-  } else { load(keys, envir = globalenv()) }
-  twitteR::setup_twitter_oauth(consumer_key = consumer_key,
-                               consumer_secret = consumer_secret,
-                               access_token = access_token,
-                               access_secret = access_secret)
-  rm(consumer_key, consumer_secret, access_token, access_secret,
+    warning("You must supply OAuth credentials to proceed")
+  } else {
+    load(keys, envir = globalenv())
+  }
+  twitteR::setup_twitter_oauth(
+    consumer_key = consumer_key,
+    consumer_secret = consumer_secret,
+    access_token = access_token,
+    access_secret = access_secret
+  )
+  cat("** Authentication successful\n")
+  
+  ## Remove keys from the workspace
+  rm(consumer_key,
+     consumer_secret,
+     access_token,
+     access_secret,
      envir = globalenv())
 }

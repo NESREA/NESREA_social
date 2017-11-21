@@ -6,7 +6,7 @@
 library(twitteR)
 library(magrittr)
                  
-source("twitter-functions.R")
+source("twitter/tw-functions.R")
 check_wd()
 logon_to_twitter()
 
