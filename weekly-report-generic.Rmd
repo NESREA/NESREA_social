@@ -1,6 +1,6 @@
 ---
 title: "Weekly Social Media Report"
-author: "null"
+author: "NESREA Web Monitoring Group"
 params:
   client: NESREA
 output:
@@ -126,7 +126,8 @@ busiest_day <- ymd(names(busiest_day))
                         ############
                         # Facebook #
                         ############
-## Load data on Facebook Page posts
+## Load data on Facebook Page posts from database;
+## also do a little data wrangling
 connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
 
 fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
@@ -135,7 +136,9 @@ fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
   mutate(created_mth = format(as.Date(created_time), "%B"))
 
 dbDisconnect(connxn)
+rm(connxn)
 
+## make data frames for monthly
 fbPosts$created_mth <-
   fbPosts$created_mth %>%
   factor(levels = month.name, ordered = TRUE)
@@ -146,26 +149,28 @@ thisMth <- format(today(), "%B")
 mth_Posts <- filter(fbPosts, created_mth == thisMth)
 wk_Posts <- filter(mth_Posts, created_time >= (today() - 7))
 
-attach(fbPosts)
+## Function that will return a message that matches a
+## a particular metric within the table below
+return_text <- function(df, metric) {
+  column <- select(df, match(metric, colnames(df))) %>%
+    unlist(.)
+  txt <- df$message[match(max(column), column)]
+  txt
+}
 ```
 
 ## 2.2 Facebook
-|                            |                                  |
-|----------------------------|----------------------------------|
-|NESREA Page Posts (All-time)|    `r nrow(fbPosts)`             |
-|Posts in `r thisMth`        |`r nrow(mth_Posts)`               |
-|Posts in the past 7 days    |`r nrow(wk_Posts)`                |
-|Most Liked  (Overall)       |`r message[match(max(likes_count), likes_count)]`|
-|Most Liked in `r thisMth`   |`r # no code yet`                 |
-|Most Shared (Overall)       |`r message[match(max(likes_count), shares_count)]`|
-|Most Shared in `r thisMth`  | `r # no code yet`                |
-|Most Commented  (Overall)   |`r message[match(max(comments_count), comments_count)]`|
-|                        |`r # if (is.null(fbPosts)) paste(noPosts)`  |
-
-```{r midway-clean}
-detach(fbPosts)
-rm(connxn)
-```
+|                            |                                          |
+|----------------------------|------------------------------------------|
+|NESREA Page Posts (All-time)|`r nrow(fbPosts)`                         |
+|Posts in `r thisMth`        |`r nrow(mth_Posts)`                       |
+|Posts in the past 7 days    |`r nrow(wk_Posts)`                        |
+|Most Liked  (Overall)       |`r return_text(fbPosts, "likes_count")`   |
+|Most Liked in `r thisMth`   |`r return_text(mth_Posts, "likes_count")` |
+|Most Shared (Overall)       |`r return_text(fbPosts, "shares_count")`  |
+|Most Shared in `r thisMth`  |`r return_text(mth_Posts, "shares_count")`|
+|Most Commented  (Overall)   |`r return_text(fbPosts, "comments_count")`|
+|                            |`r if (is.null(wk_Posts)) noPosts`        |
 
 # 3.0 Exploratory Analysis
 ## 3.1 Twitter
