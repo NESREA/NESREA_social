@@ -105,22 +105,21 @@ busiest_day <- ymd(names(busiest_day))
 
 # 2.0 Summary Statistics
 ## 2.1 Twitter
-|       Description                        |      Result                                      |
-|------------------------------------------|--------------------------------------------------|
-|No. of followers (overall)                |                                                  |
-|No. of new followers (in last 7 days)     |                                                  |
-|No. of tweets in `r format(today(), "%B")`|`r nrow(mth_data)`                                |
-|No. of tweets in last 7 days              |`r no.wk`                                         |
-|Total number of tweets **by** `r params$client`      |`r nrow(tweets_by_us)`                            |
-|Total number of tweets **on** `r params$client`      |`r nrow(wk_data)`                                 |
-|Average number of tweets per day          |`r floor(nrow(wk_data)/7)`                        |
-|Day of highest activity                   |`r format(busiest_day, "%d %B")`                  |
-|Top 5 influential handles                 |`r print("---")`                                  |
-|Most liked tweet                          |`r mostFaved`                                     |
-|Most retweeted tweet                      |`r mostRTed`                                      |
-|Comparative tweet volume (week-on-week)   |`r ifelse((no.wk > 0), paste0("+", no.wk), no.wk)`|
-|                                          |                                                  |
-
+|       Description                        |      Result                    |
+|------------------------------------------|--------------------------------|
+|No. of followers (overall)                |                                |
+|No. of new followers (in last 7 days)     |                                |
+|No. of tweets in `r format(today(), "%B")`|`r nrow(mth_data)`              |
+|No. of tweets in last 7 days              |`r no.wk`                       |
+|Total tweets **by** `r params$client`     |`r nrow(tweets_by_us)`          |
+|Total tweets **on** `r params$client`     |`r nrow(wk_data)`               |
+|Average number of tweets per day          |`r floor(nrow(wk_data)/7)`      |
+|Day of highest activity                   |`r format(busiest_day, "%d %B")`|
+|Top 5 influential handles                 |`r print("---")`                |
+|Most liked tweet                          |`r mostFaved`                   |
+|Most retweeted tweet                      |`r mostRTed`                    |
+|Comparative tweet volume (week-on-week)   |**`r no.wk - nrow(last_wk)`**   |
+|                                          |                                |
 
 ```{r load-fb-data, message=FALSE}
                         ############
@@ -133,7 +132,8 @@ connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
 fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
   prepare_data(.) %>%
   select(message:shares_count) %>%
-  mutate(created_mth = format(as.Date(created_time), "%B"))
+  mutate(created_mth = format(as.Date(created_time), "%B")) %>%
+  mutate(created_yr = format(as.Date(created_time), "%Y"))
 
 dbDisconnect(connxn)
 rm(connxn)
@@ -146,7 +146,8 @@ fbPosts$created_mth <-
 fbPosts$created_time <- as.Date(fbPosts$created_time)
 
 thisMth <- format(today(), "%B")
-mth_Posts <- filter(fbPosts, created_mth == thisMth)
+thisYr <- format(today(), "%Y")
+mth_Posts <- filter(fbPosts, created_mth == thisMth & created_yr == thisYr)
 wk_Posts <- filter(mth_Posts, created_time >= (today() - 7))
 
 ## Function that will return a message that matches a
@@ -160,7 +161,7 @@ return_text <- function(df, metric) {
 ```
 
 ## 2.2 Facebook
-|                            |                                          |
+|     Description            |    Result                                |
 |----------------------------|------------------------------------------|
 |NESREA Page Posts (All-time)|`r nrow(fbPosts)`                         |
 |Posts in `r thisMth`        |`r nrow(mth_Posts)`                       |
@@ -170,7 +171,7 @@ return_text <- function(df, metric) {
 |Most Shared (Overall)       |`r return_text(fbPosts, "shares_count")`  |
 |Most Shared in `r thisMth`  |`r return_text(mth_Posts, "shares_count")`|
 |Most Commented  (Overall)   |`r return_text(fbPosts, "comments_count")`|
-|                            |`r if (is.null(wk_Posts)) noPosts`        |
+|                            |                                          |
 
 # 3.0 Exploratory Analysis
 ## 3.1 Twitter
