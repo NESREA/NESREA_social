@@ -52,6 +52,3 @@ if (!dbIsValid(sql.conn)) {
   cat("** Database successfully disconnected\n")
   rm(sql.conn, tbls, posts)
 }
-
-## Goodbye
-cat("** Updates to local Facebook data completed\n")
