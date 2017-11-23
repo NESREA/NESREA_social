@@ -1,11 +1,9 @@
 ---
 title: "Weekly Social Media Report"
 author: "NESREA Web Monitoring Group"
-params:
-  client: NESREA
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 <!--
@@ -29,38 +27,26 @@ pkglist <- c("DBI",
              "ggplot2",
              "lubridate",
              "qdap",
+             "rvest",
              "SnowballC",
              "stringr",
              "tm",
              "twitteR",
              "wordcloud")
-
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
-
 if (length(not_installed))
   install.packages(not_installed)
-
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
-## We want to not only source certain project files, but also ensure that
-## such files exist. Once done, clean up is done
-source_but_also_check_for <- function(ff) {
-  sapply(ff, function(x) {
-    if (file.exists(x)) {
-      source(x)
-      } else {
-        warning(paste(sQuote(x), "was not found in the working directory"))
-      }
-  })
-}
-
+source("global-function-prototypes.R")
 source_but_also_check_for(c("twitter/tw-functions.R",
                             "facebook/fb-functions.R"))
+
 rm(source_but_also_check_for, pkglist, not_installed)
 ```
 
 # 1.0 Introduction
-This is the `r params$client` Social Media Monitoring Report.  
+This is the NESREA Social Media Monitoring Report.  
 
 **Date of Report**: `r format(today(), "%A, %d %B %Y")`  
 **Period of Reporting**: `r format(today() - 7, "%A, %d %B %Y")`
@@ -77,10 +63,6 @@ all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 ## Add a column of Date objects for easy categorisation. Also carry out a 
 ## check to see whether the database needs to be updated.
 all_data$date_only <- as.Date(all_data$created)
-
-if (all_data$date_only[nrow(all_data)] < today()) {
-  warning("The database may be outdated.\nRun 'logon_to_twitter() followed by 'update_nesrea_db()' to update it before knitting the document.")
-}
 
 wk_data <- filter(all_data,
                   date_only >= (today() - 7) & date_only <= (today() - 1))
@@ -111,8 +93,8 @@ busiest_day <- ymd(names(busiest_day))
 |No. of new followers (in last 7 days)     |                                |
 |No. of tweets in `r format(today(), "%B")`|`r nrow(mth_data)`              |
 |No. of tweets in last 7 days              |`r no.wk`                       |
-|Total tweets **by** `r params$client`     |`r nrow(tweets_by_us)`          |
-|Total tweets **on** `r params$client`     |`r nrow(wk_data)`               |
+|Total tweets **by** NESREA                |`r nrow(tweets_by_us)`          |
+|Total tweets **on** NESREA                |`r nrow(wk_data)`               |
 |Average number of tweets per day          |`r floor(nrow(wk_data)/7)`      |
 |Day of highest activity                   |`r format(busiest_day, "%d %B")`|
 |Top 5 influential handles                 |`r print("---")`                |
@@ -135,29 +117,29 @@ fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
   mutate(created_mth = format(as.Date(created_time), "%B")) %>%
   mutate(created_yr = format(as.Date(created_time), "%Y"))
 
+
+fbComments <- dbReadTable(connxn, "nesreanigeria_fbcomments")
+fbLikes <- dbReadTable(connxn, "nesreanigeria_fblikes")
+
 dbDisconnect(connxn)
 rm(connxn)
 
-## make data frames for monthly
+## Convert to date-time structures
+fbPosts$created_time <- as.POSIXct(fbPosts$created_time)
+fbComments$created_time <- as.POSIXct(fbComments$created_time)
+
+## make variable for monthly data
+thisMth <- format(today(), "%B")
+thisYr <- format(today(), "%Y")
+
 fbPosts$created_mth <-
   fbPosts$created_mth %>%
   factor(levels = month.name, ordered = TRUE)
 
-fbPosts$created_time <- as.Date(fbPosts$created_time)
-
-thisMth <- format(today(), "%B")
-thisYr <- format(today(), "%Y")
-mth_Posts <- filter(fbPosts, created_mth == thisMth & created_yr == thisYr)
-wk_Posts <- filter(mth_Posts, created_time >= (today() - 7))
-
-## Function that will return a message that matches a
-## a particular metric within the table below
-return_text <- function(df, metric) {
-  column <- select(df, match(metric, colnames(df))) %>%
-    unlist(.)
-  txt <- df$message[match(max(column), column)]
-  txt
-}
+mth_Posts <- fbPosts %>%
+  filter(created_mth == thisMth & created_yr == thisYr)
+wk_Posts <- mth_Posts %>%
+  filter(created_time >= (today() - 7))
 ```
 
 ## 2.2 Facebook
@@ -175,7 +157,13 @@ return_text <- function(df, metric) {
 
 # 3.0 Exploratory Analysis
 ## 3.1 Twitter
-```{r, warning=FALSE, message=FALSE}
+```{r plain density, warning=FALSE, message=FALSE}
+simplePlot <- plain_dens_plot(data = wk_data, platform = "twitter")
+simplePlot
+```
+
+
+```{r disaggregated tweets density}
 distr <- ggplot(wk_data, aes(created)) +
   geom_density(aes(fill = isRetweet), alpha = .5) +
   theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
@@ -185,104 +173,80 @@ distr <- ggplot(wk_data, aes(created)) +
 distr
 ```
 
-```{r, eval=FALSE}  
-dayOf <- filter(wk_data, mday(created) == 7)
-distr_day <- ggplot(dayOf, aes(created)) +
-  geom_density(aes(fill = isRetweet), alpha = .5) +
-  theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
-  xlab("Time") +
-  ggtitle("Tweets on... ")
 
-distr_day
+```{r daily tweets plot}  
+dlyPlots <- simplePlot +
+  facet_wrap( ~ date_only)
+dlyPlots
 ```
 
-```{r, message=FALSE}
+
+```{r twitter sentiments-1}
 spl <- split(wk_data, wk_data$isRetweet)
-orig <- spl[['FALSE']]
+origTwts <- spl[['FALSE']]
+
+twPol <- compute_emotional_valence(origTwts$text)
+visualise_pol_diff(pol.list = twPol)
+```
+
+* __Most positive tweet__: `r origTwts$text[which.max(origTwts$emotionalValence)]`
+* __Most negative tweet__: `r origTwts$text[which.min(origTwts$emotionalValence)]`  
+
+```{r twitter sentiments-2}
+origTwts$emotionalValence <- sapply(twPol, function(x) x$all$polarity)
+generate_wordcloud(origTwts, twPol, site = "Twitter")
+```
+
+
+```{r network}
 RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
-
-pol <- suppressWarnings(lapply(orig$text, function(txt) {
-  gsub("(\\.|!|\\?)+\\s+|(\\++)", " ", txt) %>% 
-    gsub(" http[^[:blank:]]+", "", .) %>% 
-    polarity(.)
-}))
-orig$emotionalValence <- sapply(pol, function(x) x$all$polarity)
-
-polWordTable <- sapply(pol, function(p) {
-  words <- c(positiveWords = paste(p$all$pos.words[[1]], collapse = ' '),
-            negativeWords = paste(p$all$neg.words[[1]], collapse = ' '))
-  gsub('-', '', words) 
-}) %>%
-  apply(1, paste, collapse = ' ') %>%
-  stripWhitespace() %>%
-  strsplit(' ') %>%
-  sapply(table, simplify = FALSE)
-
-oldpar <- par()
-par(mfrow = c(1, 2))
-invisible(
-  lapply(1:2, function(i) {
-    suppressWarnings(dotchart(sort(polWordTable[[i]]), cex = .8))
-    mtext(names(polWordTable)[i])
-  }))
-
-suppressWarnings(par(oldpar))
 ```
 
-* __Most positive tweet__: `r orig$text[which.max(orig$emotionalValence)]`
-* __Most negative tweet__: `r orig$text[which.min(orig$emotionalValence)]`  
-
-```{r, warning=FALSE, message=FALSE}
-make_corpus <- function(GText, stem = TRUE) {
-  corp <- VCorpus(VectorSource(GText)) %>% 
-    tm_map(removePunctuation) %>%
-    tm_map(stripWhitespace) %>%
-    tm_map(content_transformer(tolower)) %>%
-    tm_map(removeWords, stopwords("english"))
-  if(stem)
-    corp <- tm_map(corp, stemDocument) 
-  
-  names(corp) <- names(GText)
-  corp
-}
-
-polSplit <- split(orig, sign(orig$emotionalValence))
-
-if (length(polSplit) != 3) {
-  warning("Insufficient data to render the wordcloud\n")
-  } else {
-  polText <- sapply(polSplit, function(df) {
-    paste(tolower(df$text), collapse = ' ') %>%
-      gsub(' http|@)[^[:blank:]]+', '', .) %>%  
-      gsub('[[:punct:]]', '', .)
-    }) %>%
-    structure(names = c('negative', 'neutral', 'positive'))
-  
-    polText['negative'] <- removeWords(polText['negative'],
-                                   names(polWordTable$negativeWords))
-    polText['positive'] <- removeWords(polText['positive'],
-                                       names(polWordTable$positiveWords))
-    
-    corp <- make_corpus(polText)
-    col3 <- RColorBrewer::brewer.pal(3, 'Paired')
-    suppressWarnings(comparison.cloud(as.matrix(TermDocumentMatrix(corp)),
-                                      max.words = 150,
-                                      min.freq = 1,
-                                      random.order = FALSE,
-                                      rot.per = 0,
-                                      colors = col3,
-                                      vfont = c("sans serif", "plain")))
-  }
-```
 
 ## 3.2 Facebook
-**UNDER CONSTRUCTION**
+**Disclaimer**: *This section is still being developed and should be considered as experimental* 
 
-# 4.0 Observations  
+```{r density dist: FB posts}
+ggplot(fbPosts, aes(created_time)) +
+  geom_density(fill = "purple") +
+  ggtitle("Distribution of Facebook posts")
+```
+
+
+```{r facebook density plot}
+plain_dens_plot(fbComments, platform = "facebook")
+```
+
+
+```{r fb polarities}
+fbPol <- compute_emotional_valence(text.var = fbComments$message)
+visualise_pol_diff(pol.list = fbPol)
+```
+
+
+```{r facebook wordcloud}
+fbComments$emotionalValence <- sapply(fbPol, function(x) x$all$polarity)
+generate_wordcloud(fbComments, fbPol, site = "Facebook")
+```
+
+<!-- ## 3.3 Website 
+```{r}
+
+```
+-->
+
+# 4.0 Observations
+## 4.1 General
+
+## 4.2 Twitter
+
+## 4.3 Facebook
+
+<!-- ## 4.4 Website -->
 
 # 5.0 Recommendations
 
-```{r, echo=FALSE}
+```{r signatories, echo=FALSE}
 victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
 remi <- person("Remi", "Agunbiade", email = "remi.agunbiade@nesrea.gov.ng", comment = "Member, Web Monitoring Group")
 amaka <- person("Amaka", "Ejiofor", email = "amaka.ejiofor@nesrea.gov.ng", comment = "Member, Web Monitoring Group")

@@ -10,10 +10,6 @@ suppressPackageStartupMessages(lapply(pkgs, library, character.only = TRUE))
 source("facebook/fb-functions.R")
 load("facebook/NESREA_fboauth")    # load 'nesreaToken'
 
-
-## Begin
-cat("** Updating local Facebook data\n")
-
 ## Set up database connections
 sql.conn <- dbConnect(SQLite(), "data/nesreanigeria.db")
 
@@ -52,6 +48,3 @@ if (!dbIsValid(sql.conn)) {
   cat("** Database successfully disconnected\n")
   rm(sql.conn, tbls, posts)
 }
-
-## Goodbye
-cat("** Updates to local Facebook data completed\n")
