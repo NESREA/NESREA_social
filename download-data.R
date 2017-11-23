@@ -19,17 +19,17 @@ validate_db <- function(dBase) {
 
 validate_db("data/nesreanigeria.db")
 
-tw <- "* Twitter"
-fb <- "* Facebook"
-beg <- "downloads started\n"
+tw <- "Twitter"
+fb <- "Facebook"
+beg <- "* Starting %s downloads\n"
 end <- "downloads completed\n"
 
-cat(tw, beg)
+cat(sprintf(beg, tw))
 source("twitter/download-nesrea-tweets.R")
-cat(tw, end)
+cat("*", tw, end)
 
-cat(fb, beg)
+cat(sprintf(beg, fb))
 source("facebook/download-nesrea-fbposts.R")
-cat(fb, end)
+cat("*", fb, end)
 
 rm(tw, fb, beg, end)
