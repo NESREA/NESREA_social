@@ -2,6 +2,9 @@
 
 Easy social media reporting for [NESREA](http://www.nesrea.gov.ng)'s Web Monitoring Group.
 
+## Usage
+To use, download or clone the repository
+
 ## Prerequisites
 * __R__: <http://cran.r-project.org>
 * __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
