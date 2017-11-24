@@ -1,5 +1,7 @@
 # Some Twitter functions for quick one-off operations
 
+setwd(file.path(rootDir, "twitter/"))
+
 # .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
@@ -45,7 +47,7 @@ display_twts <- function(x)
 # ```````````````````````
 update_nesrea_db <- function() {
   require(twitteR)
-  register_sqlite_backend("data/nesreanigeria.db")
+  register_sqlite_backend(file.path(rootDir, "data/nesreanigeria.db"))
   
   cat("** Updating database with NESREANigeria tweets\n")
   n <-
@@ -116,24 +118,10 @@ chart <- function(tbl) {
 }
 
 # ..............................................
-# Checks/reminds correct working directory usage
-# ``````````````````````````````````````````````
-check_wd <- function() {
-  MyComputer <- Sys.info()["nodename"]
-  workdir <- "~/Documents/7-NESREA/SA/WMG/NESREA_social/"
-  if (MyComputer == "SA-DG" | MyComputer == "NESREA") {
-    if (!identical(getwd(), path.expand(workdir)))
-      setwd(workdir)
-  } else {
-    warning("Make sure to correctly set the working directory.")
-  }
-}
-
-# ..............................................
 # Logs on to Twitter API using Oauth credentials
 # ``````````````````````````````````````````````
 logon_to_twitter <- function() {
-  keys <- "data/key.RData"
+  keys <- file.path(rootDir, "data/key.RData")
   if (!file.exists(keys)) {
     warning("You must supply OAuth credentials to proceed")
   } else {

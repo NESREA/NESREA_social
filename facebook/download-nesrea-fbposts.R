@@ -2,16 +2,17 @@
 
 ## Obtain the data on individual Facebook Page posts
 ## NB: Admin role required!
+setwd(file.path(rootDir, "facebook/"))
 
 ## Prep
 pkgs <- c("DBI", "RSQLite", "Rfacebook", "dplyr", "stringr")
 suppressPackageStartupMessages(lapply(pkgs, library, character.only = TRUE))
 
-source("facebook/fb-functions.R")
-load("facebook/NESREA_fboauth")    # load 'nesreaToken'
+source("fb-functions.R")
+load("NESREA_fboauth")    # load 'nesreaToken'
 
 ## Set up database connections
-sql.conn <- dbConnect(SQLite(), "data/nesreanigeria.db")
+sql.conn <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
 
 if (dbIsValid(sql.conn)) {
   cat("*** Database successfully connected\n")

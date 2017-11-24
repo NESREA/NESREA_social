@@ -1,8 +1,6 @@
 ## fb-functions.R
 ## User-defined functions to help work with Facebook API
 
-library(Rfacebook)
-
 # ..............................................................
 ## chooseInsight()
 ## Retrieves and preprocesses insights from NESREA Facebook Page

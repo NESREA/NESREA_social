@@ -1,4 +1,6 @@
 ## download-data.R
+rootDir <- getwd()
+setwd(file.path(rootDir, "data"))
 
 ## Ensures pre-existing database file or create one in
 ## its absence (candidate for project parameterization)
@@ -17,7 +19,7 @@ validate_db <- function(dBase) {
   }
 }
 
-validate_db("data/nesreanigeria.db")
+validate_db("nesreanigeria.db")
 
 tw <- "Twitter"
 fb <- "Facebook"
@@ -25,11 +27,11 @@ beg <- "* Starting %s downloads\n"
 end <- "downloads completed\n"
 
 cat(sprintf(beg, tw))
-source("twitter/download-nesrea-tweets.R")
+source(file.path(rootDir, "twitter/download-nesrea-tweets.R"))
 cat("*", tw, end)
 
 cat(sprintf(beg, fb))
-source("facebook/download-nesrea-fbposts.R")
+source(file.path(rootDir, "facebook/download-nesrea-fbposts.R"))
 cat("*", fb, end)
 
 rm(tw, fb, beg, end)

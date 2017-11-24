@@ -39,8 +39,8 @@ if (length(not_installed))
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 source("global-function-prototypes.R")
-source_but_also_check_for(c("twitter/tw-functions.R",
-                            "facebook/fb-functions.R"))
+source_but_also_check_for(c("../twitter/tw-functions.R",
+                            "../facebook/fb-functions.R"))
 
 rm(source_but_also_check_for, pkglist, not_installed)
 ```
@@ -56,7 +56,7 @@ This is the NESREA Social Media Monitoring Report.
                       #  TWITTER   #
                       ##############
 ## Access stored tweets
-register_sqlite_backend("data/nesreanigeria.db") 
+register_sqlite_backend("../data/nesreanigeria.db") 
 all_data <- load_tweets_db(as.data.frame = TRUE, "nesreanigeria_tweets")
 
 
@@ -109,7 +109,7 @@ busiest_day <- ymd(names(busiest_day))
                         ############
 ## Load data on Facebook Page posts from database;
 ## also do a little data wrangling
-connxn <- dbConnect(SQLite(), "data/nesreanigeria.db")
+connxn <- dbConnect(SQLite(), "../data/nesreanigeria.db")
 
 fbPosts <- dbGetQuery(connxn, 'SELECT * FROM nesreanigeria_fbposts') %>%
   prepare_data(.) %>%
