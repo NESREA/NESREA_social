@@ -1,5 +1,11 @@
 ## MAKEFILE ##
 # Generate a document report from .Rmd file
 
+R_AUTO = Rscript.exe
+RSFLAGS = --vanilla
+
 all:  
-	Rscript build-report.R
+	$(R_AUTO) $(RSFLAGS) build-report.R
+	
+update:
+	$(R_AUTO) $(RSFLAGS) download-data.R

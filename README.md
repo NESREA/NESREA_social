@@ -8,9 +8,9 @@ Easy social media reporting for [NESREA](http://www.nesrea.gov.ng)'s Web Monitor
 * __pandoc__: <http://pandoc.org/installing.html>
 
 ## Quick start
-Generating a report is **super easy**. On the command line, navigate to **this** directory and run  
+Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
 ```
-Rscript build-report.R
+make
 ```
 
 This will:
@@ -21,7 +21,7 @@ This will:
 
 The data are stored in a local **SQLite** database, `data/nesreanigeria.db`; SQLite itself is automatically installed. To update this database, the user should run  
 ```
-Rscript download-data.R
+make update
 ```
 
 To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
