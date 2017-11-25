@@ -5,7 +5,7 @@ R_AUTO = Rscript.exe
 RSFLAGS = --vanilla
 
 all:  
-	$(R_AUTO) $(RSFLAGS) build-report.R
+	$(R_AUTO) $(RSFLAGS) build/build-report.R
 	
 update:
-	$(R_AUTO) $(RSFLAGS) download-data.R
+	$(R_AUTO) $(RSFLAGS) data/download-data.R

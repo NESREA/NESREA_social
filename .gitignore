@@ -4,3 +4,7 @@
 Reports/
 data/nesreanigeria.db
 .httr-oauth
+weekly-report-generic.docx
+weekly-report-generic.html
+packrat/lib*/
+.Rproj.user

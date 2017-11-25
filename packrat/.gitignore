@@ -3,3 +3,5 @@ lib-R/
 lib-ext/
 lib/
 src/
+packrat.lock
+packrat.opts

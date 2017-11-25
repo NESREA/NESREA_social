@@ -1,7 +1,10 @@
 ## download-nesrea-tweets.R
 ## Update NESREA database
+
+setwd(file.path(rootDir, "twitter/"))
+
 library(twitteR)
-source("twitter/tw-functions.R")
+source("tw-functions.R")
 
 logon_to_twitter()
 
