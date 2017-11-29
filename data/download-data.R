@@ -1,4 +1,8 @@
 ## download-data.R
+
+if (!interactive())
+  rootDir <- getwd()
+
 setwd(file.path(rootDir, "data"))
 
 ## Ensures pre-existing database file or create one in
