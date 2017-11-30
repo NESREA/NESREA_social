@@ -1,5 +1,8 @@
 ## download-data.R
-rootDir <- getwd()
+
+if (!interactive())  # will start from repo root directory
+  rootDir <- getwd()
+
 setwd(file.path(rootDir, "data"))
 
 ## Ensures pre-existing database file or create one in
