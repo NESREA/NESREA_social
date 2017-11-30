@@ -9,8 +9,7 @@ To use, download or `git clone` the repository.
 * __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
 * __pandoc__: <http://pandoc.org/installing.html>
 
-## Quick start
-**Building a report**:  
+## Usage  
 Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
 ```
 smReports
