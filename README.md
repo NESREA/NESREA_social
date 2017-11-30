@@ -13,7 +13,7 @@ To use, download or `git clone` the repository.
 **Building a report**:  
 Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
 ```
-make
+run
 ```
 
 This will:
@@ -25,7 +25,7 @@ This will:
 **Downloading data**:  
 The data are stored in a local **SQLite** database, `data/nesreanigeria.db`; SQLite itself is automatically installed. To update this database, the user should run  
 ```
-make update
+update
 ```
 
 To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
