@@ -1,16 +1,25 @@
 ## download-data.R
 
-if (!interactive())  # will start from repo root directory
-  rootDir <- getwd()
+## For new R installations, this check is absolutely necessary
+invisible(
+  sapply(c("DBI", "RSQLite"), function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x)
+      library(x, character.only = TRUE)
+    }
+  })
+)
 
+## Checking for object created by previously called script
+if (!exists("rootDir"))
+  rootDir <- getwd()
+  
 setwd(file.path(rootDir, "data"))
 
 ## Ensures pre-existing database file or create one in
 ## its absence (candidate for project parameterization)
 validate_db <- function(dBase) {
-  requireNamespace("DBI", quietly = TRUE)
-  requireNamespace("RSQLite", quietly = TRUE)
-  if (!file.exists(dBase)) {
+   if (!file.exists(dBase)) {
     cat("* Creating the database\n")
     con <- dbConnect(SQLite(), dBase)
     if (dbIsValid(con) && file.exists(dBase)) {
