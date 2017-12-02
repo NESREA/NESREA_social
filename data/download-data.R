@@ -9,11 +9,7 @@ invisible(
     }
   })
 )
-
-## Checking for object created by previously called script
-if (!exists("rootDir"))
-  rootDir <- getwd()
-  
+rootDir <- getwd()
 setwd(file.path(rootDir, "data"))
 
 ## Ensures pre-existing database file or create one in
