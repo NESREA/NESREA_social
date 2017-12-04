@@ -6,7 +6,7 @@ setwd(file.path(rootDir, "facebook/"))
 
 ## Prep
 pkgs <- c("DBI", "RSQLite", "Rfacebook", "dplyr", "stringr")
-suppressPackageStartupMessages(lapply(pkgs, library, character.only = TRUE))
+ensure_packages(pkgs = pkgs)
 
 source("fb-functions.R")
 load("NESREA_fboauth")    # load 'nesreaToken'

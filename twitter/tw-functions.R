@@ -1,14 +1,12 @@
 # Some Twitter functions for quick one-off operations
 
-setwd(file.path(rootDir, "twitter/"))
-
 # .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
 collect_tweets <- function(string = character())
 {
   require(twitteR)
-  require(magrittr)
+  require(dplyr)
   if (!is.character(string))
     stop("'string' is not a character vector")
   if (length(string) > 1) {

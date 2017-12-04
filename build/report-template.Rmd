@@ -35,7 +35,7 @@ pkglist <- c("DBI",
              "wordcloud")
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
 if (length(not_installed))
-  install.packages(not_installed)
+  install.packages(not_installed, repos = "https://cran.rstudio.com")
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 source("global-function-prototypes.R")
@@ -236,15 +236,18 @@ generate_wordcloud(fbComments, fbPol, site = "Facebook")
 -->
 
 # 4.0 Observations
-## 4.1 General
+For the period under review, the following observations were made:  
+**Twitter:**  
 
-## 4.2 Twitter
 
-## 4.3 Facebook
+**Facebook:**  
 
-<!-- ## 4.4 Website -->
+
+<!-- **Website:** -->
 
 # 5.0 Recommendations
+In the light of the above, the Web Monitoring Group would like to make the following recommendations:  
+
 
 ```{r signatories, echo=FALSE}
 victor <- person("Victor", "Ordu", email =  "victor.ordu@nesrea.gov.ng", comment = "Chairman Web Monitoring Group")
@@ -259,4 +262,4 @@ Submitted by:
 `r victor$comment`  
 
 ***  
-Built with *R `r getRversion()`*.
+Built with *R `r getRversion()`* on `r format(Sys.time(), "%A, %d %B %Y at %H:%M")`.

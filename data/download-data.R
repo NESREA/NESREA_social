@@ -1,29 +1,17 @@
 ## download-data.R
 
-if (!interactive())  # will start from repo root directory
-  rootDir <- getwd()
+source("data/downloadfunctions-gen.R")
+ensure_packages(c("DBI", "RSQLite"))
 
+## Adjust the working directory
+rootDir <- getwd()
 setwd(file.path(rootDir, "data"))
 
-## Ensures pre-existing database file or create one in
-## its absence (candidate for project parameterization)
-validate_db <- function(dBase) {
-  requireNamespace("DBI", quietly = TRUE)
-  requireNamespace("RSQLite", quietly = TRUE)
-  if (!file.exists(dBase)) {
-    cat("* Creating the database\n")
-    con <- dbConnect(SQLite(), dBase)
-    if (dbIsValid(con) && file.exists(dBase)) {
-      cat("** Done\n")
-      dbDisconnect(con)
-    } else {
-      stop("The database could not be created")
-    }
-  }
-}
-
+## Confirm availability of database
 validate_db("nesreanigeria.db")
 
+## Download data from Twitter and Facebook, respectively
+## Print appropriate messages.
 tw <- "Twitter"
 fb <- "Facebook"
 beg <- "* Starting %s downloads\n"

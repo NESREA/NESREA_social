@@ -3,9 +3,8 @@
 
 setwd(file.path(rootDir, "twitter/"))
 
-library(twitteR)
+ensure_packages("twitteR")
 source("tw-functions.R")
 
 logon_to_twitter()
-
 update_nesrea_db()

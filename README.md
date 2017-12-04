@@ -9,11 +9,10 @@ To use, download or `git clone` the repository.
 * __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
 * __pandoc__: <http://pandoc.org/installing.html>
 
-## Quick start
-**Building a report**:  
+## Usage  
 Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
 ```
-make
+smReports
 ```
 
 This will:
@@ -21,11 +20,10 @@ This will:
 + assign a filename in the format `weekly-report_YYYY-MM-DD.docx` e.g. *weekly-report-2017-10-01*
 + create a `Reports/` sub-folder, if it does not already exist
 + save the report in the `Reports/` folder
-
-**Downloading data**:  
-The data are stored in a local **SQLite** database, `data/nesreanigeria.db`; SQLite itself is automatically installed. To update this database, the user should run  
+  
+The data are stored in a local **SQLite** database, `data/nesreanigeria.db`; SQLite itself is automatically installed. To optionally update this database before generating the report, the user should add an argument to the command:
 ```
-make update
+smReports --update
 ```
 
 To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.

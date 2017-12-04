@@ -1,7 +1,7 @@
 ## MAKEFILE ##
 # Generate a document report from .Rmd file
 
-R_AUTO = Rscript.exe
+R_AUTO = Rscript
 RSFLAGS = --vanilla
 
 all:  
