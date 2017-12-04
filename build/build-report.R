@@ -41,7 +41,8 @@ if (interactive()) {
 
 ## The main job
 cat("* Building the document\n")
-if (!requireNamespace("rmarkdown")) install.packages("rmarkdown")
+if (!requireNamespace("rmarkdown"))
+  install.packages("rmarkdown", repos = "https://cran.rstudio.com")
 rmarkdown::render(
   file.path(buildDir, "report-template.Rmd"),
   output_format = "word_document",

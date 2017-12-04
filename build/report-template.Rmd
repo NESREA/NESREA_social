@@ -35,7 +35,7 @@ pkglist <- c("DBI",
              "wordcloud")
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
 if (length(not_installed))
-  install.packages(not_installed)
+  install.packages(not_installed, repos = "https://cran.rstudio.com")
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 source("global-function-prototypes.R")

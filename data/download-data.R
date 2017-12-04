@@ -4,7 +4,7 @@
 invisible(
   sapply(c("DBI", "RSQLite"), function(x) {
     if (!require(x, character.only = TRUE)) {
-      install.packages(x)
+      install.packages(x, repos = "https://cran.rstudio.com")
       library(x, character.only = TRUE)
     }
   })
