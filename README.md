@@ -6,7 +6,6 @@ To use, download or `git clone` the repository.
 
 ## Prerequisites
 * __R__: <http://cran.r-project.org>
-* __Rtools__: <https://cran.r-project.org/bin/windows/Rtools/>
 * __pandoc__: <http://pandoc.org/installing.html>
 
 ## Usage  
