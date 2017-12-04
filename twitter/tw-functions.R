@@ -1,7 +1,5 @@
 # Some Twitter functions for quick one-off operations
 
-setwd(file.path(rootDir, "twitter/"))
-
 # .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
