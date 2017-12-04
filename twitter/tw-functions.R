@@ -6,7 +6,7 @@
 collect_tweets <- function(string = character())
 {
   require(twitteR)
-  require(magrittr)
+  require(dplyr)
   if (!is.character(string))
     stop("'string' is not a character vector")
   if (length(string) > 1) {
