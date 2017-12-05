@@ -1,0 +1,53 @@
+---
+title: "website"
+author: "Web Monitoring Group"
+date: 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+```
+
+```{r}
+news <- read_html("http://www.nesrea.gov.ng/news/") %>%
+  html_nodes(".short-description p , .entry-header a") %>%
+  html_text()
+
+news
+
+```
+
+Refine things a bit...
+```{r}
+page <- news <- read_html("http://www.nesrea.gov.ng/news/")
+
+scrape_items <- function(selector) {
+  txt <- page %>%
+    html_nodes(selector) %>%
+    html_text()
+}
+
+headers <- scrape_items(".entry-header a")
+
+descr <- scrape_items(".short-description p") %>%
+  .[. != ""]
+
+date <- scrape_items(".sponsors")
+
+df <- data.frame(Title = headers, Description = descr, Date = date)
+df
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
