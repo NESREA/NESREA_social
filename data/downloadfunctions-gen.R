@@ -4,7 +4,7 @@
 ## For new R installations, this check is absolutely necessary
 ensure_packages <- function(pkgs = character()) {
   invisible(sapply(pkgs, function(x) {
-    if (!require(x, character.only = TRUE)) {
+    if (suppressPackageStartupMessages(!require(x, character.only = TRUE))) {
       install.packages(x, repos = "https://cran.rstudio.com")
       suppressPackageStartupMessages(library(x, character.only = TRUE))
     }
