@@ -8,3 +8,6 @@ source("tw-functions.R")
 
 logon_to_twitter()
 update_nesrea_db()
+
+setwd("../")
+## Return 

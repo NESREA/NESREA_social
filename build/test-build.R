@@ -1,14 +1,16 @@
 ## test-build.R
+library(tm, quietly = TRUE)
+suppressPackageStartupMessages(library(qdap, quietly = TRUE))
 
 context("Functions for build process")
 
-test_that("compute_emotional_valence works", {
+test_that("compute_emotional_valence() works", {
   expect_equal(class(compute_emotional_valence(txt)), "list")
   expect_equal(typeof(compute_emotional_valence(txt)), "list")
   expect_equal(length(compute_emotional_valence(txt)), length(txt))
 })
 
-test_that("Tabulation of positive/negative words", {
+test_that("Tabulation of positive/negative works", {
   expect_equal(class(make_word_table(result)), "list")
   expect_output(str(make_word_table(result)), "List of 2")
 })

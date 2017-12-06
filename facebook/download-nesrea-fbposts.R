@@ -8,20 +8,20 @@ setwd(file.path(rootDir, "facebook/"))
 pkgs <- c("DBI", "RSQLite", "Rfacebook", "dplyr", "stringr")
 ensure_packages(pkgs = pkgs)
 
+## Load required objects (functions + 'nesreaToken') into the Workspace
 source("fb-functions.R")
-load("NESREA_fboauth")    # load 'nesreaToken'
+load("NESREA_fboauth")
 
-## Set up database connections
+## Oya, get busy...
+cat("** Connecting the database")
 sql.conn <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
-
 if (dbIsValid(sql.conn)) {
-  cat("*** Database successfully connected\n")
+  cat(".....Done.\n")
 } else {
-  cat("*** There was a problem connecting to the database\n")
+  stop("There was a problem connecting to the database\n")
 }
 
-## Get all Page posts from Newsfeed
-cat("*** Downloading Page posts from the Newsfeed\n")
+cat("** Downloading Page posts from the Newsfeed\n")
 posts <-
   getPage(page = "nesreanigeria",
           nesreaToken,
@@ -32,8 +32,7 @@ cat("-- from Newsfeed were stored")
 
 store_post_details(sql.conn, posts)
 
-cat("\n** Checking for duplications\n")
-
+cat("** Checking for and correcting duplications")
 tbls <- dbListTables(sql.conn) %>%
   subset(grepl("fb", .))
 
@@ -42,10 +41,17 @@ sapply(tbls, function(x) {
     distinct(.)
   dbWriteTable(sql.conn, x, temp, overwrite = TRUE)
 })
+cat(".....Done.\n")
 
-## Disconnect and clean up
+cat("** Disconnecting the database")
 dbDisconnect(sql.conn)
 if (!dbIsValid(sql.conn)) {
-  cat("** Database successfully disconnected\n")
-  rm(sql.conn, tbls, posts)
+  cat("....Done.\n")
+  rm(sql.conn)
+} else {
+  warning("The database could not be properly disconnected.")
 }
+rm(tbls, posts)
+
+## Go back one step...
+setwd("../")
