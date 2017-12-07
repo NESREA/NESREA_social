@@ -15,6 +15,6 @@ test_that("Data is scraped from the website", {
     gregexpr("domain", scrape_items(exampleDotCom, "p"))[[1]][1] == 6,
     is_true())
   expect_that(
-    gregexpr("domain", scrape_items(exampleDotCom, "p"))[[1]][2] == 100,
+    gregexpr("domain", scrape_items(exampleDotCom, "p"))[[1]][2] == 101,
     is_true())
 })

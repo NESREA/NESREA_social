@@ -49,10 +49,10 @@ generate_wordcloud <- function(data, pol.list, site) {
   var <- var[pick]
   
   if (length(polSplit) != 3) {
-    warning("Insufficient data to render the wordcloud\n")
+    cat("Insufficient data to render the wordcloud\n")
   } else {
     polText <- sapply(polSplit, function(df) {
-      paste(tolower(data[, var]), collapse = ' ') %>%
+      paste(tolower(df[, var]), collapse = ' ') %>%
         gsub(' http|@)[^[:blank:]]+', '', .) %>%
         gsub('[[:punct:]]', '', .)
     }) %>%
@@ -67,7 +67,6 @@ generate_wordcloud <- function(data, pol.list, site) {
     col3 <- RColorBrewer::brewer.pal(3, 'Paired')
     
     ## Adjust margins to make room for a title
-    oldpar <- par()
     layout(mat = matrix(c(1, 2), nrow = 2), heights = c(1, 4))
     par(mar = rep(0, 4))
     plot.new()
@@ -117,14 +116,13 @@ plain_dens_plot <- function(data, platform)
   choice <- choose_platform(site = platform)
   type <- c("tweets", "comments")
   var <- c("created", "created_time")
-  hue <- c("lightblue", "darkblue")
-  title <- paste("Distribution of", type[choice])
+  hue <- c("red", "darkblue")
+  title <- paste("Proportion of", type[choice])
   gg <- ggplot(data, aes_string(var[choice])) +
     geom_density(fill = hue[choice], alpha = 0.4) +
     theme(legend.justification = c(1, 1), legend.position = c(1, 1)) +
     ggtitle(title) +
-    xlab("Date") +
-    ylab(paste("No. of", type[choice]))
+    xlab("Date")
   gg
 }
 
