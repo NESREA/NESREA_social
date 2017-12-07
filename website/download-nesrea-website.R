@@ -20,14 +20,15 @@ descr <- scrape_items(page = news, ".short-description p") %>%
 date <- scrape_items(page = news, ".sponsors") %>%
   gsub("([[:digit:]])(st|rd|nd|th)", "\\1", .) %>%
   str_trim() %>%
-  strptime(format = "%B %d, %Y")
+  strptime(format = "%B %d, %Y") %>%
+  as.Date()
 
 df <- data.frame(Title = headers,
                  Description = descr,
                  Date = date)
 
 ## Write it to the database
-cat("** Connecting the database")
+cat("** Connecting the database\n")
 db <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
 dbWriteTable(db, "nesreanigeria_webnews", df, overwrite = TRUE)
 # TODO: Provide storage for blogs

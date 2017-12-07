@@ -51,6 +51,44 @@ This is the NESREA Social Media Monitoring Report.
 **Date of Report**: `r format(today(), "%A, %d %B %Y")`  
 **Period of Reporting**: `r format(today() - 7, "%A, %d %B %Y")`
 
+# 2.0 Summary Statistics
+## 2.1 Official Website
+```{r website data retrieval}
+                        ############
+                        # Website  #
+                        ############
+
+connection <- dbConnect(SQLite(), "../data/nesreanigeria.db")
+newsData <- dbReadTable(connection, "nesreanigeria_webnews")
+dbDisconnect(connection); rm(connection)
+
+newsData$Date <- newsData$Date %>%
+  as.Date(origin = "1970-01-01") %>%
+  as.POSIXct()
+
+newsData <- newsData %>%
+  mutate(month = format(Date, "%B")) %>%
+  mutate(year = format(Date, "%Y"))
+
+## make variables for monthly/annual data
+thisMth <- format(today(), "%B")
+thisYr <- format(today(), "%Y")
+
+mth_news <- newsData %>%
+  filter(month == thisMth & year == thisYr)
+wk_news <- newsData %>%
+  filter(as.Date(Date) >= today() - 7)
+```
+
+|     **Description**        |    **Result**                              |
+|----------------------------|--------------------------------------------|
+|News Stories (All-time)     |`r nrow(newsData)`                          |
+|News Stories in `r thisMth` |`r nrow(mth_news)`                          |
+|News Stories (last 7 days)  |`r nrow(wk_news)`                           |
+|Most recent News Story      |`r newsData$Title[which.max(newsData$Date)]`|
+|                            |                                            |
+
+## 2.2 Twitter
 ```{r load data, message=FALSE}
                       ##############
                       #  TWITTER   #
@@ -85,9 +123,7 @@ busiest_day <- which.max(table(wk_data$date_only))
 busiest_day <- ymd(names(busiest_day))
 ```
 
-# 2.0 Summary Statistics
-## 2.1 Twitter
-|       Description                        |      Result                    |
+|     **Description**                      |    **Result**                  |
 |------------------------------------------|--------------------------------|
 |No. of followers (overall)                |                                |
 |No. of new followers (in last 7 days)     |                                |
@@ -103,6 +139,7 @@ busiest_day <- ymd(names(busiest_day))
 |Comparative tweet volume (week-on-week)   |**`r no.wk - nrow(last_wk)`**   |
 |                                          |                                |
 
+## 2.3 Facebook
 ```{r load-fb-data, message=FALSE}
                         ############
                         # Facebook #
@@ -128,9 +165,6 @@ rm(connxn)
 fbPosts$created_time <- as.POSIXct(fbPosts$created_time)
 fbComments$created_time <- as.POSIXct(fbComments$created_time)
 
-## make variable for monthly data
-thisMth <- format(today(), "%B")
-thisYr <- format(today(), "%Y")
 
 fbPosts$created_mth <-
   fbPosts$created_mth %>%
@@ -142,8 +176,7 @@ wk_Posts <- mth_Posts %>%
   filter(created_time >= (today() - 7))
 ```
 
-## 2.2 Facebook
-|     Description            |    Result                                |
+|     **Description**        |    **Result**                            |
 |----------------------------|------------------------------------------|
 |NESREA Page Posts (All-time)|`r nrow(fbPosts)`                         |
 |Posts in `r thisMth`        |`r nrow(mth_Posts)`                       |
@@ -156,7 +189,13 @@ wk_Posts <- mth_Posts %>%
 |                            |                                          |
 
 # 3.0 Exploratory Analysis
-## 3.1 Twitter
+## 3.1 Website 
+```{r, results='asis'}
+knitr::kable(newsData[, 1:3])
+
+```
+
+## 3.2 Twitter
 ```{r plain density, warning=FALSE, message=FALSE}
 simplePlot <- plain_dens_plot(data = wk_data, platform = "twitter")
 simplePlot
@@ -203,9 +242,7 @@ RT <- mutate(spl[['TRUE']], sender = substr(text, 5, regexpr(':', text) - 1))
 ```
 
 
-## 3.2 Facebook
-**Disclaimer**: *This section is still being developed and should be considered as experimental* 
-
+## 3.3 Facebook
 ```{r density dist: FB posts}
 ggplot(fbPosts, aes(created_time)) +
   geom_density(fill = "purple") +
@@ -228,12 +265,6 @@ visualise_pol_diff(pol.list = fbPol)
 fbComments$emotionalValence <- sapply(fbPol, function(x) x$all$polarity)
 generate_wordcloud(fbComments, fbPol, site = "Facebook")
 ```
-
-<!-- ## 3.3 Website 
-```{r}
-
-```
--->
 
 # 4.0 Observations
 For the period under review, the following observations were made:  
