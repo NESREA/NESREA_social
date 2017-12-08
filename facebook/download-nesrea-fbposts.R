@@ -25,7 +25,7 @@ cat("** Downloading Page posts from the Newsfeed\n")
 posts <-
   getPage(page = "nesreanigeria",
           nesreaToken,
-          n = 100,
+          n = 200,
           feed = TRUE)
 dbWriteTable(sql.conn, "nesreanigeria_fbposts", posts, overwrite = TRUE)
 cat("-- from Newsfeed were stored")
