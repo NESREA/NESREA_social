@@ -14,6 +14,7 @@ validate_db("nesreanigeria.db")
 ## Print appropriate messages.
 tw <- "Twitter"
 fb <- "Facebook"
+wb <- "NESREA Website"
 beg <- "* Starting %s downloads\n"
 end <- "downloads completed\n"
 
@@ -25,4 +26,8 @@ cat(sprintf(beg, fb))
 source(file.path(rootDir, "facebook/download-nesrea-fbposts.R"))
 cat("*", fb, end)
 
-rm(tw, fb, beg, end)
+cat(sprintf(beg, wb))
+source(file.path(rootDir, "website/download-nesrea-website.R"))
+cat("*", wb, end)
+
+rm(tw, fb, wb, beg, end)

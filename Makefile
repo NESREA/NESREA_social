@@ -9,3 +9,6 @@ all:
 	
 update:
 	$(R_AUTO) $(RSFLAGS) data/download-data.R
+
+test:
+	$(R_AUTO) $(RSFLAGS) tests/testthat.R
