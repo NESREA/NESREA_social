@@ -7,6 +7,7 @@ To use, download or `git clone` the repository.
 ## Prerequisites
 * __R__: <http://cran.r-project.org>
 * __pandoc__: <http://pandoc.org/installing.html>
+* __Java__: <https://java.com/en/download/manual.jsp>
 
 ## Usage  
 Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
