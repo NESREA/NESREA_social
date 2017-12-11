@@ -13,7 +13,7 @@ source("fb-functions.R")
 load("NESREA_fboauth")
 
 ## Oya, get busy...
-cat("** Connecting the database")
+cat("Connecting the database")
 sql.conn <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
 if (dbIsValid(sql.conn)) {
   cat(".....Done.\n")
@@ -21,7 +21,7 @@ if (dbIsValid(sql.conn)) {
   stop("There was a problem connecting to the database\n")
 }
 
-cat("** Downloading Page posts from the Newsfeed\n")
+cat("Downloading Page posts from the Newsfeed\n")
 posts <-
   getPage(page = "nesreanigeria",
           nesreaToken,
@@ -32,7 +32,7 @@ cat("-- from Newsfeed were stored")
 
 store_post_details(sql.conn, posts)
 
-cat("** Checking for and correcting duplications")
+cat("Checking for and correcting duplications")
 tbls <- dbListTables(sql.conn) %>%
   subset(grepl("fb", .))
 
@@ -43,7 +43,7 @@ sapply(tbls, function(x) {
 })
 cat(".....Done.\n")
 
-cat("** Disconnecting the database")
+cat("Disconnecting the database")
 dbDisconnect(sql.conn)
 if (!dbIsValid(sql.conn)) {
   cat("....Done.\n")

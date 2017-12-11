@@ -1,5 +1,4 @@
 ## download-website.R
-cat("** ")
 setwd(file.path(rootDir, "website"))
 
 ## Preps
@@ -28,17 +27,19 @@ df <- data.frame(Title = headers,
                  Date = date)
 
 ## Write it to the database
-cat("** Connecting the database\n")
+cat("Connecting the database.... ")
 db <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
+cat("DONE\nStore website data....")
 dbWriteTable(db, "nesreanigeria_webnews", df, overwrite = TRUE)
 # TODO: Provide storage for blogs
-cat("** Checking for and correcting duplications")
+cat("DONE\nChecking for and correcting duplications... ")
 tmp <- dbReadTable(db, "nesreanigeria_webnews") %>%
   distinct()
 dbWriteTable(db, "nesreanigeria_webnews", tmp, overwrite = TRUE)
-cat("......Done.\n")
+cat("DONE\n")
   
-cat("** Disconnecting the database\n")
+cat("Disconnecting the database...")
 dbDisconnect(db)
+cat("DONE\n")
 
 setwd("../")

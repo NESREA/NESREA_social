@@ -8,15 +8,16 @@ collect_tweets <- function(string = character())
   require(twitteR)
   require(dplyr)
   if (!is.character(string))
-    stop("'string' is not a character vector")
+    stop("'string' must be a character vector.")
   if (length(string) > 1) {
     string <- string[1]
-    warning("Only the first term was used. The rest was ignored.")
+    warning(sQuote(string), "was used for the search and other terms dropped.")
   }
-  if (nchar(string) < 3 | nchar(string) > 20)
+  num.letters <- nchar(string)
+  if ( num.letters< 3 || num.letters > 20)
     stop("A term of between 3 and 20 characters is required.")
   twt <- searchTwitter(string, n = 1000) %>%
-    twListToDF(.)
+    twListToDF()
 }
 
 # .................................
@@ -30,7 +31,7 @@ display_twts <- function(x)
   tgt <- c("created", "isRetweet")
   if (!identical(match(tgt, colnames(x)), as.integer(c(5, 13))))
     stop("Not a valid tweet data frame.")
-  if (!class(x$created)[1] == "POSIXct" & is.logical(x$isRetweet))
+  if (!class(x$created)[1] == "POSIXct"& is.logical(x$isRetweet))
     stop("The data do not match the type required for the analysis.")
   plot <- ggplot(x, aes(created)) +
     geom_density(aes(fill = isRetweet), alpha = 0.7) +
@@ -47,12 +48,11 @@ update_nesrea_db <- function() {
   require(twitteR)
   register_sqlite_backend(file.path(rootDir, "data/nesreanigeria.db"))
   
-  cat("** Updating database with NESREANigeria tweets\n")
+  cat("Updating database with NESREANigeria tweets... ")
   n <-
     search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
   
-  cat("** ",
-      sprintf(ngettext(
+  cat(sprintf(ngettext(
         n, "%d tweet loaded\n", "%d tweets loaded\n"
       ), n))
 }
@@ -131,7 +131,7 @@ logon_to_twitter <- function() {
     access_token = access_token,
     access_secret = access_secret
   )
-  cat("** Authentication successful\n")
+  cat("Authentication successful\n")
   
   ## Remove keys from the workspace
   rm(consumer_key,

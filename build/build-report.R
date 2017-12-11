@@ -40,7 +40,7 @@ if (interactive()) {
 }
 
 ## The main job
-cat("* Building the document\n")
+cat("Building the document\n")
 if (!requireNamespace("rmarkdown"))
   install.packages("rmarkdown", repos = "https://cran.rstudio.com")
 rmarkdown::render(

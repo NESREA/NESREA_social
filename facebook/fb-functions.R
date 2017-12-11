@@ -77,7 +77,7 @@ store_post_details <- function(conn, data = data.frame()) {
   ## Pick an ID and use it to download details related to a particular post
   ## This function takes a while, so it's good to keep user abreast on progress
   ## Set up variables as much as possible to reduce indexing computations
-  cat("\n*** Obtaining details for individual posts\n")
+  cat("Obtaining details for individual posts\n")
   len <- length(data$id)
   PB <- txtProgressBar(max = len, style = 3, char = "-")
   

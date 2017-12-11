@@ -15,19 +15,19 @@ validate_db("nesreanigeria.db")
 tw <- "Twitter"
 fb <- "Facebook"
 wb <- "NESREA Website"
-beg <- "* Starting %s downloads\n"
-end <- "downloads completed\n"
+beg <- "Starting %s downloads\n"
+end <- "downloads completed\n\n"
 
 cat(sprintf(beg, tw))
 source(file.path(rootDir, "twitter/download-nesrea-tweets.R"))
-cat("*", tw, end)
+cat(tw, end)
 
 cat(sprintf(beg, fb))
 source(file.path(rootDir, "facebook/download-nesrea-fbposts.R"))
-cat("*", fb, end)
+cat(fb, end)
 
 cat(sprintf(beg, wb))
 source(file.path(rootDir, "website/download-nesrea-website.R"))
-cat("*", wb, end)
+cat(wb, end)
 
 rm(tw, fb, wb, beg, end)
