@@ -4,17 +4,12 @@ author: "NESREA Web Monitoring Group"
 output:
   word_document: default
 ---
-                                                                          <!--
-Text formatting                                                                 
-++++++++++                                                                 -->
-
 <style>
   body {
     text-align: justify
   }
 </style>                                                                  
-                                                                          <!--
-++++++++++
+<!--
 
   *****************************************************************************
   *                         GENERAL NOTICE                                    *
