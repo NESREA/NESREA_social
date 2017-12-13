@@ -30,6 +30,9 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r initialize, message=FALSE, include=FALSE}
 ## The existence of required dependencies is checked for. If absent, these are
 ## automatically downloaded and installed. Then, packages are (quietly) loaded.
+## Where there's an issue in R-3.2.4
+## See https://stackoverflow.com/questions/39885408/dependency-slam-is-not-available-when-installing-tm-package
+cran_mirror <- "https://cran.rstudio.com"
 pkglist <- c("DBI",
              "RSQLite",
              "Rfacebook",
@@ -38,14 +41,23 @@ pkglist <- c("DBI",
              "lubridate",
              "qdap",
              "rvest",
+             "slam",
              "SnowballC",
              "stringr",
              "tm",
              "twitteR",
              "wordcloud")
+
+if (getRversion() == "3.2.3" && !requireNamespace("devtools")) {
+  slam_url <- 
+  "https://cran.r-project.org/src/contrib/Archive/slam/slam_0.1-37.tar.gz"
+  install.packages("devtools", repos = cran_mirror)
+  devtools::install_url(slam_url)
+}
+
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
 if (length(not_installed))
-  install.packages(not_installed, repos = "https://cran.rstudio.com")
+  install.packages(not_installed, repos = cran_mirror)
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 source("global-function-prototypes.R")

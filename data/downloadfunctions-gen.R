@@ -4,14 +4,11 @@
 ## For new R installations, this check is absolutely necessary
 ensure_packages <- function(pkgs = character()) {
   invisible(sapply(pkgs, function(x) {
-    if (suppressPackageStartupMessages(
-      !require(x, character.only = TRUE, quietly = TRUE))) {
+    if (suppressPackageStartupMessages(!require(x, character.only = TRUE))) {
       sprintf("Attempt download and installation of %s...", x)
       install.packages(x, repos = "https://cran.rstudio.com", verbose = FALSE)
       suppressPackageStartupMessages(library(x, character.only = TRUE))
       cat("DONE\n")
-    } else {
-      cat("All required packages are already installed\n")
     }
   }))
 }

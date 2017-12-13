@@ -53,7 +53,7 @@ update_nesrea_db <- function() {
     search_twitter_and_store("nesreanigeria", "nesreanigeria_tweets")
   
   cat(sprintf(ngettext(
-        n, "%d tweet loaded\n", "%d tweets loaded\n"
+        n, "%d tweet added\n", "%d tweets added\n"
       ), n))
 }
 

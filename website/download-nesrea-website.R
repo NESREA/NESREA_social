@@ -7,7 +7,9 @@ ensure_packages(pkgs)
 source("website-functions.R")
 
 ## Download the NESREA 'News' page as an XML document
-news <- read_html("http://www.nesrea.gov.ng/news/")
+url <- "http://www.nesrea.gov.ng/news/"
+news <- read_html(url)
+cat("URL:", url, "\n")
 
 ## Make a dataframe from vectors of text scraped from
 ## parts of the page via CSS selectors
