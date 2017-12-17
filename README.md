@@ -28,5 +28,6 @@ smReports --update
 
 To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
 
+Note that due to the absence of a graphics device, this document cannot be built in the Linux Subsystem for Windows 10.
 ***
 Contact: <socialmedia@nesrea.gov.ng>.
