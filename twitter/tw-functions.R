@@ -45,7 +45,7 @@ display_twts <- function(x)
 # Updates NESREA database
 # ```````````````````````
 update_nesrea_db <- function() {
-  require(twitteR)
+  require(twitteR, quietly = TRUE)
   register_sqlite_backend(file.path(rootDir, "data/nesreanigeria.db"))
   
   cat("Updating database with NESREANigeria tweets... ")
