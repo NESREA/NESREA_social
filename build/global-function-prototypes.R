@@ -144,3 +144,14 @@ return_text <- function(df, metric) {
   txt <- df$message[match(max(column), column)]
   txt
 }
+
+## Makes sure that text-based columns contain human readable characters only
+remove_nonreadables <- function(string = NULL) {
+  require(stringr)
+  if (is.null(string))
+    warning("No text data were available for reading.")
+  nu.str <- string %>%
+    gsub("[^[:graph:]]", " ", .) %>%
+    str_trim()
+  nu.str
+}

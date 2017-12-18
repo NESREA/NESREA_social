@@ -54,10 +54,6 @@ prepare_data <- function(df = data.frame()) {
   if (!identical(colnames(df), cnames))
     stop("Loaded data are not compatible with this function")
   
-  df$message <- df$message %>%
-    gsub("[^[:graph:]]", " ", .) %>%
-    stringr::str_trim(.)
-  
   df$type <- as.factor(df$type)
   
   df$created_time <- df$created_time %>%

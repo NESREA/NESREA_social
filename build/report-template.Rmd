@@ -134,7 +134,7 @@ last_wk <- all_data %>%
 
 ## Remove characters from the text of tweets that are not human-readable, as 
 ## they would be of no practical use in the analysis.
-wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+wk_data$text <- remove_nonreadables(wk_data$text)
 
 # Some objects to be used to generate and/or display statistics
 no.wk <- nrow(wk_data)
@@ -188,6 +188,10 @@ rm(connxn)
 ## Convert to date-time structures
 fbPosts$created_time <- as.POSIXct(fbPosts$created_time)
 fbComments$created_time <- as.POSIXct(fbComments$created_time)
+
+## Remove any non-humanly readable characters
+fbPosts$message <- remove_nonreadables(fbPosts$message)
+fbComments$message <- remove_nonreadables(fbComments$message)
 
 fbPosts$created_mth <-
   fbPosts$created_mth %>%
