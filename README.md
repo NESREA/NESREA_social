@@ -7,6 +7,7 @@ To use, download or `git clone` the repository.
 ## Prerequisites
 * __R__: <http://cran.r-project.org>
 * __pandoc__: <http://pandoc.org/installing.html>
+* __Java__: <https://java.com/en/download/manual.jsp>
 
 ## Usage  
 Generating a report is **super easy**. On the command line, navigate to **this** directory and simply run  
@@ -27,5 +28,6 @@ smReports --update
 
 To access all of the other features that are available in this project open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE.
 
+Note that due to the absence of a graphics device, this document cannot be built in the Linux Subsystem for Windows 10.
 ***
 Contact: <socialmedia@nesrea.gov.ng>.

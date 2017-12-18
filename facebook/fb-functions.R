@@ -54,10 +54,6 @@ prepare_data <- function(df = data.frame()) {
   if (!identical(colnames(df), cnames))
     stop("Loaded data are not compatible with this function")
   
-  df$message <- df$message %>%
-    gsub("[^[:graph:]]", " ", .) %>%
-    stringr::str_trim(.)
-  
   df$type <- as.factor(df$type)
   
   df$created_time <- df$created_time %>%
@@ -77,7 +73,7 @@ store_post_details <- function(conn, data = data.frame()) {
   ## Pick an ID and use it to download details related to a particular post
   ## This function takes a while, so it's good to keep user abreast on progress
   ## Set up variables as much as possible to reduce indexing computations
-  cat("\n*** Obtaining details for individual posts\n")
+  cat("Obtaining details for individual posts\n")
   len <- length(data$id)
   PB <- txtProgressBar(max = len, style = 3, char = "-")
   

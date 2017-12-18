@@ -1,5 +1,4 @@
 ## download-website.R
-cat("** ")
 setwd(file.path(rootDir, "website"))
 
 ## Preps
@@ -8,16 +7,18 @@ ensure_packages(pkgs)
 source("website-functions.R")
 
 ## Download the NESREA 'News' page as an XML document
-news <- read_html("http://www.nesrea.gov.ng/news/")
+url <- "http://www.nesrea.gov.ng/news/"
+news <- read_html(url)
+cat("URL:", url, "\n")
 
 ## Make a dataframe from vectors of text scraped from
 ## parts of the page via CSS selectors
-headers <- scrape_items(page = news, ".entry-header a")
+headers <- scrape_items(page = news, ".entry-header a", verbose = TRUE)
 
-descr <- scrape_items(page = news, ".short-description p") %>%
+descr <- scrape_items(page = news, ".short-description p", verbose = TRUE) %>%
   .[. != ""]
 
-date <- scrape_items(page = news, ".sponsors") %>%
+date <- scrape_items(page = news, ".sponsors", verbose = TRUE) %>%
   gsub("([[:digit:]])(st|rd|nd|th)", "\\1", .) %>%
   str_trim() %>%
   strptime(format = "%B %d, %Y") %>%
@@ -28,17 +29,19 @@ df <- data.frame(Title = headers,
                  Date = date)
 
 ## Write it to the database
-cat("** Connecting the database\n")
+cat("Connecting the database.... ")
 db <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
+cat("DONE\nStore website data....")
 dbWriteTable(db, "nesreanigeria_webnews", df, overwrite = TRUE)
 # TODO: Provide storage for blogs
-cat("** Checking for and correcting duplications")
+cat("DONE\nChecking for and correcting duplications... ")
 tmp <- dbReadTable(db, "nesreanigeria_webnews") %>%
   distinct()
 dbWriteTable(db, "nesreanigeria_webnews", tmp, overwrite = TRUE)
-cat("......Done.\n")
+cat("DONE\n")
   
-cat("** Disconnecting the database\n")
+cat("Disconnecting the database...")
 dbDisconnect(db)
+cat("DONE\n")
 
 setwd("../")

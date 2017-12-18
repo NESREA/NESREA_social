@@ -4,17 +4,12 @@ author: "NESREA Web Monitoring Group"
 output:
   word_document: default
 ---
-                                                                          <!--
-Text formatting                                                                 
-++++++++++                                                                 -->
-
 <style>
   body {
     text-align: justify
   }
 </style>                                                                  
-                                                                          <!--
-++++++++++
+<!--
 
   *****************************************************************************
   *                         GENERAL NOTICE                                    *
@@ -30,6 +25,9 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r initialize, message=FALSE, include=FALSE}
 ## The existence of required dependencies is checked for. If absent, these are
 ## automatically downloaded and installed. Then, packages are (quietly) loaded.
+## Where there's an issue in R-3.2.4
+## See https://stackoverflow.com/questions/39885408/dependency-slam-is-not-available-when-installing-tm-package
+cran_mirror <- "https://cran.rstudio.com"
 pkglist <- c("DBI",
              "RSQLite",
              "Rfacebook",
@@ -38,14 +36,23 @@ pkglist <- c("DBI",
              "lubridate",
              "qdap",
              "rvest",
+             "slam",
              "SnowballC",
              "stringr",
              "tm",
              "twitteR",
              "wordcloud")
+
+if (getRversion() == "3.2.3" && !requireNamespace("devtools")) {
+  slam_url <- 
+  "https://cran.r-project.org/src/contrib/Archive/slam/slam_0.1-37.tar.gz"
+  install.packages("devtools", repos = cran_mirror)
+  devtools::install_url(slam_url)
+}
+
 not_installed <- pkglist[!pkglist %in% (.packages(all.available = TRUE))]
 if (length(not_installed))
-  install.packages(not_installed, repos = "https://cran.rstudio.com")
+  install.packages(not_installed, repos = cran_mirror)
 suppressPackageStartupMessages(lapply(pkglist, library, character.only = TRUE))
 
 source("global-function-prototypes.R")
@@ -127,7 +134,7 @@ last_wk <- all_data %>%
 
 ## Remove characters from the text of tweets that are not human-readable, as 
 ## they would be of no practical use in the analysis.
-wk_data$text <- str_replace_all(wk_data$text, "[^[:graph:]]", " ")
+wk_data$text <- remove_nonreadables(wk_data$text)
 
 # Some objects to be used to generate and/or display statistics
 no.wk <- nrow(wk_data)
@@ -181,6 +188,10 @@ rm(connxn)
 ## Convert to date-time structures
 fbPosts$created_time <- as.POSIXct(fbPosts$created_time)
 fbComments$created_time <- as.POSIXct(fbComments$created_time)
+
+## Remove any non-humanly readable characters
+fbPosts$message <- remove_nonreadables(fbPosts$message)
+fbComments$message <- remove_nonreadables(fbComments$message)
 
 fbPosts$created_mth <-
   fbPosts$created_mth %>%
