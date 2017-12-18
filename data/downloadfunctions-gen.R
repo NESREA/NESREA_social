@@ -2,13 +2,20 @@
 
 ## Checks for packages and installs if missing.
 ## For new R installations, this check is absolutely necessary
-ensure_packages <- function(pkgs = character()) {
+ensure_packages <- function(pkgs) {
+  if (length(dim(pkgs)) >= 2)
+    stop("'pkgs' is not a vector.")
+  if (!is.character(pkgs))
+    stop("Invalid input - expected a character vector")
   invisible(sapply(pkgs, function(x) {
     if (suppressPackageStartupMessages(!require(x, character.only = TRUE))) {
-      sprintf("Attempt download and installation of %s...", x)
+      sprintf("Attempt download and installation of %s... ", x)
       install.packages(x, repos = "https://cran.rstudio.com", verbose = FALSE)
       suppressPackageStartupMessages(library(x, character.only = TRUE))
-      cat("DONE\n")
+      if (x %in% (.packages(all.available = TRUE)))
+        cat("Successful\n")
+      else
+        stop(sQuote(x), " installation failed.")
     }
   }))
 }

@@ -13,12 +13,12 @@ cat("URL:", url, "\n")
 
 ## Make a dataframe from vectors of text scraped from
 ## parts of the page via CSS selectors
-headers <- scrape_items(page = news, ".entry-header a")
+headers <- scrape_items(page = news, ".entry-header a", verbose = TRUE)
 
-descr <- scrape_items(page = news, ".short-description p") %>%
+descr <- scrape_items(page = news, ".short-description p", verbose = TRUE) %>%
   .[. != ""]
 
-date <- scrape_items(page = news, ".sponsors") %>%
+date <- scrape_items(page = news, ".sponsors", verbose = TRUE) %>%
   gsub("([[:digit:]])(st|rd|nd|th)", "\\1", .) %>%
   str_trim() %>%
   strptime(format = "%B %d, %Y") %>%
