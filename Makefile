@@ -9,8 +9,8 @@ all: update doc
 doc: build/build-report.R
 	$(R_AUTO) $(RSFLAGS) build/build-report.R
 	
-update: data/download-data.R
+update: data/download-data.R 
 	$(R_AUTO) $(RSFLAGS) data/download-data.R
 
-test:
+test: tests/testthat.R
 	$(R_AUTO) $(RSFLAGS) tests/testthat.R
