@@ -112,3 +112,42 @@ store_post_details <- function(conn, data = data.frame()) {
   }
   cat("\n")
 }
+
+# ....................................................................
+# Creates an S3 object containing an access token and its expiry date
+#
+## The key thing about this function is that we want to be able to
+## keep in store the expected expiry date the token according to the
+## prevailing Facebook API policy, so that on loading it we can
+## confirm whether it is still valid or not.
+# ````````````````````````````````````````````````````````````````````
+mytoken <- function(app_id, app_secret) {
+  require(Rfacebook)
+  token <-
+    list(
+      token = fbOAuth(app_id = app_id, app_secret = app_secret),
+      expiryDate = Sys.Date() + 60)
+  attr(token, "class") <- "mytoken"
+  token
+}
+
+# ..........................................................................
+# fetch_token()
+#
+## Checks for local storage of the access token. If it is already present
+## we also check whether it has expired or not, in line with Facebook's 
+## policy on token changes. The App credentials used (App Id & App Secret) 
+## are as available via the App dashboard,
+# ``````````````````````````````````````````````````````````````````````````
+fetch_token <- function(file, app_id, app_secret) {
+  if (file.exists(file))
+    load(file, verbose = TRUE)
+  
+  if (!file.exists(file) | nesreaToken$expiryDate <= Sys.Date()) {
+    nesreaToken <- mytoken(app_id, app_secret)
+    save(nesreaToken, file = as.character(file))
+  }
+  
+  ## Redefine object since we're done using the date element
+  Tk <- nesreaToken$token
+}

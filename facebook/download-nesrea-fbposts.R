@@ -4,13 +4,18 @@
 ## NB: Admin role required!
 setwd(file.path(rootDir, "facebook/"))
 
-## Prep
+## Preparations
 pkgs <- c("DBI", "RSQLite", "Rfacebook", "dplyr", "stringr")
 ensure_packages(pkgs = pkgs)
 
-## Load required objects (functions + 'nesreaToken') into the Workspace
+## Load required functions
 source("fb-functions.R")
-load("NESREA_fboauth")
+
+## Check if access token is still valid
+## This file contains secret credentials and hence is not shared publicly
+## At the end of the file, an access token, aongst others, is loaded
+## into the workpace
+source("fb_auth.R")
 
 ## Oya, get busy...
 cat("Connecting the database... ")
