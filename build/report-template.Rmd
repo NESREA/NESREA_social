@@ -216,7 +216,7 @@ wk_Posts <- mth_Posts %>%
 |                            |                                          |
 
 # 3.0 Exploratory Analysis
-The data were harvested using R[^3] scripts. For the website, the text in the pages of interest were scraped as hypertext markup language (HTML) with particular portions of the page(s) identified via cascading style sheet (CSS) selectors. For the social media platforms Facebook and Twitter, the data were downloaded via the respective platforms' application programming interface (API). All the downloaded data are stored together locally in a database. The analyses in this document (including visualizations) were also carried out using R.
+**Methodology**: The data were harvested using R scripts[^2]. For the website, the text in the pages of interest were scraped as hypertext markup language (HTML) with particular portions of the page(s) identified via cascading style sheet (CSS) selectors. For the social media platforms Facebook and Twitter, the data were downloaded via the respective platforms' application programming interface (API). All the downloaded data are stored together locally in a database. The analyses in this document (including visualizations) were also carried out using R.
 
 ## 3.1 Website 
 Below is a tabulation of recent news items uploaded to the NESREA Official website:
@@ -226,14 +226,14 @@ knitr::kable(head(newsData[, c(1, 4, 5)], n = 10L),
 ```
 
 ## 3.2 Twitter
-All tweets in this analysis are those containing the NESREA handle, [@nesreanigeria](https://www.twitter.com/nesreanigeria). Firstly, they are displayed as a density distribution, where $p(AUC) = 1$ (for simplicity, the $y$-axis labels are not displayed).  
+All tweets in this analysis are those containing the NESREA handle, [nesreanigeria](https://www.twitter.com/nesreanigeria). Firstly, they are displayed as a density distribution, where $p(AUC) = 1$ (for simplicity, the $y$-axis labels are not displayed).  
 ```{r plain density, warning=FALSE, message=FALSE}
 simplePlot <- plain_dens_plot(data = wk_data, platform = "twitter")
 simplePlot +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 ```
 
-Below, is a representation of the previous plot, with the data disaggregated by days in order to display relative Twitter activity during the week under review.[^2]  
+Below, is a representation of the previous plot, with the data disaggregated by days in order to display relative Twitter activity during the week under review.[^3]  
 ```{r daily tweets plot}  
 simplePlot +
   facet_grid(day ~ .) +
@@ -333,5 +333,5 @@ Submitted by:
 
   
 [^1]: The report was built using *R `r getRversion()`* on `r format(Sys.time(), "%A, %d %B %Y at %H:%M")`.
-[^2]: Note that days with no data are automatically dropped
-[^3]: R is a programming language as well as an environment for statistical computing (<http://r-project.org>)
+[^2]: R is a programming language as well as an environment for statistical computing (<http://r-project.org>)
+[^3]: Note that days with no data are automatically dropped.
