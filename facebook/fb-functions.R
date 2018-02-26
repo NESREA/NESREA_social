@@ -124,15 +124,11 @@ store_post_details <- function(conn, data = data.frame()) {
 ## prevailing Facebook API policy, so that on loading it we can
 ## confirm whether it is still valid or not.
 # ````````````````````````````````````````````````````````````````````
-mytoken <- function(app_id, app_secret) {
-  require(Rfacebook)
-  token <-
-    list(
-      token = fbOAuth(app_id = app_id, app_secret = app_secret),
-      expiryDate = Sys.Date() + 60
-    )
-  attr(token, "class") <- "mytoken"
-  token
+fbTokenObj <- function(app_id, app_secret) {
+  structure(
+    list(token = Rfacebook::fbOAuth(app_id, app_secret),
+         expiryDate = Sys.Date() + 60),
+    class = "fbTokenObj")
 }
 
 # ..........................................................................
@@ -144,14 +140,19 @@ mytoken <- function(app_id, app_secret) {
 ## are as available via the App dashboard,
 # ``````````````````````````````````````````````````````````````````````````
 fetch_token <- function(file, app_id, app_secret) {
-  if (file.exists(file))
-    load(file, verbose = TRUE)
+  if (file.exists(file)) 
+    load(file, verbose = FALSE)
   
   if (!file.exists(file) | nesreaToken$expiryDate <= Sys.Date()) {
-    nesreaToken <- mytoken(app_id, app_secret)
+    
+    ## Open page for Facebook App Settings
+    browseURL(
+      "https://developers.facebook.com/apps/203440573439361/settings/basic/"
+    )
+    nesreaToken <- fbTokenObj(app_id, app_secret)
     save(nesreaToken, file = as.character(file))
   }
   
-  ## Redefine object since we're done using the date element
+  ## Redefine returned object since we're done using the date element
   Tk <- nesreaToken$token
 }
