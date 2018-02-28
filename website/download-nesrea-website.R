@@ -1,10 +1,8 @@
 ## download-website.R
-setwd(file.path(rootDir, "website"))
 
 ## Preps
-pkgs <- c("rvest", "DBI", "RSQLite", "dplyr", "stringr")
-ensure_packages(pkgs)
-source("website-functions.R")
+ensure_packages(c("rvest", "DBI", "RSQLite", "dplyr", "rprojroot", "stringr"))
+source(find_root_file("website", "website-functions.R", criterion = rootCrit))
 
 ## Download the NESREA 'News' page as an XML document
 url <- "http://www.nesrea.gov.ng/news/"
@@ -26,22 +24,30 @@ date <- scrape_items(page = news, ".sponsors", verbose = TRUE) %>%
 
 df <- data.frame(Title = headers,
                  Description = descr,
-                 Date = date)
+                 Date = date,
+                 stringsAsFactors = FALSE)
 
 ## Write it to the database
 cat("Connecting the database.... ")
-db <- dbConnect(SQLite(), file.path(rootDir, "data/nesreanigeria.db"))
+db <- 
+  dbConnect(SQLite(),
+            find_root_file("data", "nesreanigeria.db", criterion = rootCrit))
 cat("DONE\nStore website data....")
+
 dbWriteTable(db, "nesreanigeria_webnews", df, overwrite = TRUE)
+
 # TODO: Provide storage for blogs
 cat("DONE\nChecking for and correcting duplications... ")
+
 tmp <- dbReadTable(db, "nesreanigeria_webnews") %>%
   distinct()
+
 dbWriteTable(db, "nesreanigeria_webnews", tmp, overwrite = TRUE)
 cat("DONE\n")
   
 cat("Disconnecting the database...")
 dbDisconnect(db)
-cat("DONE\n")
 
-setwd("../")
+if (dbIsValid(db)) {
+  cat("Database was not disconnected.")
+} else cat("DONE\n")

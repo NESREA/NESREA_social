@@ -3,7 +3,7 @@
 # .....................................
 # Collects tweets to a maximum of 1,000
 # `````````````````````````````````````
-collect_tweets <- function(string = character())
+collect_tweets <- function(string)
 {
   require(twitteR)
   require(dplyr)
@@ -46,7 +46,9 @@ display_twts <- function(x)
 # ```````````````````````
 update_nesrea_db <- function() {
   require(twitteR, quietly = TRUE)
-  register_sqlite_backend(file.path(rootDir, "data/nesreanigeria.db"))
+  register_sqlite_backend(
+    find_root_file("data", "nesreanigeria.db",
+                   criterion = has_file("NESREA_social.Rproj")))
   
   cat("Updating database with NESREANigeria tweets... ")
   n <-
@@ -119,12 +121,17 @@ chart <- function(tbl) {
 # Logs on to Twitter API using Oauth credentials
 # ``````````````````````````````````````````````
 logon_to_twitter <- function() {
-  keys <- file.path(rootDir, "data/key.RData")
+  require(rprojroot)
+  keys <- find_root_file(
+    "data", "key.RData", criterion = has_file("NESREA_social.Rproj")
+    )
+  
   if (!file.exists(keys)) {
     warning("You must supply OAuth credentials to proceed")
   } else {
     load(keys, envir = globalenv())
   }
+  
   twitteR::setup_twitter_oauth(
     consumer_key = consumer_key,
     consumer_secret = consumer_secret,
