@@ -124,15 +124,11 @@ store_post_details <- function(conn, data = data.frame()) {
 ## prevailing Facebook API policy, so that on loading it we can
 ## confirm whether it is still valid or not.
 # ````````````````````````````````````````````````````````````````````
-mytoken <- function(app_id, app_secret) {
-  require(Rfacebook)
-  token <-
-    list(
-      token = fbOAuth(app_id = app_id, app_secret = app_secret),
-      expiryDate = Sys.Date() + 60
-    )
-  attr(token, "class") <- "mytoken"
-  token
+fbTokenObj <- function(app_id, app_secret) {
+  structure(
+    list(token = Rfacebook::fbOAuth(app_id, app_secret),
+         expiryDate = Sys.Date() + 60),
+    class = "fbTokenObj")
 }
 
 # ..........................................................................
@@ -143,15 +139,34 @@ mytoken <- function(app_id, app_secret) {
 ## policy on token changes. The App credentials used (App Id & App Secret)
 ## are as available via the App dashboard,
 # ``````````````````````````````````````````````````````````````````````````
-fetch_token <- function(file, app_id, app_secret) {
-  if (file.exists(file))
-    load(file, verbose = TRUE)
+fetch_token <- function(tkFile, app_id, app_secret) {
+  if (file.exists(tkFile))
+    load(tkFile, verbose = FALSE)
   
-  if (!file.exists(file) | nesreaToken$expiryDate <= Sys.Date()) {
-    nesreaToken <- mytoken(app_id, app_secret)
-    save(nesreaToken, file = as.character(file))
+  if (!file.exists(tkFile) |
+      nesreaToken$expiryDate <= Sys.Date()) {
+    val <- NULL
+    if (interactive()) {
+      msg <-
+        "This action will renew Facebook OAuth credentials. Continue?"
+      if (identical(.Platform$OS.type, "windows"))
+        val <- winDialog(type = "yesno", message = msg)
+      else
+        val <- menu(choices = c("Yes", "No"), title = msg)
+    }
+    else {
+      cat("\nThe Facebook token has expired or is non-existent.\n")
+      cat("Open R to fix this (Administrator priviledges required.\n")
+      cat("Continuing... ")
+    }
+    
+    if (identical(val, "YES") | identical(val, 1L)) {
+      nesreaToken <- fbTokenObj(app_id, app_secret)
+      save(nesreaToken, file = tkFile)
+    }
+    else return(NULL)
   }
   
-  ## Redefine object since we're done using the date element
-  Tk <- nesreaToken$token
+  ## Redefine returned object since we're done using the date element
+  invisible(nesreaToken$token)
 }
