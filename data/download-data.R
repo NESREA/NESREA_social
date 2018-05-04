@@ -57,6 +57,3 @@ source(find_root_file(
 ))
 
 cat(wb, end)
-
-## cleanup
-rm(tw, fb, wb, beg, end)

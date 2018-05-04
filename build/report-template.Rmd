@@ -43,7 +43,7 @@ pkglist <- c("DBI",
              "twitteR",
              "wordcloud")
 
-if (getRversion() == "3.2.3" && !requireNamespace("devtools")) {
+if (getRversion() == "3.2.3" & !requireNamespace("devtools")) {
   slam_url <- 
   "https://cran.r-project.org/src/contrib/Archive/slam/slam_0.1-37.tar.gz"
   install.packages("devtools", repos = cran_mirror)

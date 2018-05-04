@@ -16,7 +16,7 @@ lapply(pkgs, function(P) {
   }
 })
 
-rootDir <- rprojroot::find_root(has_file("NESREA_social.Rproj"))
+rootDir <- find_root(has_file("NESREA_social.Rproj"))
 filename <- paste0("weekly-report_", Sys.Date(), ".docx")
 folder <- file.path(rootDir, "Reports")
 folderlist <- list.dirs(rootDir, recursive = FALSE, full.names = FALSE)
@@ -37,9 +37,12 @@ if (interactive()) {
 ## The main job
 cat("Building the document\n")
 
-rmarkdown::render(
-  find_root_file("build", "report-template.Rmd",
-                 criterion = has_file("NESREA_social.Rproj")),
+render(
+  find_root_file(
+    "build",
+    "report-template.Rmd",
+    criterion = has_file("NESREA_social.Rproj")
+  ),
   output_format = "word_document",
   output_file = filename,
   output_dir = folder
@@ -48,4 +51,4 @@ rmarkdown::render(
 try(
   system(paste("open", file.path(folder, filename)))
 )
-rm(filename, folder, folderlist, rootDir, buildDir)
+
