@@ -13,8 +13,8 @@ To use, download or `git clone` the repository.
 ## Usage  
 ### On the command line  
 
-1. Build a report 
-navigate to the **NESREA_social** directory and simply type  
+**1. Build a report**  
+Navigate to the **NESREA_social** directory and simply type  
 ```
 make doc
 ```
@@ -25,13 +25,13 @@ Upon running this command, the following will happen:
 + A `Reports/` sub-folder, will be created (if it does not already exist).
 + The report will be saved in the `Reports/` folder.
 
-@. Download new data  
+**2. Download new data**  
 The data are stored in a local **SQLite** database, called `nesreanigeria.db`; SQLite itself is automatically installed alongside relevant CRAN packages. To optionally update the database before generating the report, the user should type
 ```
 make update
 ```
 
-@. Unit testing  
+**3. Conduct tests**  
 This project is intended to be high-flux, with frequent updates, as well as to provide a measure of instruction for NESREA's  Web Monitoring Group. Should the user want to be part of its development or wishes to clone it for a different line of development, testing capabilities have been included. To easily run a unit test in the project, simply type
 ```
 make test
