@@ -1,0 +1,205 @@
+---
+title: "Facebook"
+author: "Web Monitoring Group"
+date: 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+# Preliminaries
+Load and attach packages, as well as custom functions
+```{r dependencies, echo=TRUE, results='hide'}
+suppressPackageStartupMessages(
+  invisible(
+    lapply(c("DBI", "RSQLite", "Rfacebook", "dplyr", "ggplot2", "tidyr"),
+           library,
+           character.only = TRUE)
+  )
+)
+
+source("fb-functions.R")
+```
+
+# Data collection
+Fetch the Page's Newsfeed from the local database. A summary of the available data is displayed.
+```{r retrieve-data}
+if (!exists("con")) {
+  con <- dbConnect(SQLite(), "../data/nesreanigeria.db")
+  
+  posts <- dbReadTable(con, "nesreanigeria_fbposts")
+  likes <- dbReadTable(con, "nesreanigeria_fblikes")
+  comments <- dbReadTable(con, "nesreanigeria_fbcomments")
+  
+  dbDisconnect(con)
+  suppressWarnings(rm(con))
+}
+
+dfs <- list(posts = posts,
+            likes = likes,
+            comments = comments)
+glimpse(dfs$posts)
+```
+
+```{r}
+glimpse(dfs$likes)
+```
+
+```{r}
+glimpse(dfs$comments)
+```
+
+
+Note that the function `getPage()` is used to collect these posts through the Facebook API/Rfacebook package. It can equally be used to harvest data from others' public posts via the `page` argument.
+
+
+# Data cleaning  
+We have a user-defined function we have called `prepare_data()` that lives in the file *fb-functions* that was sourced earlier and it will help us do some data cleaning very quickly.  
+
+The function:
+
+- takes a data frame as an argument
+- checks that the column names match those of typical Facebook post data
+- removes non-human readable characters from the 'message' variable
+- changes 'type' from a character to a categorical variable
+- converts 'time' into a Date-Time object (POSIX standard)
+- returns the modified data frame  
+
+This is what the function definition looks like:  
+```{r prepare_data-definition, results='hold'}
+prepare_data
+```
+
+Also columns 1 and 2 are redundant for the purpose of these particular analyses and will be removed. This is how it's done and the data now look like this  
+```{r clean-data, echo=TRUE}
+posts <- posts %>%
+  prepare_data() %>%
+  select(message:shares_count)
+
+glimpse(posts)
+```
+
+
+```{r density dist: FB posts}
+ggplot(posts, aes(created_time)) +
+  geom_density(fill = "lightblue") +
+  ggtitle("Distribution of Facebook posts")
+```
+
+```{r}
+gg <- ggplot(posts, aes(created_time, likes_count)) +
+  geom_point() +
+  labs(title = "Scatterplot of Facebook Post Likes",
+       y = "No. of Likes") 
+  
+gg
+
+```
+
+
+```{r}
+ggplot(posts, aes(type)) + geom_bar(aes(fill = type)) +
+  labs(title = "Bar chart of Types of Facebook Posts")
+```
+
+```{r}
+## Remove outlier
+adj.posts <- filter(posts, likes_count < 500)
+
+ggplot(adj.posts, aes(type, likes_count)) +
+  geom_boxplot(aes(fill = type)) +
+  labs(title = "Total Likes vs Type of Post",
+       caption = "NB: A photo post that attracted > 500 likes was omitted")
+```
+
+```{r}
+gg_likes <- ggplot(posts, aes(likes_count))
+
+gg_likes + 
+  geom_histogram(aes(fill = type)) +
+  facet_wrap( ~ type)
+```
+
+
+```{r}
+adj.posts <- filter(posts, comments_count < max(comments_count))
+
+ggplot(adj.posts, aes(type, comments_count)) +
+  geom_boxplot(aes(fill = type)) +
+  labs(title = "Total Comments vs. Type of Post")
+```
+
+
+```{r}
+ggplot(posts, aes(comments_count)) + geom_histogram(fill = "blue")
+```
+
+
+```{r}
+gg_comments <- ggplot(posts, aes(comments_count))
+
+gg_comments +
+  geom_histogram(aes(fill = type)) +
+  facet_wrap( ~ type)
+```
+
+
+
+```{r}
+gg_shares <- ggplot(posts, aes(shares_count))
+gg_shares +
+  geom_histogram(fill = "darkgreen") +
+  labs(title = "Histogram of Post 'Shares'",
+       x = "No. of times shared")
+```
+
+```{r}
+gg_shares +
+  geom_histogram(aes(fill =  type)) +
+  facet_wrap( ~ type)
+```
+
+```{r}
+ggplot(posts, aes(type, shares_count)) +
+  geom_boxplot(aes(fill = type)) +
+  labs(title = "Shares vs Type of Post",
+       y = "No. of 'Shares'")
+```
+
+
+Like details
+
+```{r}
+top10Likers <- 
+  head(sort(table(likes$from_name, dnn = c(NULL, "Name")), decreasing = TRUE), n = 10L) %>%
+  as.data.frame(.)
+  
+top10Likers
+```
+
+```{r}
+ggplot(top10Likers, aes(Name, Freq)) +
+  geom_col(fill = "violet") +
+  coord_flip()
+```
+
+
+```{r}
+nesrea <- "National Environmental Standards & Regulations Enforcement Agency"
+
+top10Commenters <- 
+  table(comments$from_name, dnn = c(NULL, "Name")) %>%
+  sort(decreasing = TRUE) %>%
+  as.data.frame() %>%
+  filter(Name != nesrea) %>%
+  slice(1:10)
+
+top10Commenters
+```
+
+```{r}
+ggplot(top10Commenters, aes(Name, Freq)) +
+  geom_col(fill = "blue") +
+  coord_flip()
+```
