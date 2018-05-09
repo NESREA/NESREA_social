@@ -1,16 +1,17 @@
 # NESREA_social
-Easy social media reporting for [NESREA](http://www.nesrea.gov.ng)'s Web Monitoring Group.
+Easy social media reporting and other frills for [NESREA](http://www.nesrea.gov.ng)'s social media team.
 
 ## Usage
 To use, download or `git clone` the repository.
 
 ## Prerequisites
+
 * __R__: <http://cran.r-project.org>
 * __RTools__: <https://cran.r-project.org/bin/windows/Rtools/index.html>
 * __pandoc__: <http://pandoc.org/installing.html>
 * __Java__: <https://java.com/en/download/manual.jsp>
 
-## Usage  
+<!-- ## Usage  
 ### On the command line  
 
 **1. Build a report**  
@@ -39,6 +40,6 @@ make test
 
 For additional features (e.g. experimental files, tutorials), open `NESREA_social.Rproj` in the [RStudio](https://www.rstudio.com/products/RStudio/) IDE and explore the various directories, especially in  *facebook*, *twitter* and *website*.
 
-__*Note that due to the absence of a graphics device (at the time of writing), this document cannot be built in the Linux Subsystem for Windows 10.*__  
+__*Note that due to the absence of a graphics device (at the time of writing), this document cannot be built in the Linux Subsystem for Windows 10.*__  -->
 ***
 Contact: <socialmedia@nesrea.gov.ng>.
