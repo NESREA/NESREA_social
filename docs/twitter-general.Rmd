@@ -1,0 +1,179 @@
+---
+title: "Twitter"
+author: "Web Monitoring Group"
+date: 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The Data
+Using data already stored on computer
+```{r, message=FALSE}
+library(dplyr)
+library(stringr)
+library(twitteR)
+
+register_sqlite_backend("../data/nesreanigeria.db")
+dframe <- load_tweets_db(as.data.frame = TRUE,
+                         table_name = "nesreanigeria_tweets")
+twList <- load_tweets_db(as.data.frame = FALSE,
+                         table_name = "nesreanigeria_tweets")
+```
+
+## Data cleaning
+Remove unwanted and add extra variable columns
+```{r}
+
+dframe <- dframe %>%
+  select(text, favoriteCount, created, statusSource:isRetweet) %>%
+  mutate(month = factor(format(as.Date(created), "%B"), levels = month.name, ordered = TRUE))
+
+
+glimpse(dframe)
+```
+
+```{r}
+summary(dframe)
+```
+
+Remove non-text characters from the *text* variable and remove the URLs in the *statusSource*
+```{r}
+dframe$text <- str_replace(dframe$text, "[^[:graph:]]", " ")
+
+dframe$statusSource <- substr(dframe$statusSource,
+                              start = regexpr(">", dframe$statusSource) + 1,
+                              stop = regexpr("</a>", dframe$statusSource) - 1)
+
+head(dframe$statusSource)
+```
+
+```{r}
+tbl_df(dframe)
+```
+
+```{r}
+
+mostfav <- dframe$text[which(dframe$favoriteCount == max(dframe$favoriteCount))]
+cat("Most favorited tweet(s):\n ", mostfav, "\n")
+rm(mostfav)
+```
+
+```{r}
+mostRts <- dframe$text[which(dframe$retweetCount == max(dframe$retweetCount))]
+cat("Most retweeted:\n", mostRts, "\n")
+rm(mostRts)
+```
+
+```{r}
+sort(table(dframe$statusSource), decreasing = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+
+ggObj <- ggplot(dframe, aes(favoriteCount)) +
+  geom_histogram()
+ggObj
+```
+
+```{r}
+minusPontifex <- dframe[which(dframe$retweetCount != max(dframe$retweetCount)), ]
+
+ggObj <- ggplot(minusPontifex, aes(retweetCount)) +
+  geom_histogram()
+ggObj
+
+rm(ggObj)
+```
+
+```{r}
+library(wordcloud)
+library(tm)
+txt <- dframe %>%
+  filter(isRetweet == "FALSE") %>%
+  select(text) %>%
+  unlist() %>%
+  paste(collapse = " ") %>%
+  gsub("@[[:alnum:]]{3,}|amp", " ", .) %>%
+  str_trim() %>%
+  stripWhitespace() %>%
+  removeWords(stopwords("english")) %>%
+  removePunctuation(preserve = TRUE) %>%
+  removeNumbers() 
+
+oldpar <- par()
+par(margin = rep(.1, 4))
+wordcloud(txt, min.freq = 10, colors = brewer.pal(6, "Dark2"))
+suppressWarnings(par(oldpar))
+rm(oldpar, txt)
+```
+
+```{r}
+dframe_x <- dframe[dframe$month != "December", ]
+yearplot <- ggplot(dframe_x, aes(created)) +
+  geom_density(aes(fill = isRetweet), alpha = 0.5) +
+  ggtitle("Distribution of tweets")
+yearplot
+```
+```{r}
+yearplot +
+  facet_wrap( ~ month, ncol = 2, scales = "free")
+```
+
+```{r}
+txt <- dframe$screenName %>%
+  paste(collapse = " ") %>%
+  str_trim() %>%
+  stripWhitespace()
+
+wordcloud(txt, colors = brewer.pal(12, "Dark2"))
+```
+
+```{r}
+rtTrend <- ggplot(dframe, aes(created, retweetCount)) +
+  geom_point(aes(y = retweetCount)) + 
+  geom_smooth(method = "loess")
+rtTrend
+```
+
+After removing the outlier
+```{r}
+sansOutlier <- ggplot(minusPontifex, aes(created, retweetCount)) +
+  geom_point(aes(y = retweetCount)) +
+  geom_smooth(method = "loess")
+
+sansOutlier
+```
+
+
+```{r}
+rtLogTrend <- ggplot(dframe, aes(created, retweetCount)) +
+  geom_point(aes(y = log(retweetCount))) +
+  geom_smooth(method = "loess")
+rtLogTrend
+```
+
+
+```{r}
+rtLogTrend +
+  geom_smooth(method = "loess")
+```
+
+
+```{r}
+rtLogTrend2 <- ggplot(minusPontifex, aes(created, retweetCount)) +
+  geom_point(aes(y = log(retweetCount)))
+
+rtLogTrend2
+```
+Without the Pope's tweet (outlier)
+```{r}
+rtLogTrend2 +
+  geom_smooth(method = "loess")
+```
+
+## User Data

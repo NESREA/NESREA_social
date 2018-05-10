@@ -6,17 +6,18 @@ RSFLAGS=--vanilla
 
 all: update doc
 
-doc:
-	$(R_AUTO) $(RSFLAGS) build/build-report.R
-	
+
 update:
-	$(R_AUTO) $(RSFLAGS) data/download-data.R
+	$(R_AUTO) $(RSFLAGS) data/download.R
 
 test:
 	$(R_AUTO) $(RSFLAGS) tests/testthat.R
 
 facebook:
-	$(R_AUTO) $(RSFLAGS) facebook/facebook-general.Rmd
+	$(R_AUTO) $(RSFLAGS) docs/facebook-general.Rmd
 
 twitter:
-	$(R_AUTO) $(RSFLAGS) twitter/twitter-general.Rmd
+	$(R_AUTO) $(RSFLAGS) docs/twitter-general.Rmd
+	
+website:
+	$(R_AUTO) $(RSFLAGS) docs/website.Rmd
