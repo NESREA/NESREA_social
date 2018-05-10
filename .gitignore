@@ -5,5 +5,3 @@ Reports/
 .httr-oauth
 packrat/lib*/
 .Rproj.user
-packrat/* 
-.Rprofile 
