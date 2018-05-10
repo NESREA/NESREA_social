@@ -22,4 +22,6 @@
 #   }
 # }
 
-webreport::download_all_data("nesreanigeria", "data/nesreanigeria.db")
+try(
+  webreport::download_all_data("nesreanigeria", "data/nesreanigeria.db")
+)
