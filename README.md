@@ -11,8 +11,9 @@ To use, download or `git clone` the repository.
 * __pandoc__: <http://pandoc.org/installing.html>
 * __Java__: <https://java.com/en/download/manual.jsp>
 
-<!-- ## Usage  
-### On the command line  
+## Usage  
+First navigate to the **NESREA_social** folder/directory and run `nsoc` (in the Command Line or by double-clicking in the file explorer). This will attempt to update the local database and then it will build the report.
+<!-- ### On the command line  
 
 **1. Build a report**  
 Navigate to the **NESREA_social** directory and simply type  
