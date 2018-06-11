@@ -8,7 +8,8 @@ Easy social media reporting and other frills for [NESREA](http://www.nesrea.gov.
 * __Java__: <https://java.com/en/download/manual.jsp>
 
 ## Usage  
-Navigate to the **NESREA_social** folder/directory in File Explorer or command line and run `nsoc` to automatically create/update a local database in the `data` folder and then build the current report.
+1. Navigate to the **NESREA_social** folder/directory in File Explorer or command line.  
+2. Run the script named `nsoc` to automatically create/update a local database in the `data` folder and then build the current report.  
 
 To _exclusively_ update the data
 ```
