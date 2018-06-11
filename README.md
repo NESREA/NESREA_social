@@ -1,5 +1,5 @@
 # NESREA_social
-Easy social media reporting and other frills for [NESREA](http://www.nesrea.gov.ng)'s social media team.
+Easy social media reporting and other frills for [NESREA](http://www.nesrea.gov.ng)'s Public Relations Unit.
 
 ## Prerequisites
 * __R__: <http://cran.r-project.org>
@@ -8,7 +8,7 @@ Easy social media reporting and other frills for [NESREA](http://www.nesrea.gov.
 * __Java__: <https://java.com/en/download/manual.jsp>
 
 ## Usage  
-Navigate to the **NESREA_social** folder/directory in File Explorer or command line and run `nsoc` to update the local database and then build the report.
+Navigate to the **NESREA_social** folder/directory in File Explorer or command line and run `nsoc` to automatically create/update a local database in the `data` folder and then build the current report.
 
 To _exclusively_ update the data
 ```
@@ -21,4 +21,4 @@ nsoc --build
 ```
 
 ***
-Contact: <socialmedia@nesrea.gov.ng>.
+Contact: <News@nesrea.gov.ng>.
